@@ -9,17 +9,18 @@ public class TemporaryCameraScript : MonoBehaviour
 
     [Header("Settings")]
     public Vector3 CameraOffset;
+    public float MinCameraRadius;
     public float MaxCameraRadius;
-    public float CameraStep;
     public float CameraSmoothing;
     private Camera CameraComponent;
     private Vector3 CameraPoint;
     private Vector3 CursorWorldSpacePosition;
     private Vector3 PlayerPosition;
+    private Plane CursorPlane = new Plane(Vector3.down, 0);
 
     void Start()
     {
-        CameraComponent = transform.GetComponent<Camera>();
+        CameraComponent = GetComponent<Camera>();
     }
 
     /*
@@ -28,7 +29,8 @@ public class TemporaryCameraScript : MonoBehaviour
     private void CharacterLookAtCursor()
     {
         Vector3 dir = Vector3.Normalize(CursorWorldSpacePosition - PlayerPosition);
-        PlayerObject.transform.rotation = Quaternion.LookRotation(dir,Vector3.up);
+        Quaternion toRotation = Quaternion.LookRotation(dir,Vector3.up);
+        PlayerObject.transform.rotation = Quaternion.Slerp(PlayerObject.transform.rotation, toRotation, Time.deltaTime * 20);
 
         // Lock the axis
         Vector3 lockedAxis = PlayerObject.transform.eulerAngles;
@@ -44,38 +46,32 @@ public class TemporaryCameraScript : MonoBehaviour
         }
 
         // Get Cursor position in world space
-        Ray ray = CameraComponent.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        Vector3 ScreenPosition = Input.mousePosition;
+        Ray ray = Camera.main.ScreenPointToRay(ScreenPosition);
+        if (CursorPlane.Raycast(ray, out float dist))
         {
-            CursorWorldSpacePosition = hit.point;
-            CursorWorldSpacePosition.y = 0;
+            CursorWorldSpacePosition = ray.GetPoint(dist);
         }
 
         PlayerPosition = PlayerObject.transform.position;
         PlayerPosition.y = 0;
 
-        // Camera point between cursor and player
-        CameraPoint = CursorWorldSpacePosition + PlayerPosition;
+        Vector3 diff = (CursorWorldSpacePosition - PlayerPosition) / 2;
+        Vector3 dir = Vector3.Normalize(diff);
+        float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
 
-        // Constrain Camera to radius
-        Vector3 dir = Vector3.Normalize(CursorWorldSpacePosition - PlayerPosition);
-        float len = Vector3.Distance(CursorWorldSpacePosition, PlayerPosition);
-        if (len > MaxCameraRadius)
-        {
-            CameraPoint = PlayerPosition + dir * MaxCameraRadius;
+        // Deadzone
+        if (len > MinCameraRadius) {
+            CharacterLookAtCursor();
         }
 
-        CameraPoint = CameraPoint / CameraStep;
-        CameraPoint.y = 0;
-
-        CharacterLookAtCursor();
-
-        Vector3 targetPostion = CameraPoint + CameraOffset;
-        transform.position = Vector3.Lerp(
-            transform.position,
-            targetPostion,
-            CameraSmoothing * Time.deltaTime
-        );
+        CameraPoint = PlayerPosition + dir * len;
+        transform.position = CameraPoint + CameraOffset;
+        // transform.position = Vector3.Lerp(
+        //     transform.position,
+        //     targetPostion,
+        //     CameraSmoothing * Time.deltaTime
+        // );
     }
 
     void OnDrawGizmosSelected()

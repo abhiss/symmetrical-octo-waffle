@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3580646906963157518
+--- !u!1 &7324132592294224636
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6218488408265147251}
-  - component: {fileID: 679528552918024147}
-  - component: {fileID: 6816821784385804433}
-  - component: {fileID: 6882213241277003729}
-  - component: {fileID: 7168279886203783838}
+  - component: {fileID: 1874154751190073316}
+  - component: {fileID: 275861853824523809}
+  - component: {fileID: 1817610296523796134}
+  - component: {fileID: 5466384974509173957}
+  - component: {fileID: 6242158840686075453}
+  - component: {fileID: 6630131446834850359}
   m_Layer: 0
   m_Name: TopDownCamera
   m_TagString: MainCamera
@@ -20,28 +21,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6218488408265147251
+--- !u!4 &1874154751190073316
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3580646906963157518}
-  m_LocalRotation: {x: 0, y: -0.9063079, z: 0.42261827, w: 0}
-  m_LocalPosition: {x: -0.05, y: 10, z: 8}
+  m_GameObject: {fileID: 7324132592294224636}
+  m_LocalRotation: {x: 0, y: -0.8433915, z: 0.53729963, w: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 50, y: -180, z: 0}
---- !u!20 &679528552918024147
+  m_LocalEulerAnglesHint: {x: 65, y: -180, z: 0}
+--- !u!20 &275861853824523809
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3580646906963157518}
+  m_GameObject: {fileID: 7324132592294224636}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -86,21 +87,21 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &6816821784385804433
+--- !u!81 &1817610296523796134
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3580646906963157518}
+  m_GameObject: {fileID: 7324132592294224636}
   m_Enabled: 1
---- !u!114 &6882213241277003729
+--- !u!114 &5466384974509173957
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3580646906963157518}
+  m_GameObject: {fileID: 7324132592294224636}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
@@ -137,15 +138,40 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &7168279886203783838
+--- !u!114 &6242158840686075453
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3580646906963157518}
+  m_GameObject: {fileID: 7324132592294224636}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91cffade3faa23640921cbb79b1e6bb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerObject: {fileID: 0}
+  FOV: 60
+  CameraOffset: {x: 0, y: 10, z: 4}
+  MinCameraRadius: 0.1
+  MaxCameraRadius: 4
+  CameraStep: 3
+  CameraSmoothing: 5
+--- !u!114 &6630131446834850359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7324132592294224636}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14921209c835f0f4a88a4efd4c241d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerObject: {fileID: 0}
+  CameraOffset: {x: 0, y: 10, z: 4}
+  MinCameraRadius: 0.1
+  MaxCameraRadius: 4
+  CameraStep: 3
+  CameraSmoothing: 5

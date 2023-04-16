@@ -352,7 +352,7 @@ PrefabInstance:
     - target: {fileID: 6630131446834850359, guid: ebb7da75339d0524a8a5c691079417b7,
         type: 3}
       propertyPath: MaxCameraRadius
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6630131446834850359, guid: ebb7da75339d0524a8a5c691079417b7,
         type: 3}

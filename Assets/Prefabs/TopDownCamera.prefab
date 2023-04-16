@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 275861853824523809}
   - component: {fileID: 1817610296523796134}
   - component: {fileID: 5466384974509173957}
-  - component: {fileID: 6242158840686075453}
   - component: {fileID: 6630131446834850359}
   m_Layer: 0
   m_Name: TopDownCamera
@@ -138,25 +137,6 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &6242158840686075453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7324132592294224636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91cffade3faa23640921cbb79b1e6bb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerObject: {fileID: 0}
-  FOV: 60
-  CameraOffset: {x: 0, y: 10, z: 4}
-  MinCameraRadius: 0.1
-  MaxCameraRadius: 4
-  CameraStep: 3
-  CameraSmoothing: 5
 --- !u!114 &6630131446834850359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,5 +153,4 @@ MonoBehaviour:
   CameraOffset: {x: 0, y: 10, z: 4}
   MinCameraRadius: 0.1
   MaxCameraRadius: 4
-  CameraStep: 3
   CameraSmoothing: 5

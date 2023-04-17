@@ -7,6 +7,7 @@ public class TopDownCharacterLogic : MonoBehaviour
     [Header("Settings")]
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 20.0f;
+    public float rotateDeadZone = 1.75f;
 
     [Header("Character Info")]
     public Vector3 inputVelocity;
@@ -31,16 +32,24 @@ public class TopDownCharacterLogic : MonoBehaviour
 
     public void RotateCharacter(Vector3 lookAtTarget)
     {
+        // Deadzone
+        float len = Vector3.Distance(lookAtTarget, transform.position);
+        if (len <= rotateDeadZone)
+        {
+            return;
+        }
+
         Vector3 dir = Vector3.Normalize(lookAtTarget - transform.position);
         Quaternion toRotation = Quaternion.LookRotation(dir,Vector3.up);
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             toRotation,
-            Time.deltaTime * 20);
+            Time.deltaTime * rotateSpeed);
 
         // Lock the axis
         Vector3 lockedAxis = transform.eulerAngles;
         lockedAxis.x = 0;
+        lockedAxis.z = 0;
         transform.eulerAngles = lockedAxis;
     }
 
@@ -59,11 +68,11 @@ public class TopDownCharacterLogic : MonoBehaviour
         // ).normalized;
 
         // float slope = Mathf.Abs(adjustedDir.y);
-        // if(slope < 0 && slope < 1) {
+        // if(slope > 0 && slope < 1) {
         //     return adjustedDir * inputDir.magnitude;
         // }
 
-        return new Vector3(inputDir.x, 0, inputDir.y);
+        return new Vector3(inputDir.x, 0, inputDir.z);
     }
 
     private void GravitySimulation()

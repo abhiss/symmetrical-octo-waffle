@@ -17,8 +17,7 @@ public class TopDownCharacterMotor : MonoBehaviour
 
     void Update()
     {
-        Vector2 input = GetInput();
-        controller.inputVelocity = controller.ProcessRawInput(input);
+        controller.inputVelocity = controller.ProcessRawInput(GetInput());
         controller.RotateCharacter(cam.CursorWorldSpacePosition);
         controller.Tick();
     }
@@ -28,8 +27,8 @@ public class TopDownCharacterMotor : MonoBehaviour
         // Setup a input manager later
         return new Vector3(
             -Input.GetAxis("Horizontal"),
-            -Input.GetAxis("Vertical"),
-            0
+            0,
+            -Input.GetAxis("Vertical")
         );
     }
 }

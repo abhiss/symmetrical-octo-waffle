@@ -17,7 +17,7 @@ public class TopDownCharacterLogic : MonoBehaviour
     private CharacterController controller;
     private ControllerColliderHit controllerHit;
 
-    void Awake()
+    public void Init()
     {
         controller = GetComponent<CharacterController>();
         gravity = Physics.gravity.y;
@@ -55,22 +55,20 @@ public class TopDownCharacterLogic : MonoBehaviour
 
     public Vector3 ProcessRawInput(Vector3 inputDir)
     {
-        if (!controller.isGrounded) {
-            return Vector3.zero;
-        }
-
         inputDir = Vector3.ClampMagnitude(inputDir, 1.0f);
 
-        // Parrallel to surface normal (doesnt work)
-        // Vector3 adjustedDir = Vector3.ProjectOnPlane(
-        //     inputDir,
-        //     controllerHit.normal
-        // ).normalized;
+        // Input parrallel to surface
+        if (controllerHit != null) {
+            Vector3 adjustedDir = Vector3.ProjectOnPlane(
+                inputDir,
+                controllerHit.normal
+            ).normalized;
 
-        // float slope = Mathf.Abs(adjustedDir.y);
-        // if(slope > 0 && slope < 1) {
-        //     return adjustedDir * inputDir.magnitude;
-        // }
+            float slope = adjustedDir.y;
+            if(slope < 0) {
+                return adjustedDir * inputDir.magnitude;
+            }
+        }
 
         return new Vector3(inputDir.x, 0, inputDir.z);
     }

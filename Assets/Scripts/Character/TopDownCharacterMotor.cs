@@ -11,8 +11,9 @@ public class TopDownCharacterMotor : MonoBehaviour
 
     void Start()
     {
-        controller = GetComponent<TopDownCharacterLogic>();
         cam = cameraObject.GetComponent<TemporaryCameraScript>();
+        controller = GetComponent<TopDownCharacterLogic>();
+        controller.Init();
     }
 
     void Update()

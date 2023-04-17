@@ -10,7 +10,7 @@ public class GenLayout : MonoBehaviour
     public int RoomSizeMin = 32;
     public float FloorProb = 0.1f;
     public float InteriorProb = 0.3f;
-    public float NoiseFac = 32.0f;
+    public float NoiseFac = 4.0f;
 
     const int MAP_SIZE = 256;
     char[,] _layout = new char[MAP_SIZE, MAP_SIZE];

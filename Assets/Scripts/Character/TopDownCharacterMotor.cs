@@ -52,7 +52,7 @@ public class TopDownCharacterMotor : MonoBehaviour
         forward *= input.z;
         right *= input.x;
 
-        animationDir = forward + right;
+        animationDir = forward - right;
         animator.SetFloat(horizontalHash, animationDir.x, dampTime, Time.deltaTime);
         animator.SetFloat(verticalHash, animationDir.z, dampTime, Time.deltaTime);
     }

@@ -6,26 +6,36 @@ using System.Linq;
 public class GenLayout : MonoBehaviour
 {
     public int RoomAmt = 3;
-    public int RoomSizeMax = 16;
-    public int RoomSizeMin = 32;
+    public int RoomSizeRange = 16;
+    public int RoomSizeMin = 16;
     public float FloorProb = 0.1f;
+    public float WallProb = 0.1f;
     public float InteriorProb = 0.3f;
-    public float NoiseFac = 4.0f;
+    public float NoiseFac = 0.5f;
+    public int Seed = 0;
 
     const int MAP_SIZE = 256;
     char[,] _layout = new char[MAP_SIZE, MAP_SIZE];
     int _totalDir;
-    int[] _dirs;
+    int[] _dir_cans;
     int _currentDir;
     int _cursorX;
     int _cursorZ;
     List<GameObject> _floorPrefabs = new List<GameObject>();
     List<GameObject> _wallPrefabs = new List<GameObject>();
-    List<GameObject> _cielingPrefabs = new List<GameObject>();
+    List<GameObject> _topsPrefabs = new List<GameObject>();
+    GameObject _exitPrefab;
+    GameObject _columnPrefab;
+    System.Random _random;
+
     void Awake()
     {
-        Debug.Log("here");
-        _totalDir = _currentDir = Random.Range(0, 3);
+        if (Seed == 0) {
+            _random = new System.Random();
+            Seed = _random.Next();
+        }
+        _random = new System.Random(Seed);
+        _totalDir = _currentDir = (int)(_random.NextDouble() * 4);
         switch (_totalDir)
         {
             case 0:
@@ -45,50 +55,68 @@ public class GenLayout : MonoBehaviour
                 _cursorZ = MAP_SIZE / 2;
                 break;
         };
-        _dirs = Enumerable.Range(0, 4).Where(n => n != ((_totalDir + 2) & 3)).ToArray();
+        _dir_cans = Enumerable.Range(0, 4).Where(n => n != ((_totalDir + 2) & 3)).ToArray();
         MoveRoom(5, 5);
         WriteRoom(5, 5);
-        _currentDir = _dirs[Random.Range(0, 2)];
+        AdvanceDir();
         MoveRoomWall(5, 5);
-        WriteHall(Random.Range(3, 5));
+        WriteHall((int)(_random.NextDouble() * 5) + 3);
         for (int i = 0; i < RoomAmt; ++i)
         {
-            var roomWidth = Random.Range(RoomSizeMin, RoomSizeMax);
-            var roomHeight = Random.Range(RoomSizeMin, RoomSizeMax);
+            var roomWidth = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
+            var roomHeight = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
             MoveRoom(roomWidth, roomHeight);
             WriteRoom(roomWidth, roomHeight);
-            _currentDir = _dirs[Random.Range(0, 2)];
+            AdvanceDir();
             MoveRoomWall(roomWidth, roomHeight);
-            WriteHall(Random.Range(1, 3));
+            WriteHall((int)(_random.NextDouble() * 2 )+ 1);
         }
         MoveRoom(5, 5);
         WriteRoom(5, 5);
-        _floorPrefabs = LoadPrefabs("Floors/FloorTile_Empty", "Assets/Resources/Floors");
-        _wallPrefabs = LoadPrefabs("Walls/Wall_Empty", "Assets/Resources/Walls");
-        _cielingPrefabs = System.IO.Directory.GetFiles("Assets/Resources/Cielings")
-            .Where(path => !path.EndsWith(".meta"))
-            .Select(path => (GameObject)Resources.Load(path.Substring(17, path.IndexOf('.') - 17)))
-            .ToList();
-        Resources.Load("Exit");
-        for (int i = 0; i < MAP_SIZE; ++i)
-        {
-            for (int j = 0; j < MAP_SIZE; ++j)
-            {
-                AddInteriorWall(i, j);
-            }
-        }
 
         for (int i = 0; i < MAP_SIZE; ++i)
         {
             for (int j = 0; j < MAP_SIZE; ++j)
             {
+                // AddInteriorWall(i, j);
+            }
+        }
+
+        _floorPrefabs = LoadPrefabs("Floors/FloorTile_Empty", "Assets/Resources/Floors");
+        _wallPrefabs = LoadPrefabs("Walls/Wall_Empty", "Assets/Resources/Walls");
+        _topsPrefabs = System.IO.Directory.GetFiles("Assets/Resources/Tops")
+            .Where(path => !path.EndsWith(".meta"))
+            .Select(path => (GameObject)Resources.Load(path.Substring(17, path.IndexOf('.') - 17)))
+            .ToList();
+        _exitPrefab = (GameObject)Resources.Load("Exit");
+        _columnPrefab = (GameObject)Resources.Load("Column_1");
+
+        for (int i = 0; i < MAP_SIZE; ++i)
+        {
+            for (int j = 0; j < MAP_SIZE; ++j)
+            {
+                var wallPrefab = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
                 var status = _layout[i, j] switch
                 {
                     'g' => GenerateGround(i, j),
-                    'b' => GenerateBackWall(i, j),
-                    'f' => GenerateFrontWall(i, j),
-                    'l' => GenerateLeftWall(i, j),
-                    'r' => GenerateRightWall(i, j),
+                    'b' => GenerateBackWall(
+                        wallPrefab,
+                        i, j),
+                    'f' => GenerateFrontWall(
+                        wallPrefab,
+                        i, j),
+                    'l' => GenerateLeftWall(
+                        wallPrefab,
+                        i, j),
+                    'r' => GenerateRightWall(
+                        wallPrefab,
+                        i, j),
+                    'd' => GenerateVertExit(i, j),
+                    'e' => GenerateHorExit(i, j),
+                    '{' => GenerateBackLeft(i, j),
+                    '}' => GenerateBackRight(i, j),
+                    '[' => GenerateFrontLeft(i, j),
+                    ']' => GenerateFrontRight(i, j),
                     _ => 0,
                 };
             }
@@ -102,12 +130,10 @@ public class GenLayout : MonoBehaviour
             return;
         }
 
-        Debug.Log(Mathf.PerlinNoise(((float) x) / ((float)NoiseFac), ((float) z) / ((float)NoiseFac)));
-        if (Mathf.PerlinNoise(((float) x) / ((float)NoiseFac), ((float) z) / ((float)NoiseFac)) > InteriorProb)
+        if (Mathf.PerlinNoise(((float)x) * NoiseFac, ((float)z) * NoiseFac) > InteriorProb)
         {
             return;
         }
-        Debug.Log("removed");
         _layout[x, z] = '\0';
         if (_layout[x + 1, z] != '\0')
         {
@@ -139,21 +165,58 @@ public class GenLayout : MonoBehaviour
         return prefabs;
     }
 
-    int GenerateBackWall(int x, int z)
+    int GenerateBackRight(int x, int z) {
+        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        column.transform.Translate(new Vector3(-1, -0.04f, 3));
+        column.transform.Rotate(new Vector3(-90, 0, 0));
+        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Translate(new Vector3(0, 0, 2));
+        top0.transform.Rotate(new Vector3(-90, 0, 0));
+        return 1;
+    }
+    int GenerateBackLeft(int x, int z) {
+        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        column.transform.Translate(new Vector3(3,-0.04f, 3));
+        column.transform.Rotate(new Vector3(-90, 0, 0));
+        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Translate(new Vector3(2, 0, 2));
+        top0.transform.Rotate(new Vector3(-90, 0, 0));
+        return 1;
+    }
+    int GenerateFrontRight(int x, int z) {
+        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        column.transform.Translate(new Vector3(-1,-0.04f, -1));
+        column.transform.Rotate(new Vector3(-90, 0, 0));
+        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Translate(new Vector3(0, 0, 0));
+        top0.transform.Rotate(new Vector3(-90, 0, 0));
+        return 1;
+    }
+    int GenerateFrontLeft(int x, int z) {
+        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        column.transform.Translate(new Vector3(3,-0.04f, -1));
+        column.transform.Rotate(new Vector3(-90, 0, 0));
+        var cieling0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        cieling0.transform.Translate(new Vector3(2, 0, 0));
+        cieling0.transform.Rotate(new Vector3(-90, 0, 0));
+        return 1;
+    }
+
+    int GenerateBackWall( GameObject prefab, int x, int z)
     {
-        var wall = Instantiate(_wallPrefabs[0], new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        var wall = Instantiate(prefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
         wall.transform.Translate(new Vector3(1, 0, 3));
         wall.transform.Rotate(new Vector3(-90, 0, 0));
-        var cieling0 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        cieling0.transform.Translate(new Vector3(0, 0, 2));
-        cieling0.transform.Rotate(new Vector3(-90, 90, 0));
-        var cieling1 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4 + 2, 4, z * 4), Quaternion.identity);
-        cieling1.transform.Translate(new Vector3(0, 0, 2));
-        cieling1.transform.Rotate(new Vector3(-90, 90, 0));
+        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Translate(new Vector3(0, 0, 2));
+        top0.transform.Rotate(new Vector3(-90, 0, 0));
+        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4 + 2, 4, z * 4), Quaternion.identity);
+        top1.transform.Translate(new Vector3(0, 0, 2));
+        top1.transform.Rotate(new Vector3(-90, 0, 0));
         return 1;
 
     }
-    int GenerateFrontWall(int x, int z)
+    int GenerateFrontWall( GameObject prefab, int x, int z)
     {
 
         // var wall = Instantiate(_wallPrefabs[0], new Vector3(i * 4, 0, j * 4), Quaternion.identity);
@@ -161,34 +224,48 @@ public class GenLayout : MonoBehaviour
         // break;
         return 1;
     }
-    int GenerateLeftWall(int x, int z)
+    int GenerateLeftWall( GameObject prefab, int x, int z)
     {
-        var wall = Instantiate(_wallPrefabs[0], new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        var wall = Instantiate( prefab , new Vector3(x * 4, 0, z * 4), Quaternion.identity);
         wall.transform.Translate(new Vector3(-1, 0, 1));
         wall.transform.Rotate(new Vector3(-90, -90, 0));
-        var cieling0 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        cieling0.transform.Rotate(new Vector3(-90, 0, 0));
-        var cieling1 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
-        cieling1.transform.Rotate(new Vector3(-90, 0, 0));
+        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Rotate(new Vector3(-90, 90, 0));
+        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
+        top1.transform.Rotate(new Vector3(-90, 90, 0));
         return 1;
 
     }
-    int GenerateRightWall(int x, int z)
+    int GenerateRightWall( GameObject prefab, int x, int z)
     {
-        var wall = Instantiate(_wallPrefabs[0], new Vector3(x * 4, 0, z * 4), Quaternion.identity);
+        var wall = Instantiate(prefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
         wall.transform.Translate(new Vector3(3, 0, 1));
         wall.transform.Rotate(new Vector3(-90, 90, 0));
-        var cieling0 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        cieling0.transform.Translate(new Vector3(2, 0, 0));
-        cieling0.transform.Rotate(new Vector3(-90, 180, 0));
-        var cieling1 = Instantiate(_cielingPrefabs[2], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
-        cieling1.transform.Translate(new Vector3(2, 0, 0));
-        cieling1.transform.Rotate(new Vector3(-90, 180, 0));
+        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
+        top0.transform.Translate(new Vector3(2, 0, 0));
+        top0.transform.Rotate(new Vector3(-90, 90, 0));
+        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
+        top1.transform.Translate(new Vector3(2, 0, 0));
+        top1.transform.Rotate(new Vector3(-90, 90, 0));
         return 1;
 
     }
 
 
+    int GenerateHorExit(int x, int z)
+    {
+        GenerateRightWall( _exitPrefab, x, z);
+        GenerateLeftWall( _exitPrefab, x, z);
+        return 1;
+    }
+
+    int GenerateVertExit(int x, int z)
+    {
+        GenerateBackWall( _exitPrefab, x, z);
+        GenerateFrontWall( _exitPrefab, x, z);
+        return 1;
+
+    }
     int GenerateGround(int x, int z)
     {
 
@@ -197,9 +274,8 @@ public class GenLayout : MonoBehaviour
             for (int j = 0; j < 2; ++j)
             {
                 Instantiate(_floorPrefabs[
-
-                 // 0
-                 Random.Range(0.0f, 1.0f) < FloorProb ? Random.Range(1, _floorPrefabs.Count) : 0
+                 _random.NextDouble()< FloorProb ? 
+(int)(_random.NextDouble() * (_floorPrefabs.Count - 1)) + 1 : 0
                 ], new Vector3(x * 4 + i * 2, 0, z * 4 + j * 2), Quaternion.AngleAxis(-90, Vector3.right));
             }
         }
@@ -212,7 +288,7 @@ public class GenLayout : MonoBehaviour
 
         if ((_currentDir & 1) == 1)
         {
-            _cursorZ -= Random.Range(1, height - 1);
+            _cursorZ -= (int)(_random.NextDouble() * (height - 2)) + 1;
             if (_currentDir == 1)
             {
                 _cursorX -= width - 1;
@@ -220,7 +296,7 @@ public class GenLayout : MonoBehaviour
         }
         else
         {
-            _cursorX -= Random.Range(1, width - 1);
+            _cursorX -= (int)(_random.NextDouble() * (width - 2)) + 1;
             if (_currentDir == 0)
             {
                 _cursorZ -= height - 1;
@@ -229,39 +305,45 @@ public class GenLayout : MonoBehaviour
         }
     }
 
+    void WriteWeak(int x, int z, char val) {
+            if (_layout[x, z] == '\0')
+            {
+                _layout[x, z] = val;
+            }
+    }
+
     void WriteRoom(int width, int height)
     {
-        Debug.Log(_currentDir + " " + _cursorX + " " + _cursorZ);
-        _layout[_cursorX, _cursorZ] = '{';
+        WriteWeak(_cursorX, _cursorZ , '{');
         for (int i = 1; i < width - 1; ++i)
         {
-            _layout[_cursorX + i, _cursorZ] = 'b';
+            WriteWeak(_cursorX + i, _cursorZ, 'b');
         }
-        _layout[_cursorX + width - 1, _cursorZ] = '}';
+        WriteWeak(_cursorX + width - 1, _cursorZ , '}');
 
         for (int i = 1; i < height - 1; ++i)
         {
-            _layout[_cursorX, _cursorZ + i] = 'r';
+            WriteWeak(_cursorX, _cursorZ + i, 'r');
             for (int j = 1; j < width - 1; ++j)
             {
-                _layout[_cursorX + j, _cursorZ + i] = 'g';
+                WriteWeak(_cursorX + j, _cursorZ + i, 'g');
             }
-            _layout[_cursorX + width - 1, _cursorZ + i] = 'l';
+            WriteWeak(_cursorX + width - 1, _cursorZ + i, 'l');
         }
 
-        _layout[_cursorX, _cursorZ + height - 1] = '[';
+        WriteWeak(_cursorX, _cursorZ + height - 1, '[');
         for (int i = 1; i < width - 1; ++i)
         {
-            _layout[_cursorX + i, _cursorZ + height - 1] = 'f';
+            WriteWeak(_cursorX + i, _cursorZ + height - 1, 'f');
         }
-        _layout[_cursorX + width - 1, _cursorZ + height - 1] = ']';
+        WriteWeak(_cursorX + width - 1, _cursorZ + height - 1, ']');
     }
 
     void MoveRoomWall(int width, int height)
     {
         if ((_currentDir & 1) == 1)
         {
-            _cursorZ += Random.Range(1, height - 1);
+            _cursorZ += (int)(_random.NextDouble() * (height - 2)) + 1;
             if (_currentDir == 3)
             {
                 _cursorX += width - 1;
@@ -269,7 +351,7 @@ public class GenLayout : MonoBehaviour
         }
         else
         {
-            _cursorX += Random.Range(1, width - 1);
+            _cursorX += (int)(_random.NextDouble() * (width - 2)) + 1;
             if (_currentDir == 2)
             {
                 _cursorZ += height - 1;
@@ -299,19 +381,32 @@ public class GenLayout : MonoBehaviour
 
     void WriteHall(int len)
     {
-        bool isVert = (_currentDir & 1) == 1;
-        int xOff = isVert ? 0 : 1;
-        int yOff = isVert ? 1 : 0;
-        _layout[_cursorX, _cursorZ] = (char)(_currentDir + '0');
+        bool isHor = (_currentDir & 1) == 1;
+        int xOff = isHor ? 0 : 1;
+        int yOff = isHor ? 1 : 0;
+        _layout[_cursorX, _cursorZ] = isHor ? 'e' : 'd';
         for (int i = 0; i < len; ++i)
         {
             MoveDir(_currentDir);
-            _layout[_cursorX, _cursorZ] = 'g';
-            _layout[_cursorX + xOff, _cursorZ + yOff] = isVert ? 'f' : 'l';
-            _layout[_cursorX - xOff, _cursorZ - yOff] = isVert ? 'b' : 'r';
+            _layout[_cursorX, _cursorZ] = isHor ? 'h' : 'v';
+            _layout[_cursorX + xOff, _cursorZ + yOff] = isHor ? 'f' : 'l';
+            _layout[_cursorX - xOff, _cursorZ - yOff] = isHor ? 'b' : 'r';
         }
         MoveDir(_currentDir);
+        _layout[_cursorX, _cursorZ] = isHor ? 'h' : 'v';
+        _layout[_cursorX + xOff, _cursorZ + yOff] = isHor ? 'f' : 'l';
+        _layout[_cursorX - xOff, _cursorZ - yOff] = isHor ? 'b' : 'r';
         MoveDir(_currentDir);
+        _layout[_cursorX, _cursorZ] = isHor ? 'e' : 'd';
+    }
+
+    void AdvanceDir() {
+        if(_currentDir == _totalDir) {
+            _currentDir = _dir_cans[(int)(_random.NextDouble() * 3)];
+        } else {
+            var dir_cans = _dir_cans.Where(n => n != ((_currentDir + 2) & 3)).ToArray();
+            _currentDir = dir_cans[(int)(_random.NextDouble() * 2)];
+        }
     }
 
     // Update is called once per frame

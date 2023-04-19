@@ -11,24 +11,26 @@ public class TopDownCharacter : MonoBehaviour
 
     [Header("Animatons")]
     public float dampTime = 0.1f;
-    private Vector3 animationDir;
     private Animator animator;
     private int horizontalHash;
     private int verticalHash;
 
-    [Header("GameObjects")]
+    [Header("Game Objects")]
     public GameObject cameraObject;
     public GameObject modelObject;
 
-    [Header("Velocities")]
-    public Vector3 inputVelocity;
-    public Vector3 externalVelocity;
+    [Header("Velocity")]
     public Vector3 velocity;
+    public Vector3 inputVelocity;
+    public Vector3 forceVelocity;
+
+    [Header("Misc Components")]
     private CharacterController characterController;
     private ControllerColliderHit controllerHit;
-
-    [Header("Misc")]
     private TopDownCamera cam;
+
+    [Header("Gizmo Variables")]
+    private Vector3 gizmoAnimatorDir;
 
     public void Start()
     {
@@ -60,7 +62,7 @@ public class TopDownCharacter : MonoBehaviour
 
         // Character Movement
         GravityForce();
-        velocity = externalVelocity + (inputVelocity * moveSpeed);
+        velocity = forceVelocity + (inputVelocity * moveSpeed);
         characterController.Move(velocity * Time.deltaTime);
 
         // Animatons
@@ -79,13 +81,14 @@ public class TopDownCharacter : MonoBehaviour
 
     public void RotateCharacter(Vector3 lookAtTarget)
     {
-        // Deadzone
+        // Rotation dead zone
         float len = Vector3.Distance(lookAtTarget, transform.position);
         if (len <= rotateDeadZone)
         {
             return;
         }
 
+        // Rotate the player
         Vector3 dir = Vector3.Normalize(lookAtTarget - transform.position);
         Quaternion toRotation = Quaternion.LookRotation(dir,Vector3.up);
         transform.rotation = Quaternion.Slerp(
@@ -102,6 +105,7 @@ public class TopDownCharacter : MonoBehaviour
 
     public Vector3 ProcessInput(Vector3 input)
     {
+        // Keep the input vector normalized
         input = Vector3.ClampMagnitude(input, 1.0f);
 
         // Input parrallel to surface
@@ -122,14 +126,15 @@ public class TopDownCharacter : MonoBehaviour
 
     private void GravityForce()
     {
-        externalVelocity.y += Time.deltaTime * Physics.gravity.y;
+        forceVelocity.y += Time.deltaTime * Physics.gravity.y;
         if (characterController.isGrounded) {
-            externalVelocity.y = -0.5f;
+            forceVelocity.y = -0.5f;
         }
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // Only consider non trigger colliders as collisions
         if(!hit.collider.isTrigger) {
             controllerHit = hit;
         }
@@ -137,25 +142,31 @@ public class TopDownCharacter : MonoBehaviour
 
     private void AnimatedMovement(Vector3 input)
     {
+        // Get move direction relative to players rotation
         Vector3 forward = transform.forward.normalized;
         Vector3 right = transform.right.normalized;
+
+        // Apply input
         forward *= input.z;
         right *= input.x;
 
-        animationDir = forward - right;
+        // Set animation floats
+        Vector3 animationDir = forward - right;
         animator.SetFloat(horizontalHash, animationDir.x, dampTime, Time.deltaTime);
         animator.SetFloat(verticalHash, animationDir.z, dampTime, Time.deltaTime);
+
+        // Debugging
+        gizmoAnimatorDir = animationDir;
     }
 
-    private void AnimatedWeapon()
+    public void AnimatedWeapon()
     {
         // TODO: Set layer weight
     }
 
     void OnDrawGizmosSelected()
     {
-        // Draws a blue line from this transform to the target
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + animationDir, 0.1f);
+        Gizmos.DrawSphere(transform.position + gizmoAnimatorDir, 0.1f);
     }
 }

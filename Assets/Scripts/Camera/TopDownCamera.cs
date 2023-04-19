@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class TemporaryCameraScript : MonoBehaviour
+public class TopDownCamera : MonoBehaviour
 {
-    // TODO: Temp code, should be split up later
-    // Note - The camera later will be ECS
     public GameObject PlayerObject;
 
     [Header("Settings")]
@@ -45,13 +43,12 @@ public class TemporaryCameraScript : MonoBehaviour
         Vector3 dir = Vector3.Normalize(diff);
         float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
 
-        // Deadzone
-        // if (len > MinCameraRadius) {
-        //     CharacterLookAtCursor();
-        // }
-
         CameraPoint = PlayerPosition + dir * len;
-        transform.position = CameraPoint + CameraOffset;
+        transform.position = Vector3.Lerp(
+            transform.position,
+            CameraPoint + CameraOffset,
+            Time.deltaTime * CameraSmoothing
+        );
     }
 
     void OnDrawGizmosSelected()

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4835008359612262946
 Transform:
   m_ObjectHideFlags: 0
@@ -128,7 +128,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1197403502379417950}
   m_Layer: 0
-  m_Name: GameObjectPlayer
+  m_Name: MainPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -257,7 +257,7 @@ PrefabInstance:
     - target: {fileID: 7324132592294224636, guid: ebb7da75339d0524a8a5c691079417b7,
         type: 3}
       propertyPath: m_Name
-      value: TopDownCamera
+      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6242158840686075453, guid: ebb7da75339d0524a8a5c691079417b7, type: 3}
@@ -516,10 +516,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4071045441193475096, guid: e44139547f79d0c4c820f7dfb8752dfb,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 671088826041354729}
-    - targetCorrespondingSourceObject: {fileID: 4071045441193475096, guid: e44139547f79d0c4c820f7dfb8752dfb,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 5271648715341855460}
   m_SourcePrefab: {fileID: 100100000, guid: e44139547f79d0c4c820f7dfb8752dfb, type: 3}
 --- !u!1 &7074219844475240962 stripped
@@ -554,21 +550,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &671088826041354729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7074219844475240962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6388f8269d7ffc9488fdbc640938c0a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraObject: {fileID: 7353410373492526162}
-  playerModel: {fileID: 3576899899529108940}
-  dampTime: 0.1
 --- !u!114 &5271648715341855460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,6 +565,9 @@ MonoBehaviour:
   moveSpeed: 6
   rotateSpeed: 20
   rotateDeadZone: 1.75
+  dampTime: 0.1
+  cameraObject: {fileID: 7353410373492526162}
+  modelObject: {fileID: 3576899899529108940}
   inputVelocity: {x: 0, y: 0, z: 0}
   externalVelocity: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}

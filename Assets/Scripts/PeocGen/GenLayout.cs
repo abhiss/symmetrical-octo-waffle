@@ -3,8 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+
 public class GenLayout : MonoBehaviour
 {
+private enum Block{
+    None,
+    Ground,
+    KeyGround,
+    Right,
+    Left,
+    Front,
+    Back,
+    InnerFrontRight,
+    InnerFrontLeft,
+    InnerBackRight,
+    InnerBackLeft,
+    OuterFrontRight,
+    OuterFrontLeft,
+    OuterBackRight,
+    OuterBackLeft,
+    Pit,
+}
+    
     public int RoomAmt = 3;
     public int RoomSizeRange = 16;
     public int RoomSizeMin = 16;
@@ -12,10 +32,13 @@ public class GenLayout : MonoBehaviour
     public float WallProb = 0.1f;
     public float InteriorProb = 0.3f;
     public float NoiseFac = 0.5f;
+    public float HalfInnerMin = 1.0f;
+    public float HalfInnerRange = 2.0f;
     public int Seed = 0;
+    public GameObject Player;
 
     const int MAP_SIZE = 256;
-    char[,] _layout = new char[MAP_SIZE, MAP_SIZE];
+    Block[,] _layout = new Block[MAP_SIZE, MAP_SIZE];
     int _totalDir;
     int[] _dir_cans;
     int _currentDir;
@@ -27,6 +50,8 @@ public class GenLayout : MonoBehaviour
     GameObject _exitPrefab;
     GameObject _columnPrefab;
     System.Random _random;
+    Vector3[] _bounds;
+
 
     void Awake()
     {
@@ -36,27 +61,12 @@ public class GenLayout : MonoBehaviour
         }
         _random = new System.Random(Seed);
         _totalDir = _currentDir = (int)(_random.NextDouble() * 4);
-        switch (_totalDir)
-        {
-            case 0:
-                _cursorX = MAP_SIZE / 2;
-                _cursorZ = MAP_SIZE * 3 / 4;
-                break;
-            case 1:
-                _cursorX = MAP_SIZE * 3 / 4;
-                _cursorZ = MAP_SIZE / 2;
-                break;
-            case 2:
-                _cursorX = MAP_SIZE / 2;
-                _cursorZ = MAP_SIZE / 4;
-                break;
-            case 3:
-                _cursorX = MAP_SIZE / 4;
-                _cursorZ = MAP_SIZE / 2;
-                break;
-        };
+
+        _cursorX = MAP_SIZE / 2;
+        _cursorZ = MAP_SIZE / 2;
+        Player.transform.position =  new Vector3(_cursorX * 4 + 8, 5, _cursorZ  * 4 + 8);
+
         _dir_cans = Enumerable.Range(0, 4).Where(n => n != ((_totalDir + 2) & 3)).ToArray();
-        MoveRoom(5, 5);
         WriteRoom(5, 5);
         AdvanceDir();
         MoveRoomWall(5, 5);
@@ -64,23 +74,16 @@ public class GenLayout : MonoBehaviour
         for (int i = 0; i < RoomAmt; ++i)
         {
             var roomWidth = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
-            var roomHeight = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
-            MoveRoom(roomWidth, roomHeight);
-            WriteRoom(roomWidth, roomHeight);
+            var roomdepth = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
+            MoveRoom(roomWidth, roomdepth);
+            WriteRoom(roomWidth, roomdepth);
             AdvanceDir();
-            MoveRoomWall(roomWidth, roomHeight);
+            MoveRoomWall(roomWidth, roomdepth);
             WriteHall((int)(_random.NextDouble() * 2 )+ 1);
         }
         MoveRoom(5, 5);
         WriteRoom(5, 5);
 
-        for (int i = 0; i < MAP_SIZE; ++i)
-        {
-            for (int j = 0; j < MAP_SIZE; ++j)
-            {
-                // AddInteriorWall(i, j);
-            }
-        }
 
         _floorPrefabs = LoadPrefabs("Floors/FloorTile_Empty", "Assets/Resources/Floors");
         _wallPrefabs = LoadPrefabs("Walls/Wall_Empty", "Assets/Resources/Walls");
@@ -95,28 +98,23 @@ public class GenLayout : MonoBehaviour
         {
             for (int j = 0; j < MAP_SIZE; ++j)
             {
-                var wallPrefab = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
+                var wall0 = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
+                var wall1 = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
                 var status = _layout[i, j] switch
                 {
-                    'g' => GenerateGround(i, j),
-                    'b' => GenerateBackWall(
-                        wallPrefab,
-                        i, j),
-                    'f' => GenerateFrontWall(
-                        wallPrefab,
-                        i, j),
-                    'l' => GenerateLeftWall(
-                        wallPrefab,
-                        i, j),
-                    'r' => GenerateRightWall(
-                        wallPrefab,
-                        i, j),
-                    'd' => GenerateVertExit(i, j),
-                    'e' => GenerateHorExit(i, j),
-                    '{' => GenerateBackLeft(i, j),
-                    '}' => GenerateBackRight(i, j),
-                    '[' => GenerateFrontLeft(i, j),
-                    ']' => GenerateFrontRight(i, j),
+                    Block.KeyGround or Block.Ground => GenerateGround(i, j),
+                    Block.Front => GenerateFrontWall( wall0, i, j),
+                    Block.Back => GenerateBackWall( wall0, i, j),
+                    Block.Right => GenerateRightWall(wall0, i, j),
+                    Block.Left => GenerateLeftWall(wall0, i, j),
+                    Block.InnerFrontRight => GenerateFrontRightColumn(i, j),
+                    Block.InnerFrontLeft => GenerateFrontLeftColumn(i, j),
+                    Block.InnerBackRight => GenerateBackRightColumn( i, j),
+                    Block.InnerBackLeft => GenerateBackLeftColumn(i, j),
+                    Block.OuterFrontRight => GenerateFrontRightOuter(wall0, wall1, i, j),
+                    Block.OuterFrontLeft => GenerateFrontLeftOuter(wall0, wall1, i, j),
+                    Block.OuterBackRight => GenerateBackRightOuter(wall0, wall1, i, j),
+                    Block.OuterBackLeft => GenerateBackLeftOuter(wall0, wall1, i, j),
                     _ => 0,
                 };
             }
@@ -125,7 +123,7 @@ public class GenLayout : MonoBehaviour
 
     void AddInteriorWall(int x, int z)
     {
-        if (_layout[x, z] == '\0')
+        if (_layout[x, z] ==Block.None)
         {
             return;
         }
@@ -134,23 +132,23 @@ public class GenLayout : MonoBehaviour
         {
             return;
         }
-        _layout[x, z] = '\0';
-        if (_layout[x + 1, z] != '\0')
+        _layout[x, z] = Block.None;
+        if (_layout[x + 1, z] !=Block.None)
         {
-            _layout[x + 1, z] = 'r';
+            _layout[x + 1, z] =Block.Right;
         }
-        if (_layout[x - 1, z] != '\0')
+        if (_layout[x - 1, z] !=Block.None)
         {
-            _layout[x - 1, z] = 'l';
+            _layout[x - 1, z] =Block.Left;
 
         }
-        if (_layout[x, z + 1] != '\0')
+        if (_layout[x, z + 1] !=Block.None)
         {
-            _layout[x, z + 1] = 'b';
+            _layout[x, z + 1] =Block.Back;
         }
-        if (_layout[x, z - 1] != '\0')
+        if (_layout[x, z - 1] !=Block.None)
         {
-            _layout[x, z - 1] = 'f';
+            _layout[x, z - 1] =Block.Front;
         }
     }
 
@@ -165,107 +163,101 @@ public class GenLayout : MonoBehaviour
         return prefabs;
     }
 
-    int GenerateBackRight(int x, int z) {
-        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        column.transform.Translate(new Vector3(-1, -0.04f, 3));
-        column.transform.Rotate(new Vector3(-90, 0, 0));
-        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Translate(new Vector3(0, 0, 2));
-        top0.transform.Rotate(new Vector3(-90, 0, 0));
-        return 1;
-    }
-    int GenerateBackLeft(int x, int z) {
-        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        column.transform.Translate(new Vector3(3,-0.04f, 3));
-        column.transform.Rotate(new Vector3(-90, 0, 0));
-        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Translate(new Vector3(2, 0, 2));
-        top0.transform.Rotate(new Vector3(-90, 0, 0));
-        return 1;
-    }
-    int GenerateFrontRight(int x, int z) {
-        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        column.transform.Translate(new Vector3(-1,-0.04f, -1));
-        column.transform.Rotate(new Vector3(-90, 0, 0));
-        var top0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Translate(new Vector3(0, 0, 0));
-        top0.transform.Rotate(new Vector3(-90, 0, 0));
-        return 1;
-    }
-    int GenerateFrontLeft(int x, int z) {
-        var column = Instantiate(_columnPrefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        column.transform.Translate(new Vector3(3,-0.04f, -1));
-        column.transform.Rotate(new Vector3(-90, 0, 0));
-        var cieling0 = Instantiate(_topsPrefabs[0], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        cieling0.transform.Translate(new Vector3(2, 0, 0));
-        cieling0.transform.Rotate(new Vector3(-90, 0, 0));
+
+    int GenerateFrontLeftOuter(GameObject wall0, GameObject wall1, int x, int z) {
+        GenerateFrontLeftColumn( x, z);
+        GenerateFrontWall(wall0, x, z);
+        GenerateLeftWall(wall1, x, z);
         return 1;
     }
 
-    int GenerateBackWall( GameObject prefab, int x, int z)
-    {
-        var wall = Instantiate(prefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        wall.transform.Translate(new Vector3(1, 0, 3));
-        wall.transform.Rotate(new Vector3(-90, 0, 0));
-        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Translate(new Vector3(0, 0, 2));
-        top0.transform.Rotate(new Vector3(-90, 0, 0));
-        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4 + 2, 4, z * 4), Quaternion.identity);
-        top1.transform.Translate(new Vector3(0, 0, 2));
-        top1.transform.Rotate(new Vector3(-90, 0, 0));
+    int GenerateFrontRightColumn(int x, int z) {
+        GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 + 3), 0);
+        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), -90);
         return 1;
-
     }
+
+    int GenerateFrontRightOuter(GameObject wall0, GameObject wall1, int x, int z) {
+        GenerateFrontRightColumn(x, z);
+        GenerateFrontWall(wall0, x, z);
+        GenerateRightWall(wall1, x, z);
+        return 1;
+    }
+
+    int GenerateFrontLeftColumn(int x, int z) {
+        GeneratePrefab(_columnPrefab, new Vector3(x * 4 + 3, 0, z * 4 + 3), 0);
+        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1),0);
+        return 1;
+    }
+
+    int GenerateBackRightOuter(GameObject wall0, GameObject wall1, int x, int z) {
+        GenerateBackRightColumn( x, z);
+        GenerateBackWall(wall0, x, z);
+        GenerateRightWall(wall1, x, z);
+        return 1;
+    }
+
+
+    int GenerateBackRightColumn(int x, int z) {
+        GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 - 1), 0);
+        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 180);
+        return 1;
+    }
+    int GenerateBackLeftOuter(GameObject wall0, GameObject wall1, int x, int z) {
+        GenerateBackLeftColumn( x, z);
+        GenerateBackWall(wall0, x, z);
+        GenerateLeftWall(wall1, x, z);
+        return 1;
+    }
+    int GenerateBackLeftColumn(int x, int z) {
+        GeneratePrefab(_columnPrefab, new Vector3(x * 4 + 3, 0, z * 4 - 1), 0);
+        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 90);
+        return 1;
+    }
+
     int GenerateFrontWall( GameObject prefab, int x, int z)
     {
-
-        // var wall = Instantiate(_wallPrefabs[0], new Vector3(i * 4, 0, j * 4), Quaternion.identity);
-        // wall.transform.Rotate(new Vector3(-90, 90, 0));
-        // break;
+        GeneratePrefab(prefab, new Vector3(x * 4 + 1, 0, z * 4 + 3), 0);
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 1, 4, z * 4 + 2),0);
         return 1;
+
     }
-    int GenerateLeftWall( GameObject prefab, int x, int z)
+    int GenerateBackWall( GameObject prefab, int x, int z)
     {
-        var wall = Instantiate( prefab , new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        wall.transform.Translate(new Vector3(-1, 0, 1));
-        wall.transform.Rotate(new Vector3(-90, -90, 0));
-        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Rotate(new Vector3(-90, 90, 0));
-        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
-        top1.transform.Rotate(new Vector3(-90, 90, 0));
-        return 1;
+        var wall = GeneratePrefab(prefab, new Vector3(x * 4 + 1, 0, z * 4 - 1), 180);
+        var collider = wall.GetComponent<BoxCollider>();
+        var size = collider.size;
+        size.y *= 2;
+        collider.size = size;
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 1, 4, z * 4), 180);
 
+        return 1;
     }
     int GenerateRightWall( GameObject prefab, int x, int z)
     {
-        var wall = Instantiate(prefab, new Vector3(x * 4, 0, z * 4), Quaternion.identity);
-        wall.transform.Translate(new Vector3(3, 0, 1));
-        wall.transform.Rotate(new Vector3(-90, 90, 0));
-        var top0 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4), Quaternion.identity);
-        top0.transform.Translate(new Vector3(2, 0, 0));
-        top0.transform.Rotate(new Vector3(-90, 90, 0));
-        var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
-        top1.transform.Translate(new Vector3(2, 0, 0));
-        top1.transform.Rotate(new Vector3(-90, 90, 0));
+        GeneratePrefab(prefab, new Vector3(x * 4 - 1, 0, z * 4 + 1), -90);
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 , 4, z * 4 + 1), -90);
         return 1;
 
     }
-
-
-    int GenerateHorExit(int x, int z)
+    int GenerateLeftWall( GameObject prefab, int x, int z)
     {
-        GenerateRightWall( _exitPrefab, x, z);
-        GenerateLeftWall( _exitPrefab, x, z);
+        GeneratePrefab(prefab, new Vector3(x * 4 + 3, 0, z * 4 + 1), 90);
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 2, 4, z * 4 + 1), 90);
+        // var top1 = Instantiate(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 2), Quaternion.identity);
+        // top1.transform.parent = gameObject.transform;
+        // top1.transform.Translate(new Vector3(2, 0, 0));
+        // top1.transform.Rotate(new Vector3(-90, 90, 0));
         return 1;
     }
 
-    int GenerateVertExit(int x, int z)
-    {
-        GenerateBackWall( _exitPrefab, x, z);
-        GenerateFrontWall( _exitPrefab, x, z);
-        return 1;
-
+    GameObject GeneratePrefab(GameObject prefab, Vector3 pos, float yRot) {
+        var go = Instantiate(prefab, pos, Quaternion.identity);
+        go.transform.parent = gameObject.transform;
+        go.transform.Rotate(new Vector3(-90, yRot, 0));
+        return go;
     }
+
     int GenerateGround(int x, int z)
     {
 
@@ -273,22 +265,140 @@ public class GenLayout : MonoBehaviour
         {
             for (int j = 0; j < 2; ++j)
             {
-                Instantiate(_floorPrefabs[
-                 _random.NextDouble()< FloorProb ? 
-(int)(_random.NextDouble() * (_floorPrefabs.Count - 1)) + 1 : 0
+                var ground = Instantiate(
+                    _floorPrefabs[_random.NextDouble()< FloorProb ?  
+                    (int)(_random.NextDouble() * (_floorPrefabs.Count - 1)) + 1 : 0
                 ], new Vector3(x * 4 + i * 2, 0, z * 4 + j * 2), Quaternion.AngleAxis(-90, Vector3.right));
+        ground.transform.parent = gameObject.transform;
             }
         }
         return 1;
     }
 
 
-    void MoveRoom(int width, int height)
+
+    private static Block[] s_rightTable = new Block[] {
+        Block.None,
+        Block.None,
+        Block.KeyGround,
+        Block.Right,
+        Block.None,
+        Block.OuterFrontRight,
+        Block.OuterBackRight,
+        Block.Right,
+        Block.None,
+        Block.Right,
+        Block.None,
+    };
+    private static Block[] s_leftTable = new Block[] {
+        Block.None,
+        Block.None,
+        Block.KeyGround,
+        Block.None,
+        Block.Left,
+        Block.OuterFrontLeft,
+        Block.OuterBackLeft,
+        Block.None,
+        Block.Left,
+        Block.None,
+        Block.Left,
+    };
+    private static Block[] s_frontTable = new Block[] {
+        Block.None,
+        Block.None,
+        Block.KeyGround,
+        Block.OuterFrontRight,
+        Block.OuterFrontLeft,
+        Block.Front,
+        Block.None,
+        Block.Front,
+        Block.Front,
+        Block.None,
+        Block.None,
+    };
+    private static Block[] s_backTable = new Block[] {
+        Block.None,
+        Block.None,
+        Block.KeyGround,
+        Block.OuterBackRight,
+        Block.OuterBackLeft,
+        Block.None,
+        Block.Back,
+        Block.None,
+        Block.Back,
+        Block.Back,
+    };
+
+    void WriteWallAdd(int x, int z, Block val) {
+        _layout[x, z] = _layout[x, z] switch
+        {
+            Block.Right => s_rightTable[(int) val],
+            Block.Left => s_leftTable[(int) val],
+            Block.Front => s_frontTable[(int)val],
+            Block.Back => s_backTable[(int) val],
+            Block.KeyGround => Block.KeyGround,
+            _ => _layout[x, z] = val,
+        };
+    }
+
+
+    void WriteWeak(int x, int z, Block val) {
+            if (_layout[x, z] ==Block.None)
+            {
+                _layout[x, z] = val;
+            }
+    }
+
+    Vector3 CheckRoom(int width, int depth) {
+        return new Vector3();
+        // var foundMask = 0;
+        // Vector3 minKeyDiff;
+        // var recordDist = 0;
+
+        // for (int i = 0; i < width; ++i) {
+        //     for (int j = 0; j < depth; ++j) {
+        //         var block =_layout[_cursorX + i, _cursorZ + j];
+        //         switch(block) {
+        //             case Block.KeyGround: {
+        //                 var minX = i < width - i ? i + 1 : i - width;
+        //                 var minZ = j < depth - j ? j + 1 : j - depth;
+        //                 if (abs(minX) < abs(minZ)) {
+        //                     if (abs(minX) < minMag) {
+        //                         minMag = abs(minX);
+        //                         recordKeyPos.set(minX, 0, 0);
+        //                     }
+        //                 } else {
+        //                     if (abs(minZ) < minMag) {
+        //                         minMag = abs(minZ);
+        //                         recordKeyPos.set(0, 0, minZ);
+        //                     }
+        //                 }
+        //             break;
+        //             }
+        //             case Block.Right:
+        //             case Block.Left:
+        //             case Block.Front:
+        //             case Block.Back:
+        //                 if (foundMask & (block + 2) & 3) {
+        //                     return null;
+        //                 }
+        //                 foundMask |= block & 3;
+        //                 break;
+        //         }
+        //     }
+        // }
+        // if (recordKeyPos != null) {
+        //     return recordKeyPos;
+        // }
+        // return new Vector3();
+    }
+
+    void MoveRoom(int width, int depth)
     {
 
         if ((_currentDir & 1) == 1)
         {
-            _cursorZ -= (int)(_random.NextDouble() * (height - 2)) + 1;
+            _cursorZ -= (int)(_random.NextDouble() * (depth - 2)) + 1;
             if (_currentDir == 1)
             {
                 _cursorX -= width - 1;
@@ -299,51 +409,66 @@ public class GenLayout : MonoBehaviour
             _cursorX -= (int)(_random.NextDouble() * (width - 2)) + 1;
             if (_currentDir == 0)
             {
-                _cursorZ -= height - 1;
+                _cursorZ -= depth - 1;
             }
 
         }
     }
 
-    void WriteWeak(int x, int z, char val) {
-            if (_layout[x, z] == '\0')
-            {
-                _layout[x, z] = val;
-            }
-    }
-
-    void WriteRoom(int width, int height)
+    void WriteRoom(int width, int depth)
     {
-        WriteWeak(_cursorX, _cursorZ , '{');
+        WriteWallAdd (_cursorX, _cursorZ ,Block.InnerFrontLeft);
         for (int i = 1; i < width - 1; ++i)
         {
-            WriteWeak(_cursorX + i, _cursorZ, 'b');
+            WriteWallAdd (_cursorX + i, _cursorZ, Block.Front);
         }
-        WriteWeak(_cursorX + width - 1, _cursorZ , '}');
+        WriteWallAdd(_cursorX + width - 1, _cursorZ , Block.InnerFrontRight);
 
-        for (int i = 1; i < height - 1; ++i)
+        for (int i = 1; i < depth - 1; ++i)
         {
-            WriteWeak(_cursorX, _cursorZ + i, 'r');
+            WriteWallAdd(_cursorX, _cursorZ + i, Block.Left);
             for (int j = 1; j < width - 1; ++j)
             {
-                WriteWeak(_cursorX + j, _cursorZ + i, 'g');
+                WriteWeak(_cursorX + j, _cursorZ + i, Block.Ground);
             }
-            WriteWeak(_cursorX + width - 1, _cursorZ + i, 'l');
+            WriteWallAdd(_cursorX + width - 1, _cursorZ + i,Block.Right);
         }
 
-        WriteWeak(_cursorX, _cursorZ + height - 1, '[');
+        WriteWallAdd(_cursorX, _cursorZ + depth - 1, Block.InnerBackLeft);
         for (int i = 1; i < width - 1; ++i)
         {
-            WriteWeak(_cursorX + i, _cursorZ + height - 1, 'f');
+            WriteWallAdd(_cursorX + i, _cursorZ + depth - 1,Block.Back);
         }
-        WriteWeak(_cursorX + width - 1, _cursorZ + height - 1, ']');
+        WriteWallAdd(_cursorX + width - 1, _cursorZ + depth - 1, Block.InnerBackRight);
+
+        var sym = _random.NextDouble();
+        if(sym < .4f) {
+        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+        for (int i = 0; i < interiorAmt; ++i)
+        {
+
+        }
+        }else if (sym < .8f) {
+        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+        for (int i = 0; i < interiorAmt; ++i)
+        {
+
+        }
+        } else {
+
+        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange * 2) + HalfInnerMin * 2;
+        for (int i = 0; i < interiorAmt; ++i)
+        {
+
+        }
+        }
     }
 
-    void MoveRoomWall(int width, int height)
+    void MoveRoomWall(int width, int depth)
     {
         if ((_currentDir & 1) == 1)
         {
-            _cursorZ += (int)(_random.NextDouble() * (height - 2)) + 1;
+            _cursorZ += (int)(_random.NextDouble() * (depth - 2)) + 1;
             if (_currentDir == 3)
             {
                 _cursorX += width - 1;
@@ -354,7 +479,7 @@ public class GenLayout : MonoBehaviour
             _cursorX += (int)(_random.NextDouble() * (width - 2)) + 1;
             if (_currentDir == 2)
             {
-                _cursorZ += height - 1;
+                _cursorZ += depth - 1;
             }
         }
 
@@ -383,21 +508,33 @@ public class GenLayout : MonoBehaviour
     {
         bool isHor = (_currentDir & 1) == 1;
         int xOff = isHor ? 0 : 1;
-        int yOff = isHor ? 1 : 0;
-        _layout[_cursorX, _cursorZ] = isHor ? 'e' : 'd';
+        int zOff = isHor ? 1 : 0;
+        Block b0 = isHor ? Block.Back:Block.Right;
+        Block b1 = isHor ? Block.Front:Block.Left;
+        MoveDir((_currentDir + 2) & 3);
+        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        MoveDir(_currentDir);
+        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        WriteWallAdd(_cursorX + xOff, _cursorZ + zOff, b0);
+        WriteWallAdd(_cursorX - xOff, _cursorZ - zOff, b1);
         for (int i = 0; i < len; ++i)
         {
             MoveDir(_currentDir);
-            _layout[_cursorX, _cursorZ] = isHor ? 'h' : 'v';
-            _layout[_cursorX + xOff, _cursorZ + yOff] = isHor ? 'f' : 'l';
-            _layout[_cursorX - xOff, _cursorZ - yOff] = isHor ? 'b' : 'r';
+            _layout[_cursorX, _cursorZ] =Block.KeyGround;//isHor ? 'h' : 'v';
+            _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
+            _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         }
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = isHor ? 'h' : 'v';
-        _layout[_cursorX + xOff, _cursorZ + yOff] = isHor ? 'f' : 'l';
-        _layout[_cursorX - xOff, _cursorZ - yOff] = isHor ? 'b' : 'r';
+        _layout[_cursorX, _cursorZ] =Block.KeyGround; //isHor ? 'h' : 'v';
+        _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
+        _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = isHor ? 'e' : 'd';
+        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
+        _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
+        MoveDir(_currentDir);
+        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        MoveDir((_currentDir + 2) & 3);
     }
 
     void AdvanceDir() {

@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 74a96e5865cb35342b5fa192a123be90
+guid: 12731775550702f46904e9196a150011
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SideGradient
+    second: {fileID: 2100000, guid: 4ca6c27f25e63f74da5a4ba7a5f2312b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -6,25 +6,26 @@ using System.Linq;
 
 public class GenLayout : MonoBehaviour
 {
-private enum Block{
-    None,
-    Ground,
-    KeyGround,
-    Right,
-    Left,
-    Front,
-    Back,
-    InnerFrontRight,
-    InnerFrontLeft,
-    InnerBackRight,
-    InnerBackLeft,
-    OuterFrontRight,
-    OuterFrontLeft,
-    OuterBackRight,
-    OuterBackLeft,
-    Pit,
-}
-    
+    private enum Block
+    {
+        None,
+        Ground,
+        KeyGround,
+        Right,
+        Left,
+        Front,
+        Back,
+        InnerFrontRight,
+        InnerFrontLeft,
+        InnerBackRight,
+        InnerBackLeft,
+        OuterFrontRight,
+        OuterFrontLeft,
+        OuterBackRight,
+        OuterBackLeft,
+        Pit,
+    }
+
     public int RoomAmt = 3;
     public int RoomSizeRange = 16;
     public int RoomSizeMin = 16;
@@ -37,7 +38,7 @@ private enum Block{
     public int Seed = 0;
     public GameObject Player;
 
-    const int MAP_SIZE = 256;
+    const int MAP_SIZE = 2048;
     Block[,] _layout = new Block[MAP_SIZE, MAP_SIZE];
     int _totalDir;
     int[] _dir_cans;
@@ -55,7 +56,8 @@ private enum Block{
 
     void Awake()
     {
-        if (Seed == 0) {
+        if (Seed == 0)
+        {
             _random = new System.Random();
             Seed = _random.Next();
         }
@@ -64,24 +66,24 @@ private enum Block{
 
         _cursorX = MAP_SIZE / 2;
         _cursorZ = MAP_SIZE / 2;
-        Player.transform.position =  new Vector3(_cursorX * 4 + 8, 5, _cursorZ  * 4 + 8);
+        Player.transform.position = new Vector3(_cursorX * 4 + 8, 5, _cursorZ * 4 + 8);
 
         _dir_cans = Enumerable.Range(0, 4).Where(n => n != ((_totalDir + 2) & 3)).ToArray();
         WriteRoom(5, 5);
         AdvanceDir();
-        MoveRoomWall(5, 5);
+        MoveRoom(5, 5);
         WriteHall((int)(_random.NextDouble() * 5) + 3);
         for (int i = 0; i < RoomAmt; ++i)
         {
-            var roomWidth = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
-            var roomdepth = (int)(_random.NextDouble() * RoomSizeRange )+ RoomSizeMin;
-            MoveRoom(roomWidth, roomdepth);
+            var roomWidth = (int)(_random.NextDouble() * RoomSizeRange) + RoomSizeMin;
+            var roomdepth = (int)(_random.NextDouble() * RoomSizeRange) + RoomSizeMin;
+            MoveRoom(roomWidth, roomdepth, true);
             WriteRoom(roomWidth, roomdepth);
             AdvanceDir();
-            MoveRoomWall(roomWidth, roomdepth);
-            WriteHall((int)(_random.NextDouble() * 2 )+ 1);
+            MoveRoom(roomWidth, roomdepth);
+            WriteHall((int)(_random.NextDouble() * 2) + 1);
         }
-        MoveRoom(5, 5);
+        MoveRoom(5, 5, true);
         WriteRoom(5, 5);
 
 
@@ -98,18 +100,18 @@ private enum Block{
         {
             for (int j = 0; j < MAP_SIZE; ++j)
             {
-                var wall0 = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
-                var wall1 = _wallPrefabs[ _random.NextDouble()< WallProb ?  (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0 ];
+                var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
+                var wall1 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
                 var status = _layout[i, j] switch
                 {
                     Block.KeyGround or Block.Ground => GenerateGround(i, j),
-                    Block.Front => GenerateFrontWall( wall0, i, j),
-                    Block.Back => GenerateBackWall( wall0, i, j),
+                    Block.Front => GenerateFrontWall(wall0, i, j),
+                    Block.Back => GenerateBackWall(wall0, i, j),
                     Block.Right => GenerateRightWall(wall0, i, j),
                     Block.Left => GenerateLeftWall(wall0, i, j),
                     Block.InnerFrontRight => GenerateFrontRightColumn(i, j),
                     Block.InnerFrontLeft => GenerateFrontLeftColumn(i, j),
-                    Block.InnerBackRight => GenerateBackRightColumn( i, j),
+                    Block.InnerBackRight => GenerateBackRightColumn(i, j),
                     Block.InnerBackLeft => GenerateBackLeftColumn(i, j),
                     Block.OuterFrontRight => GenerateFrontRightOuter(wall0, wall1, i, j),
                     Block.OuterFrontLeft => GenerateFrontLeftOuter(wall0, wall1, i, j),
@@ -123,7 +125,7 @@ private enum Block{
 
     void AddInteriorWall(int x, int z)
     {
-        if (_layout[x, z] ==Block.None)
+        if (_layout[x, z] == Block.None)
         {
             return;
         }
@@ -133,22 +135,22 @@ private enum Block{
             return;
         }
         _layout[x, z] = Block.None;
-        if (_layout[x + 1, z] !=Block.None)
+        if (_layout[x + 1, z] != Block.None)
         {
-            _layout[x + 1, z] =Block.Right;
+            _layout[x + 1, z] = Block.Right;
         }
-        if (_layout[x - 1, z] !=Block.None)
+        if (_layout[x - 1, z] != Block.None)
         {
-            _layout[x - 1, z] =Block.Left;
+            _layout[x - 1, z] = Block.Left;
 
         }
-        if (_layout[x, z + 1] !=Block.None)
+        if (_layout[x, z + 1] != Block.None)
         {
-            _layout[x, z + 1] =Block.Back;
+            _layout[x, z + 1] = Block.Back;
         }
-        if (_layout[x, z - 1] !=Block.None)
+        if (_layout[x, z - 1] != Block.None)
         {
-            _layout[x, z - 1] =Block.Front;
+            _layout[x, z - 1] = Block.Front;
         }
     }
 
@@ -164,65 +166,73 @@ private enum Block{
     }
 
 
-    int GenerateFrontLeftOuter(GameObject wall0, GameObject wall1, int x, int z) {
-        GenerateFrontLeftColumn( x, z);
+    int GenerateFrontLeftOuter(GameObject wall0, GameObject wall1, int x, int z)
+    {
+        GenerateFrontLeftColumn(x, z);
         GenerateFrontWall(wall0, x, z);
         GenerateLeftWall(wall1, x, z);
         return 1;
     }
 
-    int GenerateFrontRightColumn(int x, int z) {
+    int GenerateFrontRightColumn(int x, int z)
+    {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 + 3), 0);
         GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), -90);
         return 1;
     }
 
-    int GenerateFrontRightOuter(GameObject wall0, GameObject wall1, int x, int z) {
+    int GenerateFrontRightOuter(GameObject wall0, GameObject wall1, int x, int z)
+    {
         GenerateFrontRightColumn(x, z);
         GenerateFrontWall(wall0, x, z);
         GenerateRightWall(wall1, x, z);
         return 1;
     }
 
-    int GenerateFrontLeftColumn(int x, int z) {
+    int GenerateFrontLeftColumn(int x, int z)
+    {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 + 3, 0, z * 4 + 3), 0);
-        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1),0);
+        GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 0);
         return 1;
     }
 
-    int GenerateBackRightOuter(GameObject wall0, GameObject wall1, int x, int z) {
-        GenerateBackRightColumn( x, z);
+    int GenerateBackRightOuter(GameObject wall0, GameObject wall1, int x, int z)
+    {
+        GenerateBackRightColumn(x, z);
         GenerateBackWall(wall0, x, z);
         GenerateRightWall(wall1, x, z);
         return 1;
     }
 
 
-    int GenerateBackRightColumn(int x, int z) {
+    int GenerateBackRightColumn(int x, int z)
+    {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 - 1), 0);
         GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 180);
         return 1;
     }
-    int GenerateBackLeftOuter(GameObject wall0, GameObject wall1, int x, int z) {
-        GenerateBackLeftColumn( x, z);
+    int GenerateBackLeftOuter(GameObject wall0, GameObject wall1, int x, int z)
+    {
+        GenerateBackLeftColumn(x, z);
         GenerateBackWall(wall0, x, z);
         GenerateLeftWall(wall1, x, z);
         return 1;
     }
-    int GenerateBackLeftColumn(int x, int z) {
+    int GenerateBackLeftColumn(int x, int z)
+    {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 + 3, 0, z * 4 - 1), 0);
         GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 90);
         return 1;
     }
 
-    int GenerateFrontWall( GameObject prefab, int x, int z)
+    int GenerateFrontWall(GameObject prefab, int x, int z)
     {
         GeneratePrefab(prefab, new Vector3(x * 4 + 1, 0, z * 4 + 3), 0);
-        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 1, 4, z * 4 + 2),0);
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 1, 4, z * 4 + 2), 0);
         return 1;
 
     }
-    int GenerateBackWall( GameObject prefab, int x, int z)
+    int GenerateBackWall(GameObject prefab, int x, int z)
     {
         var wall = GeneratePrefab(prefab, new Vector3(x * 4 + 1, 0, z * 4 - 1), 180);
         var collider = wall.GetComponent<BoxCollider>();
@@ -233,14 +243,14 @@ private enum Block{
 
         return 1;
     }
-    int GenerateRightWall( GameObject prefab, int x, int z)
+    int GenerateRightWall(GameObject prefab, int x, int z)
     {
         GeneratePrefab(prefab, new Vector3(x * 4 - 1, 0, z * 4 + 1), -90);
-        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 , 4, z * 4 + 1), -90);
+        GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4, 4, z * 4 + 1), -90);
         return 1;
 
     }
-    int GenerateLeftWall( GameObject prefab, int x, int z)
+    int GenerateLeftWall(GameObject prefab, int x, int z)
     {
         GeneratePrefab(prefab, new Vector3(x * 4 + 3, 0, z * 4 + 1), 90);
         GeneratePrefab(_topsPrefabs[1], new Vector3(x * 4 + 2, 4, z * 4 + 1), 90);
@@ -251,7 +261,8 @@ private enum Block{
         return 1;
     }
 
-    GameObject GeneratePrefab(GameObject prefab, Vector3 pos, float yRot) {
+    GameObject GeneratePrefab(GameObject prefab, Vector3 pos, float yRot)
+    {
         var go = Instantiate(prefab, pos, Quaternion.identity);
         go.transform.parent = gameObject.transform;
         go.transform.Rotate(new Vector3(-90, yRot, 0));
@@ -266,10 +277,10 @@ private enum Block{
             for (int j = 0; j < 2; ++j)
             {
                 var ground = Instantiate(
-                    _floorPrefabs[_random.NextDouble()< FloorProb ?  
+                    _floorPrefabs[_random.NextDouble() < FloorProb ?
                     (int)(_random.NextDouble() * (_floorPrefabs.Count - 1)) + 1 : 0
                 ], new Vector3(x * 4 + i * 2, 0, z * 4 + j * 2), Quaternion.AngleAxis(-90, Vector3.right));
-        ground.transform.parent = gameObject.transform;
+                ground.transform.parent = gameObject.transform;
             }
         }
         return 1;
@@ -325,31 +336,35 @@ private enum Block{
         Block.None,
         Block.Back,
         Block.None,
+        Block.None,
         Block.Back,
         Block.Back,
     };
 
-    void WriteWallAdd(int x, int z, Block val) {
+    void WriteWallAdd(int x, int z, Block val)
+    {
         _layout[x, z] = _layout[x, z] switch
         {
-            Block.Right => s_rightTable[(int) val],
-            Block.Left => s_leftTable[(int) val],
+            Block.Right => s_rightTable[(int)val],
+            Block.Left => s_leftTable[(int)val],
             Block.Front => s_frontTable[(int)val],
-            Block.Back => s_backTable[(int) val],
+            Block.Back => s_backTable[(int)val],
             Block.KeyGround => Block.KeyGround,
             _ => _layout[x, z] = val,
         };
     }
 
 
-    void WriteWeak(int x, int z, Block val) {
-            if (_layout[x, z] ==Block.None)
-            {
-                _layout[x, z] = val;
-            }
+    void WriteWeak(int x, int z, Block val)
+    {
+        if (_layout[x, z] == Block.None)
+        {
+            _layout[x, z] = val;
+        }
     }
 
-    Vector3 CheckRoom(int width, int depth) {
+    Vector3 CheckRoom(int width, int depth)
+    {
         return new Vector3();
         // var foundMask = 0;
         // Vector3 minKeyDiff;
@@ -393,36 +408,14 @@ private enum Block{
         // return new Vector3();
     }
 
-    void MoveRoom(int width, int depth)
-    {
-
-        if ((_currentDir & 1) == 1)
-        {
-            _cursorZ -= (int)(_random.NextDouble() * (depth - 2)) + 1;
-            if (_currentDir == 1)
-            {
-                _cursorX -= width - 1;
-            }
-        }
-        else
-        {
-            _cursorX -= (int)(_random.NextDouble() * (width - 2)) + 1;
-            if (_currentDir == 0)
-            {
-                _cursorZ -= depth - 1;
-            }
-
-        }
-    }
-
     void WriteRoom(int width, int depth)
     {
-        WriteWallAdd (_cursorX, _cursorZ ,Block.InnerFrontLeft);
+        WriteWallAdd(_cursorX, _cursorZ, Block.InnerFrontLeft);
         for (int i = 1; i < width - 1; ++i)
         {
-            WriteWallAdd (_cursorX + i, _cursorZ, Block.Front);
+            WriteWallAdd(_cursorX + i, _cursorZ, Block.Front);
         }
-        WriteWallAdd(_cursorX + width - 1, _cursorZ , Block.InnerFrontRight);
+        WriteWallAdd(_cursorX + width - 1, _cursorZ, Block.InnerFrontRight);
 
         for (int i = 1; i < depth - 1; ++i)
         {
@@ -431,58 +424,92 @@ private enum Block{
             {
                 WriteWeak(_cursorX + j, _cursorZ + i, Block.Ground);
             }
-            WriteWallAdd(_cursorX + width - 1, _cursorZ + i,Block.Right);
+            WriteWallAdd(_cursorX + width - 1, _cursorZ + i, Block.Right);
         }
 
         WriteWallAdd(_cursorX, _cursorZ + depth - 1, Block.InnerBackLeft);
         for (int i = 1; i < width - 1; ++i)
         {
-            WriteWallAdd(_cursorX + i, _cursorZ + depth - 1,Block.Back);
+            WriteWallAdd(_cursorX + i, _cursorZ + depth - 1, Block.Back);
         }
         WriteWallAdd(_cursorX + width - 1, _cursorZ + depth - 1, Block.InnerBackRight);
 
         var sym = _random.NextDouble();
-        if(sym < .4f) {
-        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
-        for (int i = 0; i < interiorAmt; ++i)
+        if (sym < .4f)
         {
-
-        }
-        }else if (sym < .8f) {
-        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
-        for (int i = 0; i < interiorAmt; ++i)
-        {
-
-        }
-        } else {
-
-        var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange * 2) + HalfInnerMin * 2;
-        for (int i = 0; i < interiorAmt; ++i)
-        {
-
-        }
-        }
-    }
-
-    void MoveRoomWall(int width, int depth)
-    {
-        if ((_currentDir & 1) == 1)
-        {
-            _cursorZ += (int)(_random.NextDouble() * (depth - 2)) + 1;
-            if (_currentDir == 3)
+            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+            for (int i = 0; i < interiorAmt; ++i)
             {
-                _cursorX += width - 1;
+
+            }
+        }
+        else if (sym < .8f)
+        {
+            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+            for (int i = 0; i < interiorAmt; ++i)
+            {
+
             }
         }
         else
         {
-            _cursorX += (int)(_random.NextDouble() * (width - 2)) + 1;
-            if (_currentDir == 2)
+
+            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange * 2) + HalfInnerMin * 2;
+            for (int i = 0; i < interiorAmt; ++i)
             {
-                _cursorZ += depth - 1;
+
+            }
+        }
+    }
+
+    void MoveRoom(int width, int depth, bool inv = false)
+    {
+        var xOff = 0;
+        var zOff = 0;
+
+        if ((_currentDir & 1) == 1)
+        {
+            if ((_totalDir & 1) == 0)
+            {
+                zOff = (int)(_random.NextDouble() * (depth - 2) / 2 +
+                    ((_totalDir == 0) ^ inv ? 1 : depth / 2));
+            }
+            else
+            {
+                zOff = (int)(_random.NextDouble() * (depth - 2)) + 1;
+            }
+            if ((_currentDir == 3 && !inv) || (_currentDir == 1 && inv)) {
+                xOff = width - 1;
+            }
+        }
+        else
+        {
+            if ((_totalDir & 1) == 1)
+            {
+                xOff = (int)(_random.NextDouble() * (width - 2) / 2 +
+                    ((_totalDir == 1) ^ inv ? 1 : width / 2));
+            }
+            else
+            {
+                xOff = (int)(_random.NextDouble() * (width - 2)) + 1;
+            }
+            if ((_currentDir == 2 && !inv) || (_currentDir == 0 && inv))
+            {
+                zOff = depth - 1;
             }
         }
 
+        if (inv)
+        {
+            _cursorX -= xOff;
+            _cursorZ -= zOff;
+        }
+        else
+        {
+            _cursorX += xOff;
+            _cursorZ += zOff;
+
+        }
     }
 
     void MoveDir(int dir)
@@ -509,8 +536,8 @@ private enum Block{
         bool isHor = (_currentDir & 1) == 1;
         int xOff = isHor ? 0 : 1;
         int zOff = isHor ? 1 : 0;
-        Block b0 = isHor ? Block.Back:Block.Right;
-        Block b1 = isHor ? Block.Front:Block.Left;
+        Block b0 = isHor ? Block.Back : Block.Right;
+        Block b1 = isHor ? Block.Front : Block.Left;
         MoveDir((_currentDir + 2) & 3);
         _layout[_cursorX, _cursorZ] = Block.KeyGround;
         MoveDir(_currentDir);
@@ -520,12 +547,12 @@ private enum Block{
         for (int i = 0; i < len; ++i)
         {
             MoveDir(_currentDir);
-            _layout[_cursorX, _cursorZ] =Block.KeyGround;//isHor ? 'h' : 'v';
+            _layout[_cursorX, _cursorZ] = Block.KeyGround;//isHor ? 'h' : 'v';
             _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
             _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         }
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] =Block.KeyGround; //isHor ? 'h' : 'v';
+        _layout[_cursorX, _cursorZ] = Block.KeyGround; //isHor ? 'h' : 'v';
         _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
         _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         MoveDir(_currentDir);
@@ -537,10 +564,14 @@ private enum Block{
         MoveDir((_currentDir + 2) & 3);
     }
 
-    void AdvanceDir() {
-        if(_currentDir == _totalDir) {
+    void AdvanceDir()
+    {
+        if (_currentDir == _totalDir)
+        {
             _currentDir = _dir_cans[(int)(_random.NextDouble() * 3)];
-        } else {
+        }
+        else
+        {
             var dir_cans = _dir_cans.Where(n => n != ((_currentDir + 2) & 3)).ToArray();
             _currentDir = dir_cans[(int)(_random.NextDouble() * 2)];
         }

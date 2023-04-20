@@ -26,7 +26,7 @@ public class TopDownCharacter : MonoBehaviour
 
     [Header("Misc Components")]
     private CharacterController characterController;
-    private ControllerColliderHit controllerHit;
+    private ControllerColliderHit characterControllerHit;
     private TopDownCamera cam;
 
     [Header("Gizmo Variables")]
@@ -109,10 +109,10 @@ public class TopDownCharacter : MonoBehaviour
         input = Vector3.ClampMagnitude(input, 1.0f);
 
         // Input parrallel to surface
-        if (controllerHit != null) {
+        if (characterControllerHit != null) {
             Vector3 adjustedDir = Vector3.ProjectOnPlane(
                 input,
-                controllerHit.normal
+                characterControllerHit.normal
             ).normalized;
 
             float slope = adjustedDir.y;
@@ -135,8 +135,8 @@ public class TopDownCharacter : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         // Only consider non trigger colliders as collisions
-        if(!hit.collider.isTrigger) {
-            controllerHit = hit;
+        if (hit.collider.isTrigger) {
+            return;
         }
     }
 

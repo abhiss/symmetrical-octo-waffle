@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4835008359612262946
 Transform:
   m_ObjectHideFlags: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7419444103390115406}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,10 +45,10 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 4
   m_Range: 7.1156397
-  m_SpotAngle: 61.42959
-  m_InnerSpotAngle: 33.8654
+  m_SpotAngle: 47.327866
+  m_InnerSpotAngle: 3.3136427
   m_CookieSize: 10
   m_Shadows:
     m_Type: 1
@@ -568,9 +568,9 @@ MonoBehaviour:
   dampTime: 0.1
   cameraObject: {fileID: 7353410373492526162}
   modelObject: {fileID: 3576899899529108940}
-  inputVelocity: {x: 0, y: 0, z: 0}
-  externalVelocity: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
+  inputVelocity: {x: 0, y: 0, z: 0}
+  forceVelocity: {x: 0, y: 0, z: 0}
 --- !u!4 &7609185138751949327 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3731987262226166805, guid: e44139547f79d0c4c820f7dfb8752dfb,

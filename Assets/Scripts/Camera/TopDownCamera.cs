@@ -21,7 +21,7 @@ public class TopDownCamera : MonoBehaviour
         CameraComponent = GetComponent<Camera>();
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (PlayerObject == null)
         {

@@ -8,22 +8,16 @@ public class GenLayout : MonoBehaviour
 {
     private enum Block
     {
-        None,
-        Ground,
-        KeyGround,
-        Right,
-        Left,
-        Front,
-        Back,
-        InnerFrontRight,
-        InnerFrontLeft,
-        InnerBackRight,
-        InnerBackLeft,
-        OuterFrontRight,
-        OuterFrontLeft,
-        OuterBackRight,
-        OuterBackLeft,
-        Pit,
+        None = 0,
+        Ground = 1,
+        Key = 2,
+        Right = 4,
+        Left = 8,
+        Front = 16,
+        Back = 32,
+        Inner = 64,
+        Outer = 128,
+        Pit = 256,
     }
 
     public int RoomAmt = 3;
@@ -33,12 +27,14 @@ public class GenLayout : MonoBehaviour
     public float WallProb = 0.1f;
     public float InteriorProb = 0.3f;
     public float NoiseFac = 0.5f;
-    public float HalfInnerMin = 1.0f;
-    public float HalfInnerRange = 2.0f;
+    public int HalfInnerMin = 1;
+    public int HalfInnerRange = 2;
+    public int InnerSizeMin = 2;
+    public int InnerSizeRange = 1;
     public int Seed = 0;
     public GameObject Player;
 
-    const int MAP_SIZE = 2048;
+    const int MAP_SIZE = 128;
     Block[,] _layout = new Block[MAP_SIZE, MAP_SIZE];
     int _totalDir;
     int[] _dir_cans;
@@ -79,6 +75,7 @@ public class GenLayout : MonoBehaviour
             var roomdepth = (int)(_random.NextDouble() * RoomSizeRange) + RoomSizeMin;
             MoveRoom(roomWidth, roomdepth, true);
             WriteRoom(roomWidth, roomdepth);
+            WriteInterior(roomWidth, roomdepth);
             AdvanceDir();
             MoveRoom(roomWidth, roomdepth);
             WriteHall((int)(_random.NextDouble() * 2) + 1);
@@ -100,25 +97,45 @@ public class GenLayout : MonoBehaviour
         {
             for (int j = 0; j < MAP_SIZE; ++j)
             {
-                var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
-                var wall1 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
-                var status = _layout[i, j] switch
-                {
-                    Block.KeyGround or Block.Ground => GenerateGround(i, j),
-                    Block.Front => GenerateFrontWall(wall0, i, j),
-                    Block.Back => GenerateBackWall(wall0, i, j),
-                    Block.Right => GenerateRightWall(wall0, i, j),
-                    Block.Left => GenerateLeftWall(wall0, i, j),
-                    Block.InnerFrontRight => GenerateFrontRightColumn(i, j),
-                    Block.InnerFrontLeft => GenerateFrontLeftColumn(i, j),
-                    Block.InnerBackRight => GenerateBackRightColumn(i, j),
-                    Block.InnerBackLeft => GenerateBackLeftColumn(i, j),
-                    Block.OuterFrontRight => GenerateFrontRightOuter(wall0, wall1, i, j),
-                    Block.OuterFrontLeft => GenerateFrontLeftOuter(wall0, wall1, i, j),
-                    Block.OuterBackRight => GenerateBackRightOuter(wall0, wall1, i, j),
-                    Block.OuterBackLeft => GenerateBackLeftOuter(wall0, wall1, i, j),
-                    _ => 0,
-                };
+                var inner = (Block.Inner & _layout[i, j]) != 0 ;
+                if (!inner && (Block.Ground & _layout[i, j]) != 0) {
+                    GenerateGround(i, j);
+                }
+                if (!inner && (Block.Front & _layout[i, j]) != 0) {
+                    var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
+                    GenerateFrontWall(wall0, i, j);
+                }
+                if(!inner && (Block.Back & _layout[i, j]) != 0 ) {
+                    var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
+                    GenerateBackWall(wall0, i, j);
+                }
+                if(!inner &&(Block.Right  & _layout[i, j]) != 0 ) {
+                    var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
+                    GenerateRightWall(wall0, i, j);
+                }
+                if(!inner && (Block.Left  & _layout[i, j]) != 0 ) {
+                    var wall0 = _wallPrefabs[_random.NextDouble() < WallProb ? (int)(_random.NextDouble() * (_wallPrefabs.Count - 1)) + 1 : 0];
+                    GenerateLeftWall(wall0, i, j);
+                }
+                if(inner || (Block.Outer  & _layout[i, j]) != 0  ) {
+                    var walls = Block.Right | Block.Left | Block.Back | Block.Front;
+                    switch ((_layout[i, j] & walls) )//^ (inner ? walls: Block.None))
+                    {
+                        case  Block.Front | Block.Right:
+                            GenerateFrontRightColumn(i, j);
+                            break;
+                        case Block.Front | Block.Left:
+                            GenerateFrontLeftColumn(i, j);
+                            break;
+                        case Block.Back | Block.Right:
+                            GenerateBackRightColumn(i, j);
+                            break;
+                        case Block.Back | Block.Left:
+                            GenerateBackLeftColumn(i, j);
+                            break;
+
+                    };
+                }
             }
         }
     }
@@ -165,27 +182,10 @@ public class GenLayout : MonoBehaviour
         return prefabs;
     }
 
-
-    int GenerateFrontLeftOuter(GameObject wall0, GameObject wall1, int x, int z)
-    {
-        GenerateFrontLeftColumn(x, z);
-        GenerateFrontWall(wall0, x, z);
-        GenerateLeftWall(wall1, x, z);
-        return 1;
-    }
-
     int GenerateFrontRightColumn(int x, int z)
     {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 + 3), 0);
         GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), -90);
-        return 1;
-    }
-
-    int GenerateFrontRightOuter(GameObject wall0, GameObject wall1, int x, int z)
-    {
-        GenerateFrontRightColumn(x, z);
-        GenerateFrontWall(wall0, x, z);
-        GenerateRightWall(wall1, x, z);
         return 1;
     }
 
@@ -196,26 +196,11 @@ public class GenLayout : MonoBehaviour
         return 1;
     }
 
-    int GenerateBackRightOuter(GameObject wall0, GameObject wall1, int x, int z)
-    {
-        GenerateBackRightColumn(x, z);
-        GenerateBackWall(wall0, x, z);
-        GenerateRightWall(wall1, x, z);
-        return 1;
-    }
-
 
     int GenerateBackRightColumn(int x, int z)
     {
         GeneratePrefab(_columnPrefab, new Vector3(x * 4 - 1, 0, z * 4 - 1), 0);
         GeneratePrefab(_topsPrefabs[0], new Vector3(x * 4 + 1, 4, z * 4 + 1), 180);
-        return 1;
-    }
-    int GenerateBackLeftOuter(GameObject wall0, GameObject wall1, int x, int z)
-    {
-        GenerateBackLeftColumn(x, z);
-        GenerateBackWall(wall0, x, z);
-        GenerateLeftWall(wall1, x, z);
         return 1;
     }
     int GenerateBackLeftColumn(int x, int z)
@@ -288,70 +273,25 @@ public class GenLayout : MonoBehaviour
 
 
 
-    private static Block[] s_rightTable = new Block[] {
-        Block.None,
-        Block.None,
-        Block.KeyGround,
-        Block.Right,
-        Block.None,
-        Block.OuterFrontRight,
-        Block.OuterBackRight,
-        Block.Right,
-        Block.None,
-        Block.Right,
-        Block.None,
-    };
-    private static Block[] s_leftTable = new Block[] {
-        Block.None,
-        Block.None,
-        Block.KeyGround,
-        Block.None,
-        Block.Left,
-        Block.OuterFrontLeft,
-        Block.OuterBackLeft,
-        Block.None,
-        Block.Left,
-        Block.None,
-        Block.Left,
-    };
-    private static Block[] s_frontTable = new Block[] {
-        Block.None,
-        Block.None,
-        Block.KeyGround,
-        Block.OuterFrontRight,
-        Block.OuterFrontLeft,
-        Block.Front,
-        Block.None,
-        Block.Front,
-        Block.Front,
-        Block.None,
-        Block.None,
-    };
-    private static Block[] s_backTable = new Block[] {
-        Block.None,
-        Block.None,
-        Block.KeyGround,
-        Block.OuterBackRight,
-        Block.OuterBackLeft,
-        Block.None,
-        Block.Back,
-        Block.None,
-        Block.None,
-        Block.Back,
-        Block.Back,
-    };
 
     void WriteWallAdd(int x, int z, Block val)
     {
-        _layout[x, z] = _layout[x, z] switch
+        if ((_layout[x, z] & Block.Key) != 0){
+            return;
+        }
+        if ((((_layout[x, z] == Block.Right) || (_layout[x, z] == Block.Left)) && ((val == Block.Front) || (val == Block.Back)))
+         ||(((_layout[x, z] == Block.Front) || (_layout[x, z] == Block.Back)) && ((val == Block.Right) || (val == Block.Left)))) {
+            _layout[x, z] |= val | Block.Outer;
+            return;
+        }
+        if ((_layout[x, z] & (Block.Right | Block.Left | Block.Front | Block.Back)) != 0)
         {
-            Block.Right => s_rightTable[(int)val],
-            Block.Left => s_leftTable[(int)val],
-            Block.Front => s_frontTable[(int)val],
-            Block.Back => s_backTable[(int)val],
-            Block.KeyGround => Block.KeyGround,
-            _ => _layout[x, z] = val,
-        };
+            _layout[x, z] &= val;
+            return;
+        }
+        _layout[x, z] = val;
+
+    
     }
 
 
@@ -363,15 +303,20 @@ public class GenLayout : MonoBehaviour
         }
     }
 
-    Vector3 CheckRoom(int width, int depth)
+    bool CheckRoom(int x, int z, int width, int depth)
     {
-        return new Vector3();
         // var foundMask = 0;
         // Vector3 minKeyDiff;
         // var recordDist = 0;
 
-        // for (int i = 0; i < width; ++i) {
-        //     for (int j = 0; j < depth; ++j) {
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < depth; ++j) {
+                if ((_layout[x + i , z + j] & Block.Key) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
         //         var block =_layout[_cursorX + i, _cursorZ + j];
         //         switch(block) {
         //             case Block.KeyGround: {
@@ -410,12 +355,12 @@ public class GenLayout : MonoBehaviour
 
     void WriteRoom(int width, int depth)
     {
-        WriteWallAdd(_cursorX, _cursorZ, Block.InnerFrontLeft);
+        WriteWallAdd(_cursorX, _cursorZ, Block.Inner | Block.Front | Block.Left);
         for (int i = 1; i < width - 1; ++i)
         {
             WriteWallAdd(_cursorX + i, _cursorZ, Block.Front);
         }
-        WriteWallAdd(_cursorX + width - 1, _cursorZ, Block.InnerFrontRight);
+        WriteWallAdd(_cursorX + width - 1, _cursorZ, Block.Inner | Block.Front | Block.Right);
 
         for (int i = 1; i < depth - 1; ++i)
         {
@@ -427,40 +372,74 @@ public class GenLayout : MonoBehaviour
             WriteWallAdd(_cursorX + width - 1, _cursorZ + i, Block.Right);
         }
 
-        WriteWallAdd(_cursorX, _cursorZ + depth - 1, Block.InnerBackLeft);
+        WriteWallAdd(_cursorX, _cursorZ + depth - 1, Block.Inner | Block.Back | Block.Left);
         for (int i = 1; i < width - 1; ++i)
         {
             WriteWallAdd(_cursorX + i, _cursorZ + depth - 1, Block.Back);
         }
-        WriteWallAdd(_cursorX + width - 1, _cursorZ + depth - 1, Block.InnerBackRight);
+        WriteWallAdd(_cursorX + width - 1, _cursorZ + depth - 1, Block.Inner | Block.Back | Block.Right);
+    }
 
-        var sym = _random.NextDouble();
-        if (sym < .4f)
+    void WriteInterior(int width, int depth)
+        { 
+//        var sym = _random.NextDouble();
+//        if (sym < .4f)
+//        {
+//            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+//            for (int i = 0; i < interiorAmt; ++i)
+//            {
+//
+//            }
+//        }
+//        else if (sym < .8f)
+//        {
+//            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
+//            for (int i = 0; i < interiorAmt; ++i)
+//            {
+//
+//            }
+//        }
+//        else
         {
-            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
-            for (int i = 0; i < interiorAmt; ++i)
+            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange ) + HalfInnerMin ;
+            var spaceX = width - 3;
+            var spaceZ = depth - 3;
+            while ( interiorAmt > 0 && spaceX > 0 && spaceZ > 0)
             {
+                var innerW = (int)(_random.NextDouble() * System.Math.Min(InnerSizeRange, spaceX) + InnerSizeMin);
+                var innerD = (int)(_random.NextDouble() * System.Math.Min(InnerSizeRange, spaceZ) + InnerSizeMin);
+                spaceX -= innerW;
+                spaceZ -= innerD;
+                var innerX = (int)(_random.NextDouble() * (width - innerW) + _cursorX);
+                var innerZ = (int)(_random.NextDouble() * (depth - innerD) + _cursorZ);
+                Debug.Log((innerX - _cursorX) + " " + (innerZ - _cursorZ) + " " + innerW + " " + innerD);
+                if (!CheckRoom(innerX, innerZ, innerW, innerD))
+                {
+                    continue;
+                }
+                WriteWallAdd( innerX, innerZ, Block.Outer | Block.Back | Block.Right);
+                for (int i = 1; i < innerW - 1; ++i) {
+                    WriteWallAdd( innerX + i, innerZ, Block.Back);
+                }
+                WriteWallAdd( innerX + innerW - 1, innerZ, Block.Outer | Block.Back | Block.Left);
 
-            }
-        }
-        else if (sym < .8f)
-        {
-            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange) + HalfInnerMin;
-            for (int i = 0; i < interiorAmt; ++i)
-            {
+                for (int i = 1; i < innerD - 1; ++i) {
+                    WriteWallAdd( innerX, innerZ + i, Block.Right);
+                    for (int j = 1; j < innerW - 1; ++j) {
+                        _layout[innerX + j, innerZ + i] = Block.None;
+                    }
+                    WriteWallAdd( innerX + innerW - 1, innerZ + i, Block.Left);
+                }
 
-            }
-        }
-        else
-        {
-
-            var interiorAmt = (int)(_random.NextDouble() * HalfInnerRange * 2) + HalfInnerMin * 2;
-            for (int i = 0; i < interiorAmt; ++i)
-            {
-
+                WriteWallAdd( innerX, innerZ + innerD - 1, Block.Outer | Block.Front | Block.Right);
+                for (int i = 1; i < innerW - 1; ++i) {
+                    WriteWallAdd( innerX + i, innerZ + innerD - 1, Block.Front);
+                }
+                WriteWallAdd( innerX + innerW - 1, innerZ + innerD - 1, Block.Outer | Block.Front | Block.Left);
             }
         }
     }
+
 
     void MoveRoom(int width, int depth, bool inv = false)
     {
@@ -539,28 +518,28 @@ public class GenLayout : MonoBehaviour
         Block b0 = isHor ? Block.Back : Block.Right;
         Block b1 = isHor ? Block.Front : Block.Left;
         MoveDir((_currentDir + 2) & 3);
-        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground;
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground;
         WriteWallAdd(_cursorX + xOff, _cursorZ + zOff, b0);
         WriteWallAdd(_cursorX - xOff, _cursorZ - zOff, b1);
         for (int i = 0; i < len; ++i)
         {
             MoveDir(_currentDir);
-            _layout[_cursorX, _cursorZ] = Block.KeyGround;//isHor ? 'h' : 'v';
+            _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground;//isHor ? 'h' : 'v';
             _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
             _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         }
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = Block.KeyGround; //isHor ? 'h' : 'v';
+        _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground; //isHor ? 'h' : 'v';
         _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
         _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground;
         _layout[_cursorX + xOff, _cursorZ + zOff] = b0;
         _layout[_cursorX - xOff, _cursorZ - zOff] = b1;
         MoveDir(_currentDir);
-        _layout[_cursorX, _cursorZ] = Block.KeyGround;
+        _layout[_cursorX, _cursorZ] = Block.Key | Block.Ground;
         MoveDir((_currentDir + 2) & 3);
     }
 

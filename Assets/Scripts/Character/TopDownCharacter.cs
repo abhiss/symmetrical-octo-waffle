@@ -11,9 +11,14 @@ public class TopDownCharacter : MonoBehaviour
 
     [Header("Animatons")]
     public float dampTime = 0.1f;
-    private Animator animator;
+    public float aimDuration = 5.0f;
+    private bool isAimed = false;
+    private float aimWeight = 0.0f;
+    private float currentAimTime = 0.0f;
+    private int aimHash;
     private int horizontalHash;
     private int verticalHash;
+    private Animator animator;
 
     [Header("Game Objects")]
     public GameObject cameraObject;
@@ -51,6 +56,7 @@ public class TopDownCharacter : MonoBehaviour
         animator = modelObject.GetComponent<Animator>();
         horizontalHash = Animator.StringToHash("Horizontal");
         verticalHash = Animator.StringToHash("Vertical");
+        // aimHash = Animator.StringToHash("AimWeight");
     }
 
     public void Update()
@@ -60,6 +66,12 @@ public class TopDownCharacter : MonoBehaviour
         inputVelocity = ProcessInput(input);
         RotateCharacter(cam.CursorWorldSpacePosition);
 
+        // If the player shoots
+        // if (Input.GetButtonDown("Mouse1")) {
+        //     isAimed = true;
+        //     // TODO: Play shoot animation
+        // }
+
         // Character Movement
         GravityForce();
         velocity = forceVelocity + (inputVelocity * moveSpeed);
@@ -67,7 +79,7 @@ public class TopDownCharacter : MonoBehaviour
 
         // Animatons
         AnimatedMovement(input);
-        AnimatedWeapon();
+        // AnimatedAim();
     }
 
     public Vector3 GetInput()
@@ -159,9 +171,21 @@ public class TopDownCharacter : MonoBehaviour
         gizmoAnimatorDir = animationDir;
     }
 
-    public void AnimatedWeapon()
+    public void AnimatedAim()
     {
-        // TODO: Set layer weight
+        if (currentAimTime >= aimDuration) {
+            isAimed = false;
+        }
+
+        if (isAimed) {
+            currentAimTime += Time.deltaTime;
+            aimWeight = Mathf.Lerp(aimWeight, 1, Time.deltaTime);
+        } else {
+            currentAimTime = 0;
+            aimWeight = Mathf.Lerp(aimWeight, 0, Time.deltaTime);
+        }
+
+        animator.SetFloat(aimHash, aimWeight);
     }
 
     void OnDrawGizmosSelected()

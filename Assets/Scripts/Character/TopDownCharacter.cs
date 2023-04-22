@@ -191,6 +191,6 @@ public class TopDownCharacter : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + gizmoAnimatorDir, 0.1f);
+        Gizmos.DrawSphere(transform.position - gizmoAnimatorDir, 0.1f);
     }
 }

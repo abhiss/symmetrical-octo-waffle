@@ -10,16 +10,12 @@ public class TopDownCamera : MonoBehaviour
     public float MinCameraRadius;
     public float MaxCameraRadius;
     public float CameraSmoothing;
+
+    [Header("Info")]
     public Vector3 CursorWorldSpacePosition;
     private Vector3 CameraPoint;
     private Vector3 PlayerPosition;
     private Plane CursorPlane = new Plane(Vector3.down, 0);
-    private Camera CameraComponent;
-
-    void Start()
-    {
-        CameraComponent = GetComponent<Camera>();
-    }
 
     void LateUpdate()
     {

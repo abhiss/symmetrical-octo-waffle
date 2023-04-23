@@ -6,6 +6,7 @@ public class TopDownCharacterShooting : MonoBehaviour
 {
     [Header("Settings")]
     public float aimSpeed = 10.0f;
+    public float holsterSpeed = 2.5f;
     public float aimDuration = 5.0f;
     private bool isAimed = false;
     private float aimWeight = 0.0f;
@@ -25,6 +26,7 @@ public class TopDownCharacterShooting : MonoBehaviour
     {
         // Aim if player shoots
         if (Input.GetKey(KeyCode.Mouse0)) {
+            currentAimTime = 0;
             isAimed = true;
             // TODO: Play shoot animation and sound
         }
@@ -43,7 +45,7 @@ public class TopDownCharacterShooting : MonoBehaviour
             aimWeight = Mathf.Lerp(aimWeight, 1, Time.deltaTime * aimSpeed);
         } else {
             currentAimTime = 0;
-            aimWeight = Mathf.Lerp(aimWeight, 0, Time.deltaTime * aimSpeed);
+            aimWeight = Mathf.Lerp(aimWeight, 0, Time.deltaTime * holsterSpeed);
         }
 
         // ANIMATION LAYERS: Base: 0, Aiming: 1

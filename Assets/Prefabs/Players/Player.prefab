@@ -112,7 +112,6 @@ MonoBehaviour:
   rotateDeadZone: 1.75
   dampTime: 0.1
   cameraObject: {fileID: 6499487636144526818}
-  modelObject: {fileID: 4405571311213542621}
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
   forceVelocity: {x: 0, y: 0, z: 0}
@@ -128,7 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530586994baa6d04b83b5c7d7fe7f650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelObject: {fileID: 0}
   aimSpeed: 10
   aimDuration: 5
 --- !u!1 &5371906842211561286
@@ -475,12 +473,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7965cb5f3b6b49439772edd4131b2b0, type: 3}
---- !u!1 &4405571311213542621 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1112338128624330, guid: e7965cb5f3b6b49439772edd4131b2b0,
-    type: 3}
-  m_PrefabInstance: {fileID: 4404600074639648279}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4409009236749794457 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4427613559659150, guid: e7965cb5f3b6b49439772edd4131b2b0,

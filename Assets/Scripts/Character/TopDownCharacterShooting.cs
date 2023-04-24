@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownCharacterShooting : MonoBehaviour
+public class TopDownCharacterShooting : NetworkBehaviour
 {
     [Header("Settings")]
     public float aimSpeed = 10.0f;
@@ -24,6 +25,8 @@ public class TopDownCharacterShooting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!base.IsOwner) return;
+        
         // Aim if player shoots
         if (Input.GetKey(KeyCode.Mouse0)) {
             currentAimTime = 0;

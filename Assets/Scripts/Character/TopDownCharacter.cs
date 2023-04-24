@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEditor.UI;
 using UnityEngine;
 
-public class TopDownCharacter : MonoBehaviour
+public class TopDownCharacter : NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 3.0f;
@@ -32,30 +34,39 @@ public class TopDownCharacter : MonoBehaviour
     [Header("Gizmo Variables")]
     private Vector3 gizmoAnimatorDir;
 
-    public void Start()
+   
+	public void Start()
     {
-        modelObject = transform.GetChild(0).gameObject;
-        if (modelObject == null || cameraObject == null)
+		modelObject = transform.GetChild(0).gameObject;
+		if (modelObject == null || cameraObject == null)
+		{
+			Debug.LogError(
+				"Assumed player prefab Hierarchy is most likely altered. " +
+				"Aborted in Start() on "
+				+ gameObject.name + " gameobject");
+			return;
+		}
+
+		// Controller + Camera
+		cam = cameraObject.GetComponent<TopDownCamera>();
+		if (!base.IsOwner)
+		{
+            cameraObject.SetActive(false);
+		}
+		characterController = GetComponent<CharacterController>();
+
+		// Animations
+		animator = modelObject.GetComponent<Animator>();
+		horizontalHash = Animator.StringToHash("Horizontal");
+		verticalHash = Animator.StringToHash("Vertical");
+	
+    }
+	public void Update()
+    {
+        if (!base.IsOwner)
         {
-            Debug.LogError(
-                "Assumed player prefab Hierarchy is most likely altered. " +
-                "Aborted in Start() on "
-                + gameObject.name + " gameobject");
             return;
         }
-
-        // Controller + Camera
-        cam = cameraObject.GetComponent<TopDownCamera>();
-        characterController = GetComponent<CharacterController>();
-
-        // Animations
-        animator = modelObject.GetComponent<Animator>();
-        horizontalHash = Animator.StringToHash("Horizontal");
-        verticalHash = Animator.StringToHash("Vertical");
-    }
-
-    public void Update()
-    {
         // Input
         Vector3 input = GetInput();
         inputVelocity = ProcessInput(input);

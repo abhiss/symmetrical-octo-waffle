@@ -211,6 +211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4427613559659150}
   - component: {fileID: 95096058574463750}
+  - component: {fileID: 4324828455918330456}
   m_Layer: 0
   m_Name: space_man_model
   m_TagString: Untagged
@@ -234,7 +235,7 @@ Transform:
   - {fileID: 4598045900303556}
   - {fileID: 4967422519543642}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95096058574463750
 Animator:
@@ -257,6 +258,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4324828455918330456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112338128624330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8fa254c0d443f43a899ac6f058fe1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 95096058574463750}
 --- !u!1 &1114138090204880
 GameObject:
   m_ObjectHideFlags: 0

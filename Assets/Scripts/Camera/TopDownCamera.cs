@@ -6,18 +6,23 @@ public class TopDownCamera : MonoBehaviour
     public GameObject PlayerObject;
 
     [Header("Settings")]
-    public Vector3 CameraOffset;
     public float MinCameraRadius;
     public float MaxCameraRadius;
     public float CameraSmoothing;
 
     [Header("Info")]
+    private Vector3 CameraOffset;
     public Vector3 CursorWorldSpacePosition;
     private Vector3 CameraPoint;
     private Vector3 PlayerPosition;
     private Plane CursorPlane = new Plane(Vector3.down, 0);
 
-    void LateUpdate()
+    public void Awake()
+    {
+        CameraOffset = transform.localPosition;
+    }
+
+    public void LateUpdate()
     {
         if (PlayerObject == null)
         {

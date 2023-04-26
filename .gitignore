@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/osx,unity,linux,windows
 # Edit at https://www.gitignore.io/?templates=osx,unity,linux,windows
+### VS CODE ###
+.vscode
+.vsconfig
 
 ### Linux ###
 *~

@@ -5,6 +5,9 @@
 .vscode
 .vsconfig
 
+### EDITOR SETTINGS ###
+UserSettings/
+
 ### Linux ###
 *~
 

@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 348ca853bb2fe42d4bf56b52cf92913a
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Alien Invader
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 432b8fe1171444759934bf2a58462ff4, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

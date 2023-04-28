@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8836727806496936002}
   - component: {fileID: 1448661143015776440}
   - component: {fileID: 1503648979211376665}
-  - component: {fileID: 6251365724779392763}
+  - component: {fileID: 5359110799926295161}
   m_Layer: 5
   m_Name: Pause Menu
   m_TagString: Untagged
@@ -34,7 +34,7 @@ RectTransform:
   m_Children:
   - {fileID: 6061782916651348909}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6251365724779392763
+--- !u!114 &5359110799926295161
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,7 +112,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 126275559018913288}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8598db058166f4feb90cb4c6c3c5beca, type: 3}
+  m_Script: {fileID: 11500000, guid: 56c097103b69546dc9157f4649238c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PauseMenuGameObject: {fileID: 126275559018913288}
@@ -1121,7 +1121,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6251365724779392763}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
         m_MethodName: OnQuitButton
         m_Mode: 1

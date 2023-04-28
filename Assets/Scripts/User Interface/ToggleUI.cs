@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Toggle : MonoBehaviour
+public class ToggleUI : MonoBehaviour
 {
     [SerializeField] GameObject[] objectsToToggle;
     [SerializeField] KeyCode[] inputKeys;
@@ -26,8 +26,7 @@ public class Toggle : MonoBehaviour
         }
     }
 
-
-    // Add this new method to the Toggle script
+    // Add this new method to the ToggleUI script
     public void TogglePauseMenu()
     {
         for (int i = 0; i < objectsToToggle.Length; i++)

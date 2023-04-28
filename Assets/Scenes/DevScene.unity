@@ -767,6 +767,74 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &439040091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 439040094}
+  - component: {fileID: 439040093}
+  - component: {fileID: 439040092}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &439040092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439040091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
+--- !u!114 &439040093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439040091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &439040094
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439040091}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &444849426
 GameObject:
   m_ObjectHideFlags: 0
@@ -1748,25 +1816,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5359110799926295161, guid: 8aef12cda85ef4c239a11f6241bbdc28,
+        type: 3}
+      propertyPath: toggleScript
+      value: 
+      objectReference: {fileID: 1634729381}
     - target: {fileID: 8447729823142027945, guid: 8aef12cda85ef4c239a11f6241bbdc28,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1634729379}
+      objectReference: {fileID: 1634729381}
     - target: {fileID: 8447729823142027945, guid: 8aef12cda85ef4c239a11f6241bbdc28,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: TogglePauseMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 8447729823142027945, guid: 8aef12cda85ef4c239a11f6241bbdc28,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ToggleUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8534061057154643121, guid: 8aef12cda85ef4c239a11f6241bbdc28,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6251365724779392763, guid: 8aef12cda85ef4c239a11f6241bbdc28, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 126275559018913288, guid: 8aef12cda85ef4c239a11f6241bbdc28,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1192703684}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8aef12cda85ef4c239a11f6241bbdc28, type: 3}
 --- !u!1 &1192703683 stripped
 GameObject:
@@ -1774,11 +1853,11 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1145567219}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1192703684
+--- !u!114 &1192703684 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 5359110799926295161, guid: 8aef12cda85ef4c239a11f6241bbdc28,
+    type: 3}
+  m_PrefabInstance: {fileID: 1145567219}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1192703683}
   m_Enabled: 1
@@ -1786,9 +1865,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56c097103b69546dc9157f4649238c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PauseMenuGameObject: {fileID: 1192703683}
-  ResumeButton: {fileID: 1626061230}
-  toggleScript: {fileID: 1634729379}
 --- !u!1001 &1217819857
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2170,18 +2246,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1620679638}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1626061230 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8447729823142027945, guid: 8aef12cda85ef4c239a11f6241bbdc28,
-    type: 3}
-  m_PrefabInstance: {fileID: 1145567219}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1634729378
 GameObject:
   m_ObjectHideFlags: 0
@@ -2191,7 +2255,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1634729380}
-  - component: {fileID: 1634729379}
+  - component: {fileID: 1634729381}
   m_Layer: 0
   m_Name: Toggle Control
   m_TagString: Untagged
@@ -2199,22 +2263,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1634729379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1634729378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8e35f185fdba46288aa20d04245de7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectsToToggle:
-  - {fileID: 1192703683}
-  inputKeys: 70000000
-  pauseMenuScript: {fileID: 1192703684}
 --- !u!4 &1634729380
 Transform:
   m_ObjectHideFlags: 0
@@ -2230,6 +2278,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1634729381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634729378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a4a832faf2054ad0a500674256dc29f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectsToToggle:
+  - {fileID: 1192703683}
+  inputKeys: 70000000
+  pauseMenuScript: {fileID: 1192703684}
 --- !u!1001 &1673914860
 PrefabInstance:
   m_ObjectHideFlags: 0

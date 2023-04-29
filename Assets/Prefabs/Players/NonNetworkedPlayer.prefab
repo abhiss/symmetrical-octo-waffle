@@ -2161,7 +2161,7 @@ GameObject:
   - component: {fileID: 9056037640088589846}
   - component: {fileID: 5959138511278005589}
   - component: {fileID: 1363834042487543275}
-  - component: {fileID: 2439854790226636968}
+  - component: {fileID: 1508965320090836765}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -2286,7 +2286,7 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &2439854790226636968
+--- !u!114 &1508965320090836765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2295,11 +2295,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6499487636144526818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c827dfb1a6988f44ea34bd69016a77e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 14921209c835f0f4a88a4efd4c241d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerObject: {fileID: 3656713175936252363}
   MinCameraRadius: 1
   MaxCameraRadius: 4
   CameraSmoothing: 4
-  CursorWorldSpacePosition: {x: 0, y: 10, z: 4}
+  obstructionRadius: 1
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  CursorWorldSpacePosition: {x: 0, y: 0, z: 0}

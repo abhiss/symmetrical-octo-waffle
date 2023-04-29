@@ -1,25 +1,29 @@
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class TopDownCamera : MonoBehaviour
 {
     public GameObject PlayerObject;
 
-    [Header("Settings")]
+    [Header("Movement Settings")]
     public float MinCameraRadius;
     public float MaxCameraRadius;
     public float CameraSmoothing;
 
-    [Header("Info")]
-    private Vector3 CameraOffset;
-    public Vector3 CursorWorldSpacePosition;
-    private Vector3 CameraPoint;
-    private Vector3 PlayerPosition;
-    private Plane CursorPlane = new Plane(Vector3.down, 0);
+    [Header("Rendering")]
+    public LayerMask wallLayer;
+    private RaycastHit _currHit;
+    private Collider _prevHit;
 
+    [Header("Info")]
+    public Vector3 CursorWorldSpacePosition;
+    private Vector3 _cameraOffset;
+    private Vector3 _cameraPoint;
+    private Vector3 _playerPosition;
+    private Plane _cursorPlane = new Plane(Vector3.down, 0);
     public void Awake()
     {
-        CameraOffset = transform.localPosition;
+        _cameraOffset = transform.localPosition;
     }
 
     public void LateUpdate()
@@ -29,30 +33,53 @@ public class TopDownCamera : MonoBehaviour
             return;
         }
 
+        FadeObstructions();
+
         // Get Cursor position in world space
         Vector3 ScreenPosition = Input.mousePosition;
         Ray ray = Camera.main.ScreenPointToRay(ScreenPosition);
-        if (CursorPlane.Raycast(ray, out float dist))
+        if (_cursorPlane.Raycast(ray, out float dist))
         {
             CursorWorldSpacePosition = ray.GetPoint(dist);
         }
 
-        PlayerPosition = PlayerObject.transform.position;
-        PlayerPosition.y = 0;
+        _playerPosition = PlayerObject.transform.position;
+        _playerPosition.y = 0;
 
-        Vector3 diff = (CursorWorldSpacePosition - PlayerPosition) / 2;
+        Vector3 diff = (CursorWorldSpacePosition - _playerPosition) / 2;
         Vector3 dir = Vector3.Normalize(diff);
         float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
 
-        CameraPoint = PlayerPosition + dir * len;
+        _cameraPoint = _playerPosition + dir * len;
         transform.position = Vector3.Lerp(
             transform.position,
-            CameraPoint + CameraOffset,
+            _cameraPoint + _cameraOffset,
             Time.deltaTime * CameraSmoothing
         );
     }
 
-    void OnDrawGizmosSelected()
+    private void FadeObstructions()
+    {
+        // Detect obstructions
+        Vector3 dir = PlayerObject.transform.position - transform.position;
+        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, wallLayer))
+        {
+            GameObject current = _currHit.transform.gameObject;
+            if (current.GetComponent<Obstructable>() == null)
+            {
+                current.AddComponent<Obstructable>().isObstructing = true;
+            }
+
+            _prevHit = _currHit.collider;
+        }
+        else if (_prevHit != null)
+        {
+            _prevHit.transform.gameObject.GetComponent<Obstructable>().isObstructing = false;
+            _prevHit = null;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
     {
         if (PlayerObject == null)
         {
@@ -61,7 +88,7 @@ public class TopDownCamera : MonoBehaviour
 
         // Draws a blue line from this transform to the target
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(PlayerPosition, CursorWorldSpacePosition);
-        Gizmos.DrawSphere(CameraPoint, 0.5f);
+        Gizmos.DrawLine(_playerPosition, CursorWorldSpacePosition);
+        Gizmos.DrawSphere(_cameraPoint, 0.5f);
     }
 }

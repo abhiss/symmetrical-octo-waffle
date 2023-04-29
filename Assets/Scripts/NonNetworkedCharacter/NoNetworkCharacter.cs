@@ -28,7 +28,7 @@ public class NoNetworkCharacter : MonoBehaviour
     [Header("Misc Components")]
     private CharacterController characterController;
     private ControllerColliderHit characterControllerHit;
-    private NoNetworkCamera cam;
+    private TopDownCamera cam;
 
     [Header("Gizmo Variables")]
     private Vector3 gizmoAnimatorDir;
@@ -46,7 +46,7 @@ public class NoNetworkCharacter : MonoBehaviour
 		}
 
 		// Controller + Camera
-		cam = cameraObject.GetComponent<NoNetworkCamera>();
+		cam = cameraObject.GetComponent<TopDownCamera>();
 		characterController = GetComponent<CharacterController>();
 
 		// Animations

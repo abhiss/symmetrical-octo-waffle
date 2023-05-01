@@ -20,7 +20,6 @@ public class NetworkManagerUI : MonoBehaviour
 
     }
 
-
     private void Awake()
     {
         server_button.onClick.AddListener(() =>

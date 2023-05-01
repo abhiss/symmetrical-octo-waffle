@@ -1,57 +1,123 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownCharacterShooting : NetworkBehaviour
+// TODO: TEMPORARY: Should be a scriptable object
+public struct PlayerWeapon {
+    public float damage;
+    public float interval;
+    public float maxDistance;
+}
+
+public class TopDownCharacterShooting : MonoBehaviour
 {
-    [Header("Settings")]
+    [Header("TEMP: Weapon Settings")]
+    public float damage = 10.0f;
+    public float interval = 0.5f;
+    public float maxDistance = 100.0f;
+    PlayerWeapon currentWeapon;
+
+    [Header("Laser Sights Settings")]
+    public Material laserMaterial;
+    public Transform gunNozzle;
+    private LineRenderer _laserLine;
+
+    [Header("Animation Settings")]
     public float aimSpeed = 10.0f;
     public float holsterSpeed = 2.5f;
-    public float aimDuration = 5.0f;
-    private bool isAimed = false;
-    private float aimWeight = 0.0f;
-    private float currentAimTime = 0.0f;
-    private GameObject modelObject;
-    private Animator animator;
+    private bool _isAimed = false;
+    private float _aimWeight = 0.0f;
+    private GameObject _modelObject;
+    private Animator _animator;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        modelObject = transform.GetChild(0).gameObject;
-        animator = modelObject.GetComponent<Animator>();
+        // TODO: TEMPORARY
+        currentWeapon.damage = damage;
+        currentWeapon.interval = interval;
+        currentWeapon.maxDistance = maxDistance;
+
+        // Animations
+        _modelObject = transform.GetChild(0).gameObject;
+        _animator = _modelObject.GetComponent<Animator>();
+
+        // Laser
+        _laserLine = gameObject.AddComponent<LineRenderer>();
+        _laserLine.material = laserMaterial;
+        _laserLine.startWidth = 0.05f;
+        _laserLine.endWidth = 0.05f;
+        _laserLine.enabled = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (!base.IsOwner) return;
-        
-        // Aim if player shoots
-        if (Input.GetKey(KeyCode.Mouse0)) {
-            currentAimTime = 0;
-            isAimed = true;
+        // Shooting
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            _isAimed = true;
             // TODO: Play shoot animation and sound
+            Shoot();
         }
 
-        AnimatedAim();
+        // Aiming
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            EnableLaser();
+            _isAimed = true;
+        }
+        else
+        {
+            _laserLine.enabled = false;
+        }
+
+        AnimateAiming();
     }
 
-    public void AnimatedAim()
+    private void Shoot()
     {
-        if (currentAimTime >= aimDuration) {
-            isAimed = false;
+        Vector3 direction = transform.forward;
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, currentWeapon.maxDistance))
+        {
+            // Raycast hit something
+            Debug.Log("Hit: " + hit.collider.gameObject.name);
+
+            HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
+            if (healthSystem != null)
+            {
+                // Deal damage to the object with HealthSystem component
+                healthSystem.TakeDamage(currentWeapon.damage);
+            }
+        }
+    }
+
+    private void EnableLaser()
+    {
+        Vector3 origin = gunNozzle.position;
+        Vector3 direction = transform.forward;
+        Vector3 laserEndPoint = origin + direction * currentWeapon.maxDistance;
+
+        _laserLine.SetPosition(0, origin);
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, currentWeapon.maxDistance))
+        {
+            laserEndPoint = hit.point;
         }
 
-        if (isAimed) {
-            currentAimTime += Time.deltaTime;
-            aimWeight = Mathf.Lerp(aimWeight, 1, Time.deltaTime * aimSpeed);
-        } else {
-            currentAimTime = 0;
-            aimWeight = Mathf.Lerp(aimWeight, 0, Time.deltaTime * holsterSpeed);
+        _laserLine.SetPosition(1, laserEndPoint);
+        _laserLine.enabled = true;
+    }
+
+    private void AnimateAiming()
+    {
+        if (_isAimed)
+        {
+            _aimWeight = Mathf.Lerp(_aimWeight, 1, Time.deltaTime * aimSpeed);
+        }
+        else
+        {
+            _aimWeight = Mathf.Lerp(_aimWeight, 0, Time.deltaTime * holsterSpeed);
         }
 
         // ANIMATION LAYERS: Base: 0, Aiming: 1
-        animator.SetLayerWeight(1, aimWeight);
+        _animator.SetLayerWeight(1, _aimWeight);
     }
 }

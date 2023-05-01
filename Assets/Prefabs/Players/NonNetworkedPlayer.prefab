@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 2217587029086244474}
   - component: {fileID: 8373175083879619147}
   - component: {fileID: 310852709416191678}
-  - component: {fileID: 420144366768646360}
+  - component: {fileID: 8708631089376600895}
   m_Layer: 0
   m_Name: TopDownCharacter
   m_TagString: Untagged
@@ -115,7 +115,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
   forceVelocity: {x: 0, y: 0, z: 0}
---- !u!114 &420144366768646360
+--- !u!114 &8708631089376600895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,12 +124,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3656713175936252363}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3397ff617a28b7843b52b7ba5ed730cf, type: 3}
+  m_Script: {fileID: 11500000, guid: 530586994baa6d04b83b5c7d7fe7f650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 10
+  interval: 0.5
+  maxDistance: 100
+  laserMaterial: {fileID: -876546973899608171, guid: 7de47f4f1ddedc14889ac55d8ff46277,
+    type: 3}
+  gunNozzle: {fileID: 7284192694204461028}
   aimSpeed: 10
   holsterSpeed: 2.5
-  aimDuration: 5
 --- !u!1 &4405537098548577387
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,7 +928,8 @@ Transform:
   m_LocalPosition: {x: -0.0265, y: -0.0099, z: -0.0006}
   m_LocalScale: {x: 0.9999975, y: 1.0000001, z: 1.0000025}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7284192694204461028}
   m_Father: {fileID: 4409344813847416045}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -133.914, y: 22.695, z: 144.875}
@@ -2030,6 +2036,37 @@ Transform:
   - {fileID: 4409381593792058499}
   m_Father: {fileID: 4408810678657182825}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4923837280320626758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7284192694204461028}
+  m_Layer: 0
+  m_Name: LaserSight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7284192694204461028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4923837280320626758}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.3237, y: -0.0178, z: 0.0461}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4409442334696270601}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5371906842211561286
 GameObject:

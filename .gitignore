@@ -5,8 +5,9 @@
 .vscode
 .vsconfig
 
-### EDITOR SETTINGS ###
-UserSettings/
+### MISC ###
+mono_crash.*
+[Uu]serSettings/
 
 ### Linux ###
 *~

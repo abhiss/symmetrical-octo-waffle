@@ -145,9 +145,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530586994baa6d04b83b5c7d7fe7f650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 10
+  interval: 0.5
+  maxDistance: 100
+  laserMaterial: {fileID: 2100000, guid: f2c1f4548e39bab45a05514d1b8d9b4a, type: 2}
+  gunNozzle: {fileID: 4409442334696270601}
   aimSpeed: 10
   holsterSpeed: 2.5
-  aimDuration: 5
 --- !u!114 &5688000099644499388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,10 +446,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerObject: {fileID: 3656713175936252363}
-  CameraOffset: {x: 0, y: 10, z: 4}
   MinCameraRadius: 1
   MaxCameraRadius: 4
   CameraSmoothing: 4
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   CursorWorldSpacePosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &4404600074639648279
 PrefabInstance:
@@ -521,6 +527,12 @@ PrefabInstance:
 --- !u!4 &4409009236749794457 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4427613559659150, guid: e7965cb5f3b6b49439772edd4131b2b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4404600074639648279}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4409442334696270601 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4842380669603102, guid: e7965cb5f3b6b49439772edd4131b2b0,
     type: 3}
   m_PrefabInstance: {fileID: 4404600074639648279}
   m_PrefabAsset: {fileID: 0}

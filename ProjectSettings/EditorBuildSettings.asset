@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: 2d852232bb3f5b74eb653366041a9255
+  - enabled: 1
+    path: Assets/Scenes/AssetScene.unity
+    guid: ff4fabdde846dcb4ca1dc6d4cc1828fd
+  - enabled: 1
+    path: Assets/Scenes/EnemyTester.unity
+    guid: 9ea9d781f851c0149be4839064aec761
   m_configObjects: {}

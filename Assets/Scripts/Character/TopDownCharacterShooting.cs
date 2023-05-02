@@ -81,12 +81,12 @@ public class TopDownCharacterShooting : MonoBehaviour
             // Raycast hit something
             Debug.Log("Hit: " + hit.collider.gameObject.name);
 
-            HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
-            if (healthSystem != null)
-            {
-                // Deal damage to the object with HealthSystem component
-                healthSystem.TakeDamage(currentWeapon.damage);
-            }
+            //HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
+            //if (healthSystem != null)
+            //{
+            //    // Deal damage to the object with HealthSystem component
+            //    healthSystem.TakeDamage(currentWeapon.damage);
+            //}
         }
     }
 

@@ -5,6 +5,6 @@ using UnityEngine.AI;
 
 public abstract class State : MonoBehaviour
 {
-    public abstract State StateFunction(UnityEngine.AI.NavMeshAgent agent);
+    public abstract State StateFunction(NavMeshAgent agent);
 
 }

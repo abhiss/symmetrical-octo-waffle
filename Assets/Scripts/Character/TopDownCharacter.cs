@@ -9,17 +9,17 @@ public class TopDownCharacter : NetworkBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 20.0f;
-    public float rotateDeadZone = 1.75f;
+    public float rotateDeadZoneRadius = 1.75f;
 
     [Header("Animatons")]
     public float dampTime = 0.1f;
-    private int horizontalHash;
-    private int verticalHash;
-    private Animator animator;
+    private int _horizontalHash;
+    private int _verticalHash;
+    private Animator _animator;
 
     [Header("Game Objects")]
     public GameObject cameraObject;
-    private GameObject modelObject;
+    private GameObject _model;
 
     [Header("Velocity")]
     public Vector3 velocity;
@@ -27,18 +27,23 @@ public class TopDownCharacter : NetworkBehaviour
     public Vector3 forceVelocity;
 
     [Header("Misc Components")]
-    private CharacterController characterController;
-    private ControllerColliderHit characterControllerHit;
-    private TopDownCamera cam;
+    private CharacterController _characterController;
+    private ControllerColliderHit _charcaterControllerHit;
+    private TopDownCamera _topDownCamera;
 
     [Header("Gizmo Variables")]
-    private Vector3 gizmoAnimatorDir;
+    private Vector3 _gizmoAnimationDir;
 
-   
 	public void Start()
     {
-		modelObject = transform.GetChild(0).gameObject;
-		if (modelObject == null || cameraObject == null)
+        if (!base.IsOwner)
+		{
+            cameraObject.SetActive(false);
+            return;
+		}
+
+		_model = transform.GetChild(0).gameObject;
+		if (_model == null || cameraObject == null)
 		{
 			Debug.LogError(
 				"Assumed player prefab Hierarchy is most likely altered. " +
@@ -48,18 +53,14 @@ public class TopDownCharacter : NetworkBehaviour
 		}
 
 		// Controller + Camera
-		cam = cameraObject.GetComponent<TopDownCamera>();
-		if (!base.IsOwner)
-		{
-            cameraObject.SetActive(false);
-		}
-		characterController = GetComponent<CharacterController>();
+		_topDownCamera = cameraObject.GetComponent<TopDownCamera>();
+		_characterController = GetComponent<CharacterController>();
 
 		// Animations
-		animator = modelObject.GetComponent<Animator>();
-		horizontalHash = Animator.StringToHash("Horizontal");
-		verticalHash = Animator.StringToHash("Vertical");
-	
+		_animator = _model.GetComponent<Animator>();
+		_horizontalHash = Animator.StringToHash("Horizontal");
+		_verticalHash = Animator.StringToHash("Vertical");
+
     }
 	public void Update()
     {
@@ -67,15 +68,16 @@ public class TopDownCharacter : NetworkBehaviour
         {
             return;
         }
+
         // Input
         Vector3 input = GetInput();
         inputVelocity = ProcessInput(input);
-        RotateCharacter(cam.CursorWorldSpacePosition);
+        RotateCharacter(_topDownCamera.CursorWorldSpacePosition);
 
         // Character Movement
         GravityForce();
         velocity = forceVelocity + (inputVelocity * moveSpeed);
-        characterController.Move(velocity * Time.deltaTime);
+        _characterController.Move(velocity * Time.deltaTime);
 
         // Animatons
         AnimatedMovement(input);
@@ -94,7 +96,7 @@ public class TopDownCharacter : NetworkBehaviour
     {
         // Rotation dead zone
         float len = Vector3.Distance(lookAtTarget, transform.position);
-        if (len <= rotateDeadZone)
+        if (len <= rotateDeadZoneRadius)
         {
             return;
         }
@@ -120,10 +122,10 @@ public class TopDownCharacter : NetworkBehaviour
         input = Vector3.ClampMagnitude(input, 1.0f);
 
         // Input parrallel to surface
-        if (characterControllerHit != null) {
+        if (_charcaterControllerHit != null) {
             Vector3 adjustedDir = Vector3.ProjectOnPlane(
                 input,
-                characterControllerHit.normal
+                _charcaterControllerHit.normal
             ).normalized;
 
             float slope = adjustedDir.y;
@@ -138,7 +140,7 @@ public class TopDownCharacter : NetworkBehaviour
     private void GravityForce()
     {
         forceVelocity.y += Time.deltaTime * Physics.gravity.y;
-        if (characterController.isGrounded) {
+        if (_characterController.isGrounded) {
             forceVelocity.y = -0.5f;
         }
     }
@@ -163,16 +165,16 @@ public class TopDownCharacter : NetworkBehaviour
 
         // Set animation floats
         Vector3 animationDir = forward - right;
-        animator.SetFloat(horizontalHash, animationDir.x, dampTime, Time.deltaTime);
-        animator.SetFloat(verticalHash, animationDir.z, dampTime, Time.deltaTime);
+        _animator.SetFloat(_horizontalHash, animationDir.x, dampTime, Time.deltaTime);
+        _animator.SetFloat(_verticalHash, animationDir.z, dampTime, Time.deltaTime);
 
         // Debugging
-        gizmoAnimatorDir = animationDir;
+        _gizmoAnimationDir = animationDir;
     }
 
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position - gizmoAnimatorDir, 0.1f);
+        Gizmos.DrawSphere(transform.position - _gizmoAnimationDir, 0.1f);
     }
 }

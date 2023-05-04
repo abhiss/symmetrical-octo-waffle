@@ -7,10 +7,13 @@ namespace EnemyMachine
 {
     public class BaseEnemy : MonoBehaviour, IEnemyMachine
     {
-        public float stopThreshold = 0.5f;
-        public LayerMask targetMask;
-        public Vector3 destination;
         public EnemyState currentState = EnemyState.Idle;
+        public Vector3 destination;
+
+        [Header("General Settings")]
+        public LayerMask targetMask;
+        public float stopThreshold = 0.5f;
+
         private GameObject _targetObject;
 
         [Header("Idle Properties")]

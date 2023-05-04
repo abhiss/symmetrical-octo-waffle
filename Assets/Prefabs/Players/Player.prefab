@@ -108,7 +108,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 65
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
@@ -127,12 +127,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   rotateSpeed: 20
-  rotateDeadZone: 1.75
+  rotateDeadZoneRadius: 1.75
   dampTime: 0.1
   cameraObject: {fileID: 6499487636144526818}
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
   forceVelocity: {x: 0, y: 0, z: 0}
+  showAnimationDirection: 1
+  showVelocity: 1
+  showForceVelocity: 1
+  showInput: 1
 --- !u!114 &5986054516681673575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,7 +152,7 @@ MonoBehaviour:
   damage: 10
   interval: 0.5
   maxDistance: 100
-  laserMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
+  laserMaterial: {fileID: 2100000, guid: f2c1f4548e39bab45a05514d1b8d9b4a, type: 2}
   gunNozzle: {fileID: 4409442334696270601}
   aimSpeed: 10
   holsterSpeed: 2.5

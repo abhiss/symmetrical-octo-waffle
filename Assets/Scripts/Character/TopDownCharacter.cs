@@ -28,10 +28,13 @@ public class TopDownCharacter : NetworkBehaviour
 
     [Header("Misc Components")]
     private CharacterController _characterController;
-    private ControllerColliderHit _charcaterControllerHit;
     private TopDownCamera _topDownCamera;
 
     [Header("Gizmo Variables")]
+    public bool showAnimationDirection;
+    public bool showVelocity;
+    public bool showForceVelocity;
+    public bool showInput;
     private Vector3 _gizmoAnimationDir;
 
 	public void Start()
@@ -60,8 +63,8 @@ public class TopDownCharacter : NetworkBehaviour
 		_animator = _model.GetComponent<Animator>();
 		_horizontalHash = Animator.StringToHash("Horizontal");
 		_verticalHash = Animator.StringToHash("Vertical");
-
     }
+
 	public void Update()
     {
         if (!base.IsOwner)
@@ -122,14 +125,15 @@ public class TopDownCharacter : NetworkBehaviour
         input = Vector3.ClampMagnitude(input, 1.0f);
 
         // Input parrallel to surface
-        if (_charcaterControllerHit != null) {
-            Vector3 adjustedDir = Vector3.ProjectOnPlane(
-                input,
-                _charcaterControllerHit.normal
-            ).normalized;
+        float height = _characterController.height;
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, height))
+        {
+            Vector3 adjustedDir = Vector3.ProjectOnPlane(input,hit.normal);
+            adjustedDir = adjustedDir.normalized;
 
             float slope = adjustedDir.y;
-            if (slope < 0) {
+            float slopeLimit = -0.1f * _characterController.slopeLimit;
+            if (slope < 0 && slope > slopeLimit) {
                 return adjustedDir * input.magnitude;
             }
         }
@@ -143,13 +147,10 @@ public class TopDownCharacter : NetworkBehaviour
         if (_characterController.isGrounded) {
             forceVelocity.y = -0.5f;
         }
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        // Only consider non trigger colliders as collisions
-        if (hit.collider.isTrigger) {
-            return;
+        else if (_characterController.isGrounded)
+        {
+            forceVelocity = VelocityParrellelToSurface(forceVelocity);
+            forceVelocity = Vector3.MoveTowards(forceVelocity, Vector3.zero, Time.deltaTime);
         }
     }
 
@@ -172,9 +173,53 @@ public class TopDownCharacter : NetworkBehaviour
         _gizmoAnimationDir = animationDir;
     }
 
-    void OnDrawGizmosSelected()
+    private Vector3 VelocityParrellelToSurface(Vector3 velocity)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position - _gizmoAnimationDir, 0.1f);
+        if (!_characterController.isGrounded)
+        {
+            return velocity;
+        }
+
+        float extend = 1.01f;
+        float length = _characterController.skinWidth * extend;
+        float radius = _characterController.radius * extend;
+        Vector3 newVelocity = velocity;
+        Vector3 p1 = transform.position + _characterController.center + Vector3.up * -_characterController.height * 0.5f; // Bottom
+        Vector3 p2 = p1 + Vector3.up * _characterController.height; // Top
+
+        RaycastHit hit;
+        if(Physics.CapsuleCast(p1, p2, radius, newVelocity.normalized, out hit, length, ~0 , QueryTriggerInteraction.Ignore)) {
+            // Make input parrellel to surface normal
+            Vector3 temp = Vector3.Cross(hit.normal, newVelocity);
+            newVelocity = Vector3.Cross(temp, hit.normal);
+
+            // If the newdir still goes into the wall, player is in a corner and input can be zero
+            if(Physics.CapsuleCast(p1, p2, radius, newVelocity.normalized, out hit, length, ~0 , QueryTriggerInteraction.Ignore)){
+                newVelocity = Vector3.zero;
+            }
+        }
+
+        return newVelocity;
+    }
+
+    public void OnDrawGizmos()
+    {
+        if (showAnimationDirection)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.position - _gizmoAnimationDir, 0.1f);
+        }
+
+        if (showForceVelocity)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, transform.position + forceVelocity);
+        }
+
+        if (showVelocity)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + velocity);
+        }
     }
 }

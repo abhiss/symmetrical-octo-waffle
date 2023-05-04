@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class StateMachine : MonoBehaviour
 {
-    
+
     [SerializeField] private State CurrentState;
-    private UnityEngine.AI.NavMeshAgent navAgent;
-    
+    private NavMeshAgent navAgent;
+
     void Start(){
-        navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-    } 
+        navAgent = GetComponent<NavMeshAgent>();
+    }
     // Update is called once per frame
     void Update()
     {

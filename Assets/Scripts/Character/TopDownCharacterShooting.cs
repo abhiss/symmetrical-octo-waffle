@@ -79,7 +79,7 @@ public class TopDownCharacterShooting : MonoBehaviour
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, currentWeapon.maxDistance))
         {
             // Raycast hit something
-            Debug.Log("Hit: " + hit.collider.gameObject.name);
+            // Debug.Log("Hit: " + hit.collider.gameObject.name);
 
             //HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
             //if (healthSystem != null)

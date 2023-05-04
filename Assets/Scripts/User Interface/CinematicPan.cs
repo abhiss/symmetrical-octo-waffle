@@ -4,11 +4,37 @@ using UnityEngine;
 
 public class CinematicPan : MonoBehaviour
 {
-    public GameObject lookAtTarget;
+    [Header("Properties")]
     public float panSpeed = 1.0f;
-
-    void Update()
+    public GameObject[] lookObjects;
+    private Vector3 _currentPoint;
+    private int index = 0;
+    void Awake()
     {
-        transform.LookAt(lookAtTarget.transform.position);
+        // Look at main menu
+        _currentPoint = lookObjects[index].transform.position;
+    }
+
+    void LateUpdate()
+    {
+        // TOOD: TEMP
+        if (Input.GetButtonDown("Fire1"))
+        {
+            index++;
+            if (index >= lookObjects.Length)
+            {
+                index = 0;
+            }
+            _currentPoint = lookObjects[index].transform.position;
+        }
+        // END OF TEMP
+        SmoothLookAt();
+    }
+
+    private void SmoothLookAt()
+    {
+        Vector3 lookDirection = _currentPoint - transform.position;
+        lookDirection.Normalize();
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookDirection), panSpeed * Time.deltaTime);
     }
 }

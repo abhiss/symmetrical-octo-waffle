@@ -11,6 +11,7 @@ namespace EnemyMachine
         public LayerMask targetMask;
         public Vector3 destination;
         public EnemyState currentState = EnemyState.Idle;
+        private GameObject _targetObject;
 
         [Header("Idle Properties")]
         public float detectionRadius = 5.0f;
@@ -25,7 +26,9 @@ namespace EnemyMachine
         private NavMeshAgent _agent;
 
         [Header("Attack Properties")]
-        public float attackRange = 0.0f;
+        public float attackTime = 1.0f;
+        public float attackRange = 1.0f;
+        private bool _isAttacking = false;
 
         [Header("Debugging")]
         public bool showPatrolInfo;
@@ -35,12 +38,11 @@ namespace EnemyMachine
         void Start()
         {
             _agent = GetComponent<NavMeshAgent>();
+            destination = transform.position;
 
             // Init Idle State
             _patrolCenter = transform.position;
             _patrolTargetPoint = transform.position;
-
-            destination = transform.position;
         }
 
         void Update()
@@ -60,14 +62,11 @@ namespace EnemyMachine
         public EnemyState IdleStateHandler()
         {
             // Detect player
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, patrolRadius);
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, patrolRadius, targetMask);
             foreach (var hitCollider in hitColliders)
             {
-                if (hitCollider.gameObject.layer == targetMask)
-                {
-                    destination = hitCollider.transform.position;
-                    return EnemyState.Chasing;
-                }
+                _targetObject = hitCollider.gameObject;
+                return EnemyState.Chasing;
             }
 
             Patrol();
@@ -93,15 +92,12 @@ namespace EnemyMachine
 
         public EnemyState ChasingStateHandler()
         {
-            if (_agent.remainingDistance <= _agent.stoppingDistance + stopThreshold)
+            destination = _targetObject.transform.position;
+            // 1.0f = Player Radius + Enemy Radius
+            float currentDistance = _agent.stoppingDistance + stopThreshold + 1.0f;
+            if (_agent.remainingDistance <= currentDistance)
             {
                 return EnemyState.Attacking;
-            }
-
-            if (_agent.remainingDistance >= patrolRadius)
-            {
-                destination = _patrolCenter;
-                return EnemyState.Idle;
             }
 
             return EnemyState.Chasing;
@@ -109,13 +105,30 @@ namespace EnemyMachine
 
         public EnemyState AttackingStateHandler()
         {
-            if (_agent.remainingDistance > _agent.stoppingDistance + attackRange)
+            if (!_isAttacking) {
+                StartCoroutine(AttackCoroutine());
+            }
+            else
             {
-                return EnemyState.Chasing;
+                return EnemyState.Attacking;
             }
 
-            // TODO: Raycast a attack
-            return EnemyState.Attacking;
+            return EnemyState.Chasing;
+        }
+
+        private IEnumerator AttackCoroutine()
+        {
+            _isAttacking = true;
+            Debug.Log("Attacking");
+
+            // TODO: Play animation
+            if (Physics.Raycast(transform.position, destination, out RaycastHit hit, attackRange, targetMask))
+            {
+                // TODO: Send attack damage
+            }
+
+            yield return new WaitForSeconds(attackTime);
+            _isAttacking = false;
         }
 
         void OnDrawGizmos()
@@ -135,13 +148,13 @@ namespace EnemyMachine
             if (showChaseInfo && currentState == EnemyState.Chasing)
             {
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(_patrolCenter, patrolRadius);
+                Gizmos.DrawWireSphere(transform.position, patrolRadius);
             }
 
             if (showAttackInfo && currentState == EnemyState.Attacking)
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(_patrolCenter, attackRange);
+                Gizmos.DrawWireSphere(transform.position, attackRange);
             }
         }
     }

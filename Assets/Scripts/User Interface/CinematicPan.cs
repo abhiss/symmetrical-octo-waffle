@@ -9,10 +9,13 @@ public class CinematicPan : MonoBehaviour
     public GameObject[] lookObjects;
     private Vector3 _currentPoint;
     private int index = 0;
+    // TEMP
+    private AudioSource _audioSource;
     void Awake()
     {
         // Look at main menu
         _currentPoint = lookObjects[index].transform.position;
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void LateUpdate()
@@ -20,6 +23,7 @@ public class CinematicPan : MonoBehaviour
         // TOOD: TEMP
         if (Input.GetButtonDown("Fire1"))
         {
+            _audioSource.Play();
             index++;
             if (index >= lookObjects.Length)
             {

@@ -9,6 +9,7 @@ public class TopDownCamera : MonoBehaviour
     public float MinCameraRadius;
     public float MaxCameraRadius;
     public float CameraSmoothing;
+    private Vector3 _camVelocity = Vector3.zero;
 
     [Header("Rendering")]
     public LayerMask wallLayer;
@@ -26,7 +27,7 @@ public class TopDownCamera : MonoBehaviour
         _cameraOffset = transform.localPosition;
     }
 
-    public void LateUpdate()
+    public void Update()
     {
         if (PlayerObject == null)
         {
@@ -51,15 +52,17 @@ public class TopDownCamera : MonoBehaviour
         float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
 
         _cameraPoint = _playerPosition + dir * len;
-        transform.position = Vector3.Lerp(
+        transform.position = Vector3.SmoothDamp(
             transform.position,
             _cameraPoint + _cameraOffset,
-            Time.deltaTime * CameraSmoothing
+            ref _camVelocity,
+            CameraSmoothing
         );
     }
 
     private void FadeObstructions()
     {
+        // TODO: Fix logic
         // Detect obstructions
         Vector3 dir = PlayerObject.transform.position - transform.position;
         if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, wallLayer))

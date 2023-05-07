@@ -37,4 +37,9 @@ public class CinematicPan : MonoBehaviour
         lookDirection.Normalize();
         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookDirection), panSpeed * Time.deltaTime);
     }
+
+    public int GetIndex()
+    {
+        return index;
+    }
 }

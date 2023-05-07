@@ -43,8 +43,7 @@ public class CanvasManager : MonoBehaviour
             currentCanvasIndex = newIndex;
         }
     }
-
-    private void ActivateCanvas(int index)
+    public void ActivateCanvas(int index)
     {
         StartCoroutine(FadeCanvas(index, true, fadeDuration));
     }
@@ -78,3 +77,4 @@ public class CanvasManager : MonoBehaviour
         }
     }
 }
+

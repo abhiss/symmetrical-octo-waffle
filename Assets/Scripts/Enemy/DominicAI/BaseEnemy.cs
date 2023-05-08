@@ -1,10 +1,14 @@
+using Shared;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SubsystemsImplementation;
 
 namespace EnemyMachine
 {
+    [RequireComponent(typeof(Shared.HealthSystem))]
     public class BaseEnemy : MonoBehaviour, IEnemyMachine
     {
         public EnemyState currentState = EnemyState.Idle;
@@ -15,6 +19,7 @@ namespace EnemyMachine
         public float stopThreshold = 0.5f;
 
         private GameObject _targetObject;
+        private HealthSystem _healthSystem;
 
         [Header("Idle Properties")]
         public float detectionRadius = 5.0f;
@@ -41,6 +46,17 @@ namespace EnemyMachine
         void Start()
         {
             _agent = GetComponent<NavMeshAgent>();
+            _healthSystem = GetComponent<HealthSystem>();
+            _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => {
+                if(args.newHealth < 0)
+                {
+                    //dead
+                    Debug.Log("Enemy dead.");
+                    Destroy(gameObject);
+                }
+                //taking damage
+                Debug.Log($"Enemy taking damage. Remaining health: {args.newHealth}");
+            });
             destination = transform.position;
 
             // Init Idle State
@@ -87,7 +103,7 @@ namespace EnemyMachine
             // Update when timer is finished
             if (_patrolIdleTime >= patrolHoldTime)
             {
-                 _patrolTargetPoint = _patrolCenter + Random.insideUnitSphere * patrolRadius;
+                 _patrolTargetPoint = _patrolCenter + UnityEngine.Random.insideUnitSphere * patrolRadius;
                  _patrolIdleTime = 0.0f;
             }
             destination = _patrolTargetPoint;

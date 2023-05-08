@@ -98,14 +98,14 @@ public class TopDownCharacterShooting : MonoBehaviour
     {
         if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, currentWeapon.maxDistance))
         {
-            // Debug.Log("Hit: " + hit.collider.gameObject.name);
+            Debug.Log("Hit: " + hit.collider.gameObject.name);
 
-            //HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
-            //if (healthSystem != null)
-            //{
-            //    // Deal damage to the object with HealthSystem component
-            //    healthSystem.TakeDamage(currentWeapon.damage);
-            //}
+            Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
+            if (healthSystem != null)
+            {
+                // Deal damage to the object with HealthSystem component
+                healthSystem.TakeDamage(gameObject, currentWeapon.damage);
+            }
         }
     }
 
@@ -116,6 +116,9 @@ public class TopDownCharacterShooting : MonoBehaviour
         {
             position = hit.point;
             position.y += 1.0f; // Player Half Height
+        } else
+        {
+            //pointing into void
         }
         return position;
     }

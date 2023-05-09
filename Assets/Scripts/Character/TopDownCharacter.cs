@@ -9,7 +9,6 @@ public class TopDownCharacter : NetworkBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 20.0f;
-    public float rotateDeadZoneRadius = 1.75f;
 
     [Header("Animatons")]
     public float dampTime = 0.1f;
@@ -75,7 +74,10 @@ public class TopDownCharacter : NetworkBehaviour
         // Input
         Vector3 input = GetInput();
         inputVelocity = ProcessInput(input);
-        RotateCharacter(_topDownCamera.CursorWorldSpacePosition);
+        if (!_topDownCamera.IsInDeadZone())
+        {
+            RotateCharacter(_topDownCamera.cursorWorldPosition);
+        }
 
         // Character Movement
         GravityForce();
@@ -97,13 +99,6 @@ public class TopDownCharacter : NetworkBehaviour
 
     public void RotateCharacter(Vector3 lookAtTarget)
     {
-        // Rotation dead zone
-        float len = Vector3.Distance(lookAtTarget, transform.position);
-        if (len <= rotateDeadZoneRadius)
-        {
-            return;
-        }
-
         // Rotate the player
         Vector3 dir = Vector3.Normalize(lookAtTarget - transform.position);
         Quaternion toRotation = Quaternion.LookRotation(dir,Vector3.up);

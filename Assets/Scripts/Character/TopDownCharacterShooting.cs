@@ -19,8 +19,8 @@ public class TopDownCharacterShooting : MonoBehaviour
     private Vector3 _aimDirection;
 
     [Header("Core")]
-    private int _enemyLayer;
-    private LayerMask _enemyMask;
+    private LayerMask _ignoreMask;
+    private TopDownCamera _topDownCamera;
 
     [Header("Audio and Visuals")]
     public GameObject sfxVfx;
@@ -41,7 +41,7 @@ public class TopDownCharacterShooting : MonoBehaviour
     private GameObject _model;
     private Animator _animator;
 
-    private void Start()
+    private void Awake()
     {
         // TODO: TEMPORARY
         currentWeapon.damage = damage;
@@ -49,8 +49,8 @@ public class TopDownCharacterShooting : MonoBehaviour
         currentWeapon.maxDistance = maxDistance;
 
         // Core
-        _enemyLayer = LayerMask.NameToLayer("Enemy");
-        _enemyMask = LayerMask.GetMask("Enemy");
+        _ignoreMask = ~(1 << 6 | 1 << 7); // 6 = Player | 7 = enemy
+        _topDownCamera = transform.parent.GetChild(0).GetComponent<TopDownCamera>();
 
         // Animations
         _model = transform.GetChild(0).gameObject;
@@ -109,12 +109,12 @@ public class TopDownCharacterShooting : MonoBehaviour
             // TODO: Flavor Section
             // - Create particle at hit point for debrie or sparks
             // End of flavor Section
-            if (hit.collider.gameObject.layer != _enemyLayer) {
+            // 7 = Enemy Layer
+            if (hit.collider.gameObject.layer != 7) {
                 return;
             }
 
             // Hit an enemy
-            Debug.Log("Hit: " + hit.collider.gameObject.name);
             Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
             if (healthSystem != null)
             {
@@ -126,9 +126,11 @@ public class TopDownCharacterShooting : MonoBehaviour
 
     private Vector3 AdjustCursorPostion(Vector3 cursorPosition)
     {
-        Vector3 newPosition = transform.position + transform.forward;
         Ray ray = Camera.main.ScreenPointToRay(cursorPosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ~_enemyMask))
+        Vector3 newPosition = transform.position + transform.forward;
+
+        // Adjust to the floor
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _ignoreMask) && !_topDownCamera.IsInDeadZone())
         {
             newPosition = hit.point;
             newPosition.y += 1.0f; // Player Half Height

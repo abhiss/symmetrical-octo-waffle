@@ -127,7 +127,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   rotateSpeed: 20
-  rotateDeadZoneRadius: 1.75
   dampTime: 0.1
   cameraObject: {fileID: 6499487636144526818}
   velocity: {x: 0, y: 0, z: 0}
@@ -155,7 +154,7 @@ MonoBehaviour:
   sfxVfx: {fileID: 4790082589373488934}
   laserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
   gunNozzle: {fileID: 4409442334696270601}
-  laserWidth: 0.05
+  laserWidth: 0.1
   aimDuration: 5
   aimSpeed: 10
   holsterSpeed: 2.5
@@ -668,13 +667,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerObject: {fileID: 3656713175936252363}
-  MinCameraRadius: 1
-  MaxCameraRadius: 3
-  CameraSmoothing: 0.2
+  maxCameraRadius: 3
+  cameraSmoothing: 0.3
+  lockHeight: 0
+  heightLock: 0
+  rotateDeadZoneRadius: 0.25
   wallLayer:
     serializedVersion: 2
     m_Bits: 0
-  CursorWorldSpacePosition: {x: 0, y: 0, z: 0}
+  cursorWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &4404600074639648279
 PrefabInstance:
   m_ObjectHideFlags: 0

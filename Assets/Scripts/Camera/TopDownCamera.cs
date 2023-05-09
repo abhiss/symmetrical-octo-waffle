@@ -5,10 +5,12 @@ public class TopDownCamera : MonoBehaviour
 {
     public GameObject PlayerObject;
 
-    [Header("Movement Settings")]
-    public float MinCameraRadius;
-    public float MaxCameraRadius;
-    public float CameraSmoothing;
+    [Header("Camera Settings")]
+    public float maxCameraRadius;
+    public float cameraSmoothing;
+    public bool lockHeight = false;
+    public float heightLock = 0.0f;
+    public float rotateDeadZoneRadius = 1.75f;
     private Vector3 _camVelocity = Vector3.zero;
 
     [Header("Rendering")]
@@ -17,17 +19,18 @@ public class TopDownCamera : MonoBehaviour
     private Collider _prevHit;
 
     [Header("Info")]
-    public Vector3 CursorWorldSpacePosition;
+    public Vector3 cursorWorldPosition;
     private Vector3 _cameraOffset;
     private Vector3 _cameraPoint;
     private Vector3 _playerPosition;
-    private Plane _cursorPlane = new Plane(Vector3.down, 0);
+    private Plane _cursorPlane;
+
     public void Awake()
     {
         _cameraOffset = transform.localPosition;
     }
 
-    public void Update()
+    public void LateUpdate()
     {
         if (PlayerObject == null)
         {
@@ -37,27 +40,39 @@ public class TopDownCamera : MonoBehaviour
         FadeObstructions();
 
         // Get Cursor position in world space
-        Vector3 ScreenPosition = Input.mousePosition;
-        Ray ray = Camera.main.ScreenPointToRay(ScreenPosition);
+        _playerPosition = PlayerObject.transform.position;
+        _cursorPlane = new Plane(Vector3.down, _playerPosition.y);
+
+        // Get point on plane
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (_cursorPlane.Raycast(ray, out float dist))
         {
-            CursorWorldSpacePosition = ray.GetPoint(dist);
+            cursorWorldPosition = ray.GetPoint(dist);
         }
 
-        _playerPosition = PlayerObject.transform.position;
-        _playerPosition.y = 0;
-
-        Vector3 diff = (CursorWorldSpacePosition - _playerPosition) / 2;
+        Vector3 diff = (cursorWorldPosition - _playerPosition) / 2;
         Vector3 dir = Vector3.Normalize(diff);
-        float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
+        float len = Mathf.Min(maxCameraRadius, diff.magnitude);
 
+        // Lock the camera at the offset
         _cameraPoint = _playerPosition + dir * len;
+        if (lockHeight)
+        {
+            _cameraPoint.y = heightLock;
+        }
+
         transform.position = Vector3.SmoothDamp(
             transform.position,
             _cameraPoint + _cameraOffset,
             ref _camVelocity,
-            CameraSmoothing
+            cameraSmoothing
         );
+    }
+
+    public bool IsInDeadZone()
+    {
+        float len = Vector3.Distance(cursorWorldPosition, _playerPosition);
+        return len <= rotateDeadZoneRadius;
     }
 
     private void FadeObstructions()
@@ -91,7 +106,7 @@ public class TopDownCamera : MonoBehaviour
 
         // Draws a blue line from this transform to the target
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(_playerPosition, CursorWorldSpacePosition);
+        Gizmos.DrawLine(_playerPosition, cursorWorldPosition);
         Gizmos.DrawSphere(_cameraPoint, 0.5f);
     }
 }

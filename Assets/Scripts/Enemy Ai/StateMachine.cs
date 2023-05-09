@@ -5,9 +5,13 @@ using UnityEngine.AI;
 
 public class StateMachine : MonoBehaviour
 {
-
     [SerializeField] private State CurrentState;
     private NavMeshAgent navAgent;
+
+    public string GetCurrentStateAsString()
+    {
+        return CurrentState.GetStateAsString();
+    }
 
     void Start(){
         navAgent = GetComponent<NavMeshAgent>();

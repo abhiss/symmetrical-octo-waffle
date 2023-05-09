@@ -20,6 +20,10 @@ public class IdleState : State
         wonderPosition = this.transform.position;
     }
 
+    public override string GetStateAsString()
+    {
+        return "Idle";
+    }
 
     public override State StateFunction(UnityEngine.AI.NavMeshAgent agent)
     {

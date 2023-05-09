@@ -16,7 +16,11 @@ public class AttackState : State
     void Start()
     {
         //player = GameObject.Find("TopDownCharacter");
+    }
 
+    public override string GetStateAsString()
+    {
+        return "Attack";
     }
 
     // UnityEngine.AI.NavMeshAgent navAgent

@@ -18,6 +18,10 @@ public class TopDownCharacterShooting : MonoBehaviour
     PlayerWeapon currentWeapon;
     private Vector3 _aimDirection;
 
+    [Header("Core")]
+    private int _enemyLayer;
+    private LayerMask _enemyMask;
+
     [Header("Audio and Visuals")]
     public GameObject sfxVfx;
     public Material laserMaterial;
@@ -44,6 +48,10 @@ public class TopDownCharacterShooting : MonoBehaviour
         currentWeapon.interval = interval;
         currentWeapon.maxDistance = maxDistance;
 
+        // Core
+        _enemyLayer = LayerMask.NameToLayer("Enemy");
+        _enemyMask = LayerMask.GetMask("Enemy");
+
         // Animations
         _model = transform.GetChild(0).gameObject;
         _animator = _model.GetComponent<Animator>();
@@ -64,7 +72,7 @@ public class TopDownCharacterShooting : MonoBehaviour
 
     private void Update()
     {
-        _aimDirection = CursorPosition(Input.mousePosition) - gunNozzle.position;
+        _aimDirection = AdjustCursorPostion(Input.mousePosition) - transform.position;
         _aimDirection = _aimDirection.normalized;
 
         // Shooting
@@ -98,8 +106,15 @@ public class TopDownCharacterShooting : MonoBehaviour
     {
         if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, currentWeapon.maxDistance))
         {
-            Debug.Log("Hit: " + hit.collider.gameObject.name);
+            // TODO: Flavor Section
+            // - Create particle at hit point for debrie or sparks
+            // End of flavor Section
+            if (hit.collider.gameObject.layer != _enemyLayer) {
+                return;
+            }
 
+            // Hit an enemy
+            Debug.Log("Hit: " + hit.collider.gameObject.name);
             Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
             if (healthSystem != null)
             {
@@ -109,27 +124,26 @@ public class TopDownCharacterShooting : MonoBehaviour
         }
     }
 
-    private Vector3 CursorPosition(Vector3 position)
+    private Vector3 AdjustCursorPostion(Vector3 cursorPosition)
     {
-        Ray ray = Camera.main.ScreenPointToRay(position);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+        Vector3 newPosition = transform.position + transform.forward;
+        Ray ray = Camera.main.ScreenPointToRay(cursorPosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ~_enemyMask))
         {
-            position = hit.point;
-            position.y += 1.0f; // Player Half Height
-        } else
-        {
-            //pointing into void
+            newPosition = hit.point;
+            newPosition.y += 1.0f; // Player Half Height
         }
-        return position;
+
+        return newPosition;
     }
 
     private void EnableLaser()
     {
-        Vector3 origin = gunNozzle.position;
-        Vector3 laserEndPoint = origin + _aimDirection * currentWeapon.maxDistance;
+        Vector3 laserEndPoint = transform.position + _aimDirection * currentWeapon.maxDistance;
 
-        _laserLine.SetPosition(0, origin);
-        if (Physics.Raycast(origin, _aimDirection, out RaycastHit hit, currentWeapon.maxDistance))
+        // Shrink laser to wall hit
+        _laserLine.SetPosition(0, transform.position);
+        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, currentWeapon.maxDistance))
         {
             laserEndPoint = hit.point;
         }

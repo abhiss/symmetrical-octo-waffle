@@ -669,9 +669,9 @@ MonoBehaviour:
   PlayerObject: {fileID: 3656713175936252363}
   maxCameraRadius: 3
   cameraSmoothing: 0.3
+  rotateDeadZoneRadius: 0.25
   lockHeight: 0
   heightLock: 0
-  rotateDeadZoneRadius: 0.25
   wallLayer:
     serializedVersion: 2
     m_Bits: 0

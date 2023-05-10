@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: TEMPORARY: Should be a scriptable object
+// TODO: TEMPORARY: Should be a scriptable object or structs
 public struct PlayerWeapon {
     public float damage;
     public float interval;
@@ -19,8 +19,10 @@ public class TopDownCharacterShooting : MonoBehaviour
     private Vector3 _aimDirection;
 
     [Header("Core")]
+    public int playerLayer = 6;
+    public int enemyLayer = 7;
+
     private LayerMask _ignoreMask;
-    private TopDownCamera _topDownCamera;
 
     [Header("Audio and Visuals")]
     public GameObject sfxVfx;
@@ -41,7 +43,7 @@ public class TopDownCharacterShooting : MonoBehaviour
     private GameObject _model;
     private Animator _animator;
 
-    private void Awake()
+    private void Start()
     {
         // TODO: TEMPORARY
         currentWeapon.damage = damage;
@@ -49,14 +51,12 @@ public class TopDownCharacterShooting : MonoBehaviour
         currentWeapon.maxDistance = maxDistance;
 
         // Core
-        _ignoreMask = ~(1 << 6 | 1 << 7); // 6 = Player | 7 = enemy
-        _topDownCamera = transform.parent.GetChild(0).GetComponent<TopDownCamera>();
+        _ignoreMask = ~(1 << playerLayer | 1 << enemyLayer);
 
         // Animations
         _model = transform.GetChild(0).gameObject;
         _animator = _model.GetComponent<Animator>();
 
-        // SFX & VFX
         // Laser
         _laserLine = gameObject.AddComponent<LineRenderer>();
         _laserLine.material = laserMaterial;
@@ -64,15 +64,22 @@ public class TopDownCharacterShooting : MonoBehaviour
         _laserLine.endWidth = laserWidth;
         _laserLine.enabled = false;
 
+        // SFX / VFX
         _gunLight = sfxVfx.GetComponent<Light>();
         _gunLight.enabled = false;
-
         _gunSfx = sfxVfx.GetComponent<AudioSource>();
     }
 
     private void Update()
     {
-        _aimDirection = AdjustCursorPostion(Input.mousePosition) - transform.position;
+        Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
+        float dist = Vector3.Distance(_aimDirection, transform.position);
+        _aimDirection = cursorPosition - transform.position;
+        if (dist <= 3.5f)
+        {
+            _aimDirection = transform.forward;
+        }
+
         _aimDirection = _aimDirection.normalized;
 
         // Shooting
@@ -81,7 +88,6 @@ public class TopDownCharacterShooting : MonoBehaviour
             _elaspedAimTime = 0;
             _isAimed = true;
 
-            // TODO: Play shoot animation and sound
             Shoot();
             _gunSfx.Play();
             StartCoroutine("GunVFX");
@@ -109,8 +115,7 @@ public class TopDownCharacterShooting : MonoBehaviour
             // TODO: Flavor Section
             // - Create particle at hit point for debrie or sparks
             // End of flavor Section
-            // 7 = Enemy Layer
-            if (hit.collider.gameObject.layer != 7) {
+            if (hit.collider.gameObject.layer != playerLayer) {
                 return;
             }
 
@@ -130,7 +135,7 @@ public class TopDownCharacterShooting : MonoBehaviour
         Vector3 newPosition = transform.position + transform.forward;
 
         // Adjust to the floor
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _ignoreMask) && !_topDownCamera.IsInDeadZone())
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _ignoreMask))
         {
             newPosition = hit.point;
             newPosition.y += 1.0f; // Player Half Height

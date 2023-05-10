@@ -8,9 +8,11 @@ public class TopDownCamera : MonoBehaviour
     [Header("Camera Settings")]
     public float maxCameraRadius;
     public float cameraSmoothing;
+    public float rotateDeadZoneRadius = 1.75f;
+
+    [Header("Misc Settings")]
     public bool lockHeight = false;
     public float heightLock = 0.0f;
-    public float rotateDeadZoneRadius = 1.75f;
     private Vector3 _camVelocity = Vector3.zero;
 
     [Header("Rendering")]
@@ -20,12 +22,13 @@ public class TopDownCamera : MonoBehaviour
 
     [Header("Info")]
     public Vector3 cursorWorldPosition;
+    public bool drawCameraLogic = false;
     private Vector3 _cameraOffset;
     private Vector3 _cameraPoint;
     private Vector3 _playerPosition;
-    private Plane _cursorPlane;
+    private Plane _cursorPlane = new Plane(Vector3.down, Vector3.zero);
 
-    public void Awake()
+    public void Start()
     {
         _cameraOffset = transform.localPosition;
     }
@@ -41,7 +44,7 @@ public class TopDownCamera : MonoBehaviour
 
         // Get Cursor position in world space
         _playerPosition = PlayerObject.transform.position;
-        _cursorPlane = new Plane(Vector3.down, _playerPosition.y);
+        _cursorPlane.SetNormalAndPosition(Vector3.down, _playerPosition);
 
         // Get point on plane
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -97,9 +100,9 @@ public class TopDownCamera : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
-        if (PlayerObject == null)
+        if (PlayerObject == null || drawCameraLogic == false)
         {
             return;
         }

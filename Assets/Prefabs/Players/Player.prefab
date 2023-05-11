@@ -62,6 +62,7 @@ GameObject:
   - component: {fileID: 8373175083879619147}
   - component: {fileID: 9127889449909241548}
   - component: {fileID: 5986054516681673575}
+  - component: {fileID: 7815612474361838623}
   - component: {fileID: 5688000099644499388}
   m_Layer: 6
   m_Name: TopDownCharacter
@@ -127,7 +128,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   rotateSpeed: 20
-  dampTime: 0.1
   cameraObject: {fileID: 6499487636144526818}
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
@@ -151,10 +151,27 @@ MonoBehaviour:
   damage: 10
   interval: 0.5
   maxDistance: 100
+  isAiming: 0
+  playerLayer: 6
+  enemyLayer: 7
   sfxVfx: {fileID: 4790082589373488934}
   laserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
   gunNozzle: {fileID: 4409442334696270601}
   laserWidth: 0.1
+--- !u!114 &7815612474361838623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d287c874198613840baf4cf41d294d8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dampTime: 0.1
+  showAnimationDirection: 0
   aimDuration: 5
   aimSpeed: 10
   holsterSpeed: 2.5
@@ -676,6 +693,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   cursorWorldPosition: {x: 0, y: 0, z: 0}
+  drawCameraLogic: 0
 --- !u!1001 &4404600074639648279
 PrefabInstance:
   m_ObjectHideFlags: 0

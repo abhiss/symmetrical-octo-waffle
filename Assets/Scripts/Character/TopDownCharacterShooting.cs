@@ -16,12 +16,12 @@ public class TopDownCharacterShooting : MonoBehaviour
     public float interval = 0.5f;
     public float maxDistance = 100.0f;
     PlayerWeapon currentWeapon;
-    private Vector3 _aimDirection;
 
     [Header("Core")]
+    public bool isAiming = false;
+    private Vector3 _aimDirection;
     public int playerLayer = 6;
     public int enemyLayer = 7;
-
     private LayerMask _ignoreMask;
 
     [Header("Audio and Visuals")]
@@ -33,16 +33,6 @@ public class TopDownCharacterShooting : MonoBehaviour
     private Light _gunLight;
     private AudioSource _gunSfx;
 
-    [Header("Animation Settings")]
-    public float aimDuration = 5.0f;
-    public float aimSpeed = 10.0f;
-    public float holsterSpeed = 2.5f;
-    private float _elaspedAimTime = 0.0f;
-    private bool _isAimed = false;
-    private float _aimWeight = 0.0f;
-    private GameObject _model;
-    private Animator _animator;
-
     private void Start()
     {
         // TODO: TEMPORARY
@@ -52,10 +42,6 @@ public class TopDownCharacterShooting : MonoBehaviour
 
         // Core
         _ignoreMask = ~(1 << playerLayer | 1 << enemyLayer);
-
-        // Animations
-        _model = transform.GetChild(0).gameObject;
-        _animator = _model.GetComponent<Animator>();
 
         // Laser
         _laserLine = gameObject.AddComponent<LineRenderer>();
@@ -81,13 +67,12 @@ public class TopDownCharacterShooting : MonoBehaviour
         }
 
         _aimDirection = _aimDirection.normalized;
+        isAiming = false;
 
         // Shooting
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            _elaspedAimTime = 0;
-            _isAimed = true;
-
+            isAiming = true;
             Shoot();
             _gunSfx.Play();
             StartCoroutine("GunVFX");
@@ -96,16 +81,13 @@ public class TopDownCharacterShooting : MonoBehaviour
         // Laser Sights
         if (Input.GetKey(KeyCode.Mouse1))
         {
-            _elaspedAimTime = 0;
-            _isAimed = true;
+            isAiming = true;
             EnableLaser();
         }
         else
         {
             _laserLine.enabled = false;
         }
-
-        AnimateAiming();
     }
 
     private void Shoot()
@@ -157,27 +139,6 @@ public class TopDownCharacterShooting : MonoBehaviour
 
         _laserLine.SetPosition(1, laserEndPoint);
         _laserLine.enabled = true;
-    }
-
-    private void AnimateAiming()
-    {
-        if (_elaspedAimTime >= aimDuration) {
-            _isAimed = false;
-        }
-
-        if (_isAimed)
-        {
-            _elaspedAimTime += Time.deltaTime;
-            _aimWeight = Mathf.Lerp(_aimWeight, 1, Time.deltaTime * aimSpeed);
-        }
-        else
-        {
-            _elaspedAimTime = 0;
-            _aimWeight = Mathf.Lerp(_aimWeight, 0, Time.deltaTime * holsterSpeed);
-        }
-
-        // ANIMATION LAYERS: Base: 0, Aiming: 1
-        _animator.SetLayerWeight(1, _aimWeight);
     }
 
     private IEnumerator GunVFX()

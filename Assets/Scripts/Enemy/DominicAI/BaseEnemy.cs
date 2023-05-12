@@ -138,12 +138,16 @@ namespace EnemyMachine
         private IEnumerator AttackCoroutine()
         {
             _isAttacking = true;
-            Debug.Log("Attacking");
 
             // TODO: Play animation
-            if (Physics.Raycast(transform.position, destination, out RaycastHit hit, attackRange, targetMask))
+            if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, attackRange, targetMask))
             {
-                // TODO: Send attack damage
+                TopDownCharacter player = hit.transform.gameObject.GetComponent<TopDownCharacter>();
+                if (player != null)
+                {
+                    Debug.Log("Attacking");
+                    player.AddForce(transform.forward * 50.0f);
+                }
             }
 
             yield return new WaitForSeconds(attackTime);
@@ -157,6 +161,7 @@ namespace EnemyMachine
                 return;
             }
 
+            Debug.DrawLine(transform.position, transform.position + transform.forward);
             if (showPatrolInfo && currentState == EnemyState.Idle)
             {
                 Gizmos.color = Color.yellow;
@@ -173,6 +178,7 @@ namespace EnemyMachine
             if (showAttackInfo && currentState == EnemyState.Attacking)
             {
                 Gizmos.color = Color.red;
+                Gizmos.DrawLine(transform.position, transform.position + transform.forward * attackRange);
                 Gizmos.DrawWireSphere(transform.position, attackRange);
             }
         }

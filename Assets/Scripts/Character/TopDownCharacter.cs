@@ -6,14 +6,15 @@ public class TopDownCharacter : NetworkBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 20.0f;
+    public float decelerationInputInfluence = 5.0f;
 
     [Header("Game Objects")]
     public GameObject cameraObject;
 
     [Header("Velocity")]
-    public Vector3 velocity;
-    public Vector3 inputVelocity;
-    public Vector3 forceVelocity;
+    [SerializeField] private Vector3 _velocity;
+    [SerializeField] private Vector3 _inputVelocity;
+    [SerializeField] private Vector3 _forceVelocity;
 
     [Header("Misc Components")]
     private CharacterController _characterController;
@@ -22,7 +23,8 @@ public class TopDownCharacter : NetworkBehaviour
     [Header("Gizmo Variables")]
     public bool showVelocity;
     public bool showForceVelocity;
-    public bool showInput;
+    public bool showInputRaw;
+    public bool showInputVelocity;
 
 	private void Start()
     {
@@ -55,7 +57,7 @@ public class TopDownCharacter : NetworkBehaviour
 
         // Input
         Vector3 input = GetInput();
-        inputVelocity = ProcessInput(input);
+        _inputVelocity = ProcessInput(input);
         if (!_topDownCamera.IsInDeadZone())
         {
             RotateCharacter(_topDownCamera.cursorWorldPosition);
@@ -63,8 +65,13 @@ public class TopDownCharacter : NetworkBehaviour
 
         // Movement
         GravityForce();
-        velocity = forceVelocity + (inputVelocity * moveSpeed);
-        _characterController.Move(velocity * Time.deltaTime);
+        _velocity = _forceVelocity + _inputVelocity * moveSpeed;
+        _characterController.Move(_velocity * Time.deltaTime);
+    }
+
+    public void AddForce(Vector3 force)
+    {
+        _forceVelocity += force;
     }
 
     public Vector3 GetInput()
@@ -118,54 +125,74 @@ public class TopDownCharacter : NetworkBehaviour
 
     private void GravityForce()
     {
-        forceVelocity.y += Time.deltaTime * Physics.gravity.y;
-        if (_characterController.isGrounded) {
-            forceVelocity.y = -0.5f;
-        }
-        else if (_characterController.isGrounded)
+        _forceVelocity = OrthogonalToSurfaceNormal(_forceVelocity);
+        _forceVelocity.y += Time.deltaTime * Physics.gravity.y;
+
+        // Give player control over their deceleration rate
+        float decelerationRate = _forceVelocity.magnitude;
+        if (_inputVelocity.magnitude > 0.0f)
         {
-            forceVelocity = OrthogonalToSurfaceNormal(forceVelocity);
-            forceVelocity = Vector3.MoveTowards(forceVelocity, Vector3.zero, Time.deltaTime);
+            decelerationRate *= decelerationInputInfluence;
+        }
+
+        if (_characterController.isGrounded) {
+            _forceVelocity = Vector3.MoveTowards(_forceVelocity, Vector3.zero, decelerationRate * Time.deltaTime);
+            _forceVelocity.y = -0.5f;
         }
     }
 
-    private Vector3 OrthogonalToSurfaceNormal(Vector3 velocity)
+    private Vector3 OrthogonalToSurfaceNormal(Vector3 inVector)
     {
         float extend = 1.01f;
         float length = _characterController.skinWidth * extend;
         float radius = _characterController.radius * extend;
-        Vector3 p1 = transform.position + _characterController.center + Vector3.down * _characterController.height * 0.5f; // Bottom
-        Vector3 p2 = p1 + Vector3.up * _characterController.height; // Top
+        // Bottom Position
+        Vector3 p1 = transform.position + _characterController.center + Vector3.down * _characterController.height * 0.5f;
+        // Top Position
+        Vector3 p2 = p1 + Vector3.up * _characterController.height;
 
-        if (Physics.CapsuleCast(p1, p2, radius, velocity.normalized, out RaycastHit hit, length, ~0 , QueryTriggerInteraction.Ignore))
+        // Want to retain original Y value for gravity
+        float storedGravity = inVector.y;
+        if (Physics.CapsuleCast(p1, p2, radius, inVector.normalized, out RaycastHit hit, length, ~0 , QueryTriggerInteraction.Ignore))
         {
-            // Get orthogonal vector to surface
-            Vector3 upDir = Vector3.Cross(hit.normal, velocity);
-            // In the direction of velocity
-            velocity = Vector3.Cross(upDir, hit.normal);
+            // Project onto surface
+            inVector = Vector3.ProjectOnPlane(inVector, hit.normal);
 
-            // If the newdir still goes into the wall, player is in a corner and input can be zero
-            if (Physics.CapsuleCast(p1, p2, radius, velocity.normalized, length, ~0 , QueryTriggerInteraction.Ignore))
+            // If the player is in a corner
+            if (Physics.CapsuleCast(p1, p2, radius, inVector.normalized, length, ~0 , QueryTriggerInteraction.Ignore))
             {
-                velocity = Vector3.zero;
+                inVector = Vector3.zero;
             }
         }
 
-        return velocity;
+        inVector.y = storedGravity;
+        return inVector;
     }
 
     public void OnDrawGizmos()
     {
+        if (showInputRaw)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + GetInput());
+        }
+
+        if (showInputVelocity)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + _inputVelocity);
+        }
+
         if (showForceVelocity)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, transform.position + forceVelocity);
+            Gizmos.DrawLine(transform.position, transform.position + _forceVelocity);
         }
 
         if (showVelocity)
         {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + velocity);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, transform.position + _velocity);
         }
     }
 }

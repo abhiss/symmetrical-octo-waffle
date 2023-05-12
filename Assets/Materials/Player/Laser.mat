@@ -108,7 +108,7 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _Distortion_Amount: 0
-    - _Distortion_Power: 20
+    - _Distortion_Power: 5
     - _DstBlend: 1
     - _DstBlendAlpha: 0
     - _Effect_Speed: 0

@@ -5,7 +5,8 @@ public class TopDownCharacterAnimator : NetworkBehaviour
 {
     [Header("Movement")]
     public float dampTime = 0.1f;
-    public bool showAnimationDirection;
+    private Vector3 _velocity;
+    private Vector3 _previousPositon;
 
     [Header("Aiming")]
     public float aimDuration = 5.0f;
@@ -19,10 +20,13 @@ public class TopDownCharacterAnimator : NetworkBehaviour
     [Header("Core")]
     private GameObject _model;
     private Animator _animator;
+
+    [Header("Hashes")]
     private int _horizontalHash;
     private int _verticalHash;
 
     [Header("Debugging")]
+    public bool showAnimationDirection;
     private Vector3 _gizmoAnimationDir;
 
     private void Start()
@@ -43,15 +47,6 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         _shootingComponent = GetComponent<TopDownCharacterShooting>();
     }
 
-    public Vector3 GetInput()
-    {
-        return new Vector3(
-            -Input.GetAxis("Horizontal"),
-            0,
-            -Input.GetAxis("Vertical")
-        );
-    }
-
     private void Update()
     {
         if (!base.IsOwner)
@@ -60,8 +55,9 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         }
 
         // Movement
-        Vector3 input = GetInput();
-        AnimatedMovement(input);
+        _velocity = (transform.position - _previousPositon) / Time.deltaTime;
+        _previousPositon = transform.position;
+        AnimatedMovement();
 
         // Aiming
         bool shotLastFrame = _shootingComponent.isAiming;
@@ -73,15 +69,11 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         AnimateAiming();
     }
 
-    private void AnimatedMovement(Vector3 input)
+    private void AnimatedMovement()
     {
         // Get move direction relative to players rotation
-        Vector3 forward = transform.forward.normalized;
-        Vector3 right = transform.right.normalized;
-
-        // Apply input
-        forward *= input.z;
-        right *= input.x;
+        Vector3 forward = transform.forward.normalized * _velocity.z;
+        Vector3 right = transform.right.normalized * _velocity.x;
 
         // Set animation floats
         Vector3 animationDir = forward - right;
@@ -89,7 +81,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         _animator.SetFloat(_verticalHash, animationDir.z, dampTime, Time.deltaTime);
 
         // Debugging
-        _gizmoAnimationDir = animationDir;
+        _gizmoAnimationDir = animationDir.normalized;
     }
 
     private void AnimateAiming()
@@ -101,12 +93,12 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         if (_isAimed)
         {
             _elaspedAimTime += Time.deltaTime;
-            _aimWeight = Mathf.Lerp(_aimWeight, 1, Time.deltaTime * aimSpeed);
+            _aimWeight = Mathf.MoveTowards(_aimWeight, 1, Time.deltaTime * aimSpeed);
         }
         else
         {
             _elaspedAimTime = 0;
-            _aimWeight = Mathf.Lerp(_aimWeight, 0, Time.deltaTime * holsterSpeed);
+            _aimWeight = Mathf.MoveTowards(_aimWeight, 0, Time.deltaTime * holsterSpeed);
         }
 
         // ANIMATION LAYERS: Base: 0, Aiming: 1

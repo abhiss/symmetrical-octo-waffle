@@ -132,7 +132,6 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
   forceVelocity: {x: 0, y: 0, z: 0}
-  showAnimationDirection: 1
   showVelocity: 1
   showForceVelocity: 1
   showInput: 1
@@ -152,11 +151,17 @@ MonoBehaviour:
   interval: 0.5
   maxDistance: 100
   isAiming: 0
-  playerLayer: 6
-  enemyLayer: 7
+  aimDeadZone: 3.5
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 128
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  enableAimAssist: 1
+  assistRaidus: 0.5
   sfxVfx: {fileID: 4790082589373488934}
   laserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
-  gunNozzle: {fileID: 4409442334696270601}
   laserWidth: 0.1
 --- !u!114 &7815612474361838623
 MonoBehaviour:
@@ -171,10 +176,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dampTime: 0.1
-  showAnimationDirection: 0
   aimDuration: 5
   aimSpeed: 10
   holsterSpeed: 2.5
+  showAnimationDirection: 1
 --- !u!114 &5688000099644499388
 MonoBehaviour:
   m_ObjectHideFlags: 0

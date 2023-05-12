@@ -20,7 +20,6 @@ public class TopDownCharacter : NetworkBehaviour
     private TopDownCamera _topDownCamera;
 
     [Header("Gizmo Variables")]
-    public bool showAnimationDirection;
     public bool showVelocity;
     public bool showForceVelocity;
     public bool showInput;

@@ -4,14 +4,14 @@ using Unity.Netcode;
 public class TopDownCharacterAnimator : NetworkBehaviour
 {
     [Header("Movement")]
-    public float dampTime = 0.1f;
+    public float DampTime = 0.1f;
     private Vector3 _velocity;
     private Vector3 _previousPositon;
 
     [Header("Aiming")]
-    public float aimDuration = 5.0f;
-    public float aimSpeed = 10.0f;
-    public float holsterSpeed = 2.5f;
+    public float AimDuration = 5.0f;
+    public float AimSpeed = 10.0f;
+    public float HolsterSpeed = 2.5f;
     private float _elaspedAimTime = 0.0f;
     private float _aimWeight = 0.0f;
     private bool _isAimed = false;
@@ -26,7 +26,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
     private int _verticalHash;
 
     [Header("Debugging")]
-    public bool showAnimationDirection;
+    public bool ShowAnimationDirection;
     private Vector3 _gizmoAnimationDir;
 
     private void Start()
@@ -60,7 +60,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         AnimatedMovement();
 
         // Aiming
-        bool shotLastFrame = _shootingComponent.isAiming;
+        bool shotLastFrame = _shootingComponent.IsAiming;
         if (shotLastFrame == true)
         {
             _elaspedAimTime = 0;
@@ -77,8 +77,8 @@ public class TopDownCharacterAnimator : NetworkBehaviour
 
         // Set animation floats
         Vector3 animationDir = forward - right;
-        _animator.SetFloat(_horizontalHash, animationDir.x, dampTime, Time.deltaTime);
-        _animator.SetFloat(_verticalHash, animationDir.z, dampTime, Time.deltaTime);
+        _animator.SetFloat(_horizontalHash, animationDir.x, DampTime, Time.deltaTime);
+        _animator.SetFloat(_verticalHash, animationDir.z, DampTime, Time.deltaTime);
 
         // Debugging
         _gizmoAnimationDir = animationDir.normalized;
@@ -86,19 +86,19 @@ public class TopDownCharacterAnimator : NetworkBehaviour
 
     private void AnimateAiming()
     {
-        if (_elaspedAimTime >= aimDuration) {
+        if (_elaspedAimTime >= AimDuration) {
             _isAimed = false;
         }
 
         if (_isAimed)
         {
             _elaspedAimTime += Time.deltaTime;
-            _aimWeight = Mathf.MoveTowards(_aimWeight, 1, Time.deltaTime * aimSpeed);
+            _aimWeight = Mathf.MoveTowards(_aimWeight, 1, Time.deltaTime * AimSpeed);
         }
         else
         {
             _elaspedAimTime = 0;
-            _aimWeight = Mathf.MoveTowards(_aimWeight, 0, Time.deltaTime * holsterSpeed);
+            _aimWeight = Mathf.MoveTowards(_aimWeight, 0, Time.deltaTime * HolsterSpeed);
         }
 
         // ANIMATION LAYERS: Base: 0, Aiming: 1
@@ -107,7 +107,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
 
     public void OnDrawGizmos()
     {
-        if (showAnimationDirection)
+        if (ShowAnimationDirection)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(transform.position - _gizmoAnimationDir, 0.1f);

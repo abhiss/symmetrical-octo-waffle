@@ -126,18 +126,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a00d4aed3cb78c45976f8b529adc369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
-  rotateSpeed: 20
-  decelerationInputInfluence: 5
-  disableInput: 0
-  cameraObject: {fileID: 6499487636144526818}
+  MoveSpeed: 6
+  RotateSpeed: 20
+  DecelerateInputInfluence: 5
+  DisableInput: 0
+  CameraObject: {fileID: 6499487636144526818}
   _velocity: {x: 0, y: 0, z: 0}
   _inputVelocity: {x: 0, y: 0, z: 0}
   _forceVelocity: {x: 0, y: 0, z: 0}
-  showVelocity: 1
-  showForceVelocity: 1
-  showInputRaw: 1
-  showInputVelocity: 1
+  ShowVelocity: 1
+  ShowForceVelocity: 1
+  ShowInputRaw: 1
+  ShowInputVelocity: 1
 --- !u!114 &5986054516681673575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,22 +150,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530586994baa6d04b83b5c7d7fe7f650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  interval: 0.5
-  maxDistance: 100
-  isAiming: 0
-  aimDeadZone: 3.5
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 128
-  playerMask:
+  IsAiming: 0
+  AimDeadZone: 3.5
+  PlayerMask:
     serializedVersion: 2
     m_Bits: 64
-  enableAimAssist: 1
-  assistRaidus: 2
-  sfxVfx: {fileID: 4790082589373488934}
-  laserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
-  laserWidth: 0.1
+  EnemyMask:
+    serializedVersion: 2
+    m_Bits: 128
+  EnableAimAssist: 1
+  AssistRaidus: 0.2
+  SfxVfx: {fileID: 4790082589373488934}
+  LaserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
+  LaserWidth: 0.1
+  Damage: 10
+  Interval: 0.5
+  MaxDistance: 100
 --- !u!114 &7815612474361838623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,11 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d287c874198613840baf4cf41d294d8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dampTime: 0.1
-  aimDuration: 5
-  aimSpeed: 10
-  holsterSpeed: 2.5
-  showAnimationDirection: 1
+  DampTime: 0.1
+  AimDuration: 5
+  AimSpeed: 10
+  HolsterSpeed: 2.5
+  ShowAnimationDirection: 1
 --- !u!114 &5688000099644499388
 MonoBehaviour:
   m_ObjectHideFlags: 0

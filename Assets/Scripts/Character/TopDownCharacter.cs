@@ -4,13 +4,13 @@ using UnityEngine;
 public class TopDownCharacter : NetworkBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 3.0f;
-    public float rotateSpeed = 20.0f;
-    public float decelerationInputInfluence = 5.0f;
-    public bool disableInput = false;
+    public float MoveSpeed = 3.0f;
+    public float RotateSpeed = 20.0f;
+    public float DecelerateInputInfluence = 5.0f;
+    public bool DisableInput = false;
 
     [Header("Game Objects")]
-    public GameObject cameraObject;
+    public GameObject CameraObject;
 
     [Header("Velocity")]
     [SerializeField] private Vector3 _velocity;
@@ -21,31 +21,29 @@ public class TopDownCharacter : NetworkBehaviour
     private CharacterController _characterController;
     private TopDownCamera _topDownCamera;
 
-    [Header("Gizmo Variables")]
-    public bool showVelocity;
-    public bool showForceVelocity;
-    public bool showInputRaw;
-    public bool showInputVelocity;
+    [Header("Debugging")]
+    public bool ShowVelocity;
+    public bool ShowForceVelocity;
+    public bool ShowInputRaw;
+    public bool ShowInputVelocity;
 
 	private void Start()
     {
         if (!base.IsOwner)
 		{
-            Destroy(cameraObject);
+            Destroy(CameraObject);
             return;
 		}
 
-		if (cameraObject == null)
+        // Assert we have a camera
+		if (CameraObject == null)
 		{
-			Debug.LogError(
-				"Assumed player prefab Hierarchy is most likely altered. " +
-				"Aborted in Start() on "
-				+ gameObject.name + " gameobject");
+			Debug.LogError("Missing camera object on player, exiting.");
 			return;
 		}
 
 		// Controller + Camera
-		_topDownCamera = cameraObject.GetComponent<TopDownCamera>();
+		_topDownCamera = CameraObject.GetComponent<TopDownCamera>();
 		_characterController = GetComponent<CharacterController>();
     }
 
@@ -66,7 +64,7 @@ public class TopDownCharacter : NetworkBehaviour
 
         // Movement
         GravityForce();
-        _velocity = _forceVelocity + _inputVelocity * moveSpeed;
+        _velocity = _forceVelocity + _inputVelocity * MoveSpeed;
         _characterController.Move(_velocity * Time.deltaTime);
     }
 
@@ -77,7 +75,7 @@ public class TopDownCharacter : NetworkBehaviour
 
     public Vector3 GetInput()
     {
-        if (disableInput)
+        if (DisableInput)
         {
             return Vector3.zero;
         }
@@ -116,7 +114,7 @@ public class TopDownCharacter : NetworkBehaviour
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             toRotation,
-            Time.deltaTime * rotateSpeed
+            Time.deltaTime * RotateSpeed
         );
 
         // Lock the axis
@@ -135,7 +133,7 @@ public class TopDownCharacter : NetworkBehaviour
         float decelerationRate = _forceVelocity.magnitude;
         if (_inputVelocity.magnitude > 0.0f)
         {
-            decelerationRate *= decelerationInputInfluence;
+            decelerationRate *= DecelerateInputInfluence;
         }
 
         if (_characterController.isGrounded) {
@@ -174,25 +172,25 @@ public class TopDownCharacter : NetworkBehaviour
 
     public void OnDrawGizmos()
     {
-        if (showInputRaw)
+        if (ShowInputRaw)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, transform.position + GetInput());
         }
 
-        if (showInputVelocity)
+        if (ShowInputVelocity)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, transform.position + _inputVelocity);
         }
 
-        if (showForceVelocity)
+        if (ShowForceVelocity)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, transform.position + _forceVelocity);
         }
 
-        if (showVelocity)
+        if (ShowVelocity)
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(transform.position, transform.position + _velocity);

@@ -64,7 +64,6 @@ GameObject:
   - component: {fileID: 5986054516681673575}
   - component: {fileID: 7815612474361838623}
   - component: {fileID: 5688000099644499388}
-  - component: {fileID: 6550084455348052048}
   m_Layer: 6
   m_Name: TopDownCharacter
   m_TagString: Untagged
@@ -129,6 +128,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   rotateSpeed: 20
+  decelerationInputInfluence: 5
+  disableInput: 0
   cameraObject: {fileID: 6499487636144526818}
   _velocity: {x: 0, y: 0, z: 0}
   _inputVelocity: {x: 0, y: 0, z: 0}
@@ -161,7 +162,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   enableAimAssist: 1
-  assistRaidus: 0.5
+  assistRaidus: 2
   sfxVfx: {fileID: 4790082589373488934}
   laserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
   laserWidth: 0.1
@@ -208,29 +209,6 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   InLocalSpace: 0
   Interpolate: 1
---- !u!136 &6550084455348052048
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3656713175936252363}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4790082589373488934
 GameObject:
   m_ObjectHideFlags: 0

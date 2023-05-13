@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5222241229588481809}
-  - component: {fileID: 6255213181691034016}
   - component: {fileID: 6945478096663812530}
   - component: {fileID: 6497889963621049019}
   - component: {fileID: 8099586337567127805}
   - component: {fileID: 6768208389678138243}
   - component: {fileID: 5521980093979968804}
+  - component: {fileID: 6715761143312627255}
   m_Layer: 7
   m_Name: DominicAI
   m_TagString: Untagged
@@ -38,29 +38,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &6255213181691034016
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4740366880187179920}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &6945478096663812530
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -97,6 +74,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   destination: {x: 0, y: 0, z: 0}
+  pushVelocity: {x: 0, y: 0, z: 0}
   targetMask:
     serializedVersion: 2
     m_Bits: 64
@@ -104,8 +82,9 @@ MonoBehaviour:
   detectionRadius: 5
   patrolRadius: 10
   patrolHoldTime: 3
+  attackForce: 5
   attackTime: 1
-  attackRange: 5
+  attackRange: 1
   showPatrolInfo: 1
   showAttackInfo: 1
   showChaseInfo: 1
@@ -155,6 +134,29 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   damageOnCollision: 10
+--- !u!136 &6715761143312627255
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740366880187179920}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2632631650455182652
 PrefabInstance:
   m_ObjectHideFlags: 0

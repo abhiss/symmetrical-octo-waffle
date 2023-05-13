@@ -17,7 +17,6 @@ namespace EnemyMachine
         [Header("General Settings")]
         public LayerMask targetMask;
         public float stopThreshold = 0.5f;
-
         private GameObject _targetObject;
         private HealthSystem _healthSystem;
 
@@ -34,6 +33,7 @@ namespace EnemyMachine
         private NavMeshAgent _agent;
 
         [Header("Attack Properties")]
+        public float attackForce = 2.0f;
         public float attackTime = 1.0f;
         public float attackRange = 1.0f;
         private bool _isAttacking = false;
@@ -73,6 +73,18 @@ namespace EnemyMachine
                 EnemyState.Attacking => AttackingStateHandler(),
                 _ => IdleStateHandler()
             };
+
+            // TODO: Doesnt work
+            if (Physics.SphereCast(transform.position, 1.0f, Vector3.up, out RaycastHit hit, 0.1f, targetMask))
+            {
+                TopDownCharacter player = hit.transform.gameObject.GetComponent<TopDownCharacter>();
+                if (player != null)
+                {
+                    Debug.Log("pushing");
+                    Vector3 dir = hit.transform.position - transform.position;
+                    player.AddForce(dir);
+                }
+            }
 
             _agent.SetDestination(destination);
             _previousState = currentState;
@@ -145,8 +157,8 @@ namespace EnemyMachine
                 TopDownCharacter player = hit.transform.gameObject.GetComponent<TopDownCharacter>();
                 if (player != null)
                 {
-                    Debug.Log("Attacking");
-                    player.AddForce(transform.forward * 50.0f);
+                    // Debug.Log("Attacking");
+                    player.AddForce(transform.forward * attackForce);
                 }
             }
 
@@ -154,7 +166,7 @@ namespace EnemyMachine
             _isAttacking = false;
         }
 
-        void OnDrawGizmos()
+        private void OnDrawGizmos()
         {
             if (!_agent)
             {

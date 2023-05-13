@@ -7,6 +7,7 @@ public class TopDownCharacter : NetworkBehaviour
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 20.0f;
     public float decelerationInputInfluence = 5.0f;
+    public bool disableInput = false;
 
     [Header("Game Objects")]
     public GameObject cameraObject;
@@ -76,11 +77,13 @@ public class TopDownCharacter : NetworkBehaviour
 
     public Vector3 GetInput()
     {
-        return new Vector3(
-            -Input.GetAxis("Horizontal"),
-            0,
-            -Input.GetAxis("Vertical")
-        );
+        if (disableInput)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 rawInput = new Vector3(-Input.GetAxis("Horizontal"), 0, -Input.GetAxis("Vertical"));
+        return rawInput;
     }
 
     private Vector3 ProcessInput(Vector3 input)

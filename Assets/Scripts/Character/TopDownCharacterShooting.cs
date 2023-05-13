@@ -126,18 +126,34 @@ public class TopDownCharacterShooting : MonoBehaviour
         Vector3 newDirection = cursorPosition - transform.position;
 
         // Dead zone
-        float dist = Vector3.Distance(newDirection, transform.position);
-        if (dist <= aimDeadZone)
+        float deadZoneDist = Vector3.Distance(newDirection, transform.position);
+        if (deadZoneDist <= aimDeadZone)
         {
             newDirection = transform.forward;
         }
 
-        // Aim assist
-        if (Physics.SphereCast(_cameraRay, assistRaidus, out RaycastHit hit, Mathf.Infinity, enemyMask) && enableAimAssist)
+        if (!enableAimAssist)
         {
-            newDirection = hit.point - transform.position;
+            return newDirection.normalized;
         }
 
+        // TODO: not detecting enemy mask
+        // Aim assist (target closest enemy to cursor)
+        float closestDistance = Mathf.Infinity;
+        Vector3 closestPosition = cursorPosition;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, assistRaidus, enemyMask);
+        foreach (var hitCollider in hitColliders)
+        {
+            Debug.Log("hit");
+            Vector3 hitPosiiton = hitCollider.transform.position;
+            float dist = Vector3.Distance(cursorPosition, hitPosiiton);
+            if (dist <= closestDistance)
+            {
+                closestPosition = hitPosiiton;
+            }
+        }
+
+        newDirection = closestPosition - transform.position;
         return newDirection.normalized;
     }
 

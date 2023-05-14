@@ -1,22 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-// TODO: TEMPORARY: Should be a scriptable object or structs
-public struct PlayerWeapon {
-    public float damage;
-    public float interval;
-    public float maxDistance;
-}
 
 public class TopDownCharacterShooting : MonoBehaviour
 {
+    public WeaponManager CurrentWeapon;
+
+    [Header("Properties")]
     public bool IsAiming = false;
     public float AimDeadZone = 3.5f;
     public LayerMask PlayerMask;
     public LayerMask EnemyMask;
     private Vector3 _aimDirection;
     private Ray _cameraRay;
+    private bool _canShoot = true;
 
     [Header("Aim Assist")]
     public bool EnableAimAssist = true;
@@ -32,19 +28,8 @@ public class TopDownCharacterShooting : MonoBehaviour
     public float LaserWidth = 0.5f;
     private LineRenderer _laserLine;
 
-    [Header("TEMP: Weapon Settings")]
-    public float Damage = 10.0f;
-    public float Interval = 0.5f;
-    public float MaxDistance = 100.0f;
-    PlayerWeapon CurrentWeapon;
-
     private void Start()
     {
-        // TODO: TEMPORARY
-        CurrentWeapon.damage = Damage;
-        CurrentWeapon.interval = Interval;
-        CurrentWeapon.maxDistance = MaxDistance;
-
         // Laser
         _laserLine = gameObject.AddComponent<LineRenderer>();
         _laserLine.material = LaserMaterial;
@@ -67,8 +52,16 @@ public class TopDownCharacterShooting : MonoBehaviour
 
         // Shooting
         IsAiming = false;
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+
+        // Automatic or single fire
+        bool inputFire = Input.GetKeyDown(KeyCode.Mouse0);
+        if (CurrentWeapon.Interval > 0.0f) {
+            inputFire = Input.GetKey(KeyCode.Mouse0);
+        }
+
+        if (inputFire && _canShoot)
         {
+            StartCoroutine(AutomaticFire());
             IsAiming = true;
             Shoot();
         }
@@ -87,8 +80,8 @@ public class TopDownCharacterShooting : MonoBehaviour
 
     private void Shoot()
     {
-        StartCoroutine("GunVFX");
-        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.maxDistance))
+        StartCoroutine(GunVFX());
+        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             // TODO: Flavor Section
             // - Create particle at hit point for debrie or sparks
@@ -99,7 +92,7 @@ public class TopDownCharacterShooting : MonoBehaviour
             if (healthSystem != null)
             {
                 // Deal damage to the object with HealthSystem component
-                healthSystem.TakeDamage(gameObject, CurrentWeapon.damage);
+                healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
             }
         }
     }
@@ -155,11 +148,11 @@ public class TopDownCharacterShooting : MonoBehaviour
     private void EnableLaser()
     {
         Vector3 laserEndPoint = transform.position;
-        laserEndPoint += _aimDirection * CurrentWeapon.maxDistance;
+        laserEndPoint += _aimDirection * CurrentWeapon.MaxDistance;
 
         // Shrink laser to wall hit
         _laserLine.SetPosition(0, transform.position);
-        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.maxDistance))
+        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             laserEndPoint = hit.point;
         }
@@ -174,5 +167,12 @@ public class TopDownCharacterShooting : MonoBehaviour
         _gunLight.enabled = true;
         yield return new WaitForSeconds(0.05f);
         _gunLight.enabled = false;
+    }
+
+    private IEnumerator AutomaticFire()
+    {
+        _canShoot = false;
+        yield return new WaitForSeconds(CurrentWeapon.Interval);
+        _canShoot = true;
     }
 }

@@ -13,5 +13,10 @@ MonoBehaviour:
   m_Name: AutomaticWeapon
   m_EditorClassIdentifier: 
   Damage: 5
-  Interval: 0.1
+  FireRate: 0.1
+  CurrentClipCount: 10
+  MaxClipSize: 10
+  NumClips: 14
+  MaxClips: 20
+  ReloadTime: 5
   MaxDistance: 100

@@ -7,7 +7,8 @@ public class CharacterMotor : NetworkBehaviour
     public float MoveSpeed = 3.0f;
     public float RotateSpeed = 20.0f;
     public float DecelerateInputInfluence = 5.0f;
-    public bool DisableInput = false;
+    private InputListener _inputListener;
+    private Vector3 _input;
 
     [Header("Game Objects")]
     public GameObject CameraObject;
@@ -24,7 +25,7 @@ public class CharacterMotor : NetworkBehaviour
     [Header("Debugging")]
     public bool ShowVelocity;
     public bool ShowForceVelocity;
-    public bool ShowInputRaw;
+    public bool ShowInput;
     public bool ShowInputVelocity;
 
 	private void Start()
@@ -42,9 +43,17 @@ public class CharacterMotor : NetworkBehaviour
 			return;
 		}
 
+        // Input
+        _inputListener = GetComponent<InputListener>();
+
 		// Controller + Camera
 		_characterCamera = CameraObject.GetComponent<CharacterCamera>();
 		_characterController = GetComponent<CharacterController>();
+    }
+
+    public void AddForce(Vector3 force)
+    {
+        _forceVelocity += force;
     }
 
 	private void Update()
@@ -55,8 +64,8 @@ public class CharacterMotor : NetworkBehaviour
         }
 
         // Input
-        Vector3 input = GetInput();
-        _inputVelocity = ProcessInput(input);
+        _input = _inputListener.GetAxisInput();
+        _inputVelocity = ProcessInput(_input);
         if (!_characterCamera.IsInDeadZone())
         {
             RotateCharacter(_characterCamera.cursorWorldPosition);
@@ -66,22 +75,6 @@ public class CharacterMotor : NetworkBehaviour
         GravityForce();
         _velocity = _forceVelocity + _inputVelocity * MoveSpeed;
         _characterController.Move(_velocity * Time.deltaTime);
-    }
-
-    public void AddForce(Vector3 force)
-    {
-        _forceVelocity += force;
-    }
-
-    public Vector3 GetInput()
-    {
-        if (DisableInput)
-        {
-            return Vector3.zero;
-        }
-
-        Vector3 rawInput = new Vector3(-Input.GetAxis("Horizontal"), 0, -Input.GetAxis("Vertical"));
-        return rawInput;
     }
 
     private Vector3 ProcessInput(Vector3 input)
@@ -172,10 +165,10 @@ public class CharacterMotor : NetworkBehaviour
 
     public void OnDrawGizmos()
     {
-        if (ShowInputRaw)
+        if (ShowInput)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + GetInput());
+            Gizmos.DrawLine(transform.position, transform.position + _input);
         }
 
         if (ShowInputVelocity)

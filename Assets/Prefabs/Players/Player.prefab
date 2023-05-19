@@ -60,9 +60,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2217587029086244474}
   - component: {fileID: 8373175083879619147}
+  - component: {fileID: 3682091231530256069}
   - component: {fileID: 9127889449909241548}
   - component: {fileID: 5986054516681673575}
-  - component: {fileID: 3682091231530256069}
   - component: {fileID: 7815612474361838623}
   - component: {fileID: 5688000099644499388}
   m_Layer: 6
@@ -115,6 +115,25 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3682091231530256069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6775f004341104da103493c1fe40f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisablePlayerInput: 0
+  UseKey: 0
+  ReloadKey: 0
+  FireKeyDown: 0
+  FireKey: 0
+  AltFire: 0
+  AltFireDown: 0
 --- !u!114 &9127889449909241548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,14 +149,13 @@ MonoBehaviour:
   MoveSpeed: 6
   RotateSpeed: 20
   DecelerateInputInfluence: 5
-  DisableInput: 0
   CameraObject: {fileID: 6499487636144526818}
   _velocity: {x: 0, y: 0, z: 0}
   _inputVelocity: {x: 0, y: 0, z: 0}
   _forceVelocity: {x: 0, y: 0, z: 0}
   ShowVelocity: 1
   ShowForceVelocity: 1
-  ShowInputRaw: 1
+  ShowInput: 0
   ShowInputVelocity: 1
 --- !u!114 &5986054516681673575
 MonoBehaviour:
@@ -166,18 +184,6 @@ MonoBehaviour:
   SfxVfx: {fileID: 4790082589373488934}
   LaserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
   LaserWidth: 0.1
---- !u!114 &3682091231530256069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3656713175936252363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b6775f004341104da103493c1fe40f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7815612474361838623
 MonoBehaviour:
   m_ObjectHideFlags: 0

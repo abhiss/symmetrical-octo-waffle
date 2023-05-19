@@ -1,32 +1,47 @@
 using UnityEngine;
+using Unity.Netcode;
 using Interactables;
 
-public class TerminalInteractable : MonoBehaviour
+public class TerminalInteractable : NetworkBehaviour
 {
     public GameObject[] Targets;
+    private GameObject _terminalModel;
+    private InputListener _inputListener;
 
     [Header("Debugging")]
     public bool ShowConnections;
-    private GameObject _terminalModel;
 
     private void Start()
     {
         _terminalModel = transform.GetChild(0).gameObject;
     }
 
-    private void OnTriggerStay(Collider other)
+    private void Update()
+    {
+        if(_inputListener != null && _inputListener.UseKey)
+        {
+            Interactable.MessageTargets(Targets);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player"))
         {
             return;
         }
 
-        // TODO: NOT OPTIMAL
-        CharacterInteract playerListener = other.GetComponent<CharacterInteract>();
-        if (playerListener.IsUsingKey)
+        _inputListener = other.GetComponent<InputListener>();
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player"))
         {
-            Interactable.MessageTargets(Targets);
+            return;
         }
+
+        _inputListener = null;
     }
 
     private void OnDrawGizmos()

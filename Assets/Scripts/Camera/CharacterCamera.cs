@@ -3,6 +3,7 @@ using UnityEngine;
 public class CharacterCamera : MonoBehaviour
 {
     public GameObject PlayerObject;
+    private InputListener _inputListener;
 
     [Header("Camera Settings")]
     public float maxCameraRadius;
@@ -30,6 +31,7 @@ public class CharacterCamera : MonoBehaviour
     public void Start()
     {
         _cameraOffset = transform.localPosition;
+        _inputListener = PlayerObject.GetComponent<InputListener>();
     }
 
     public void LateUpdate()
@@ -46,7 +48,7 @@ public class CharacterCamera : MonoBehaviour
         _cursorPlane.SetNormalAndPosition(Vector3.down, _playerPosition);
 
         // Get point on plane
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(_inputListener.MousePosition);
         if (_cursorPlane.Raycast(ray, out float dist))
         {
             cursorWorldPosition = ray.GetPoint(dist);

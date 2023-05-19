@@ -5,6 +5,7 @@ public class CharacterShooting : MonoBehaviour
 {
     public WeaponManager CurrentWeapon;
     public bool IsReloading = false;
+    private InputListener _inputListener;
 
     [Header("Properties")]
     public bool IsAiming = false;
@@ -31,6 +32,9 @@ public class CharacterShooting : MonoBehaviour
 
     private void Start()
     {
+        // Input
+        _inputListener = GetComponent<InputListener>();
+
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
@@ -66,7 +70,7 @@ public class CharacterShooting : MonoBehaviour
     {
         // Reloading
         bool reloadConditions = _shootEnabled && CurrentWeapon.CurrentClipSize != CurrentWeapon.MaxClipSize && CurrentWeapon.CurrentAmmo > 0;
-        if (Input.GetKeyDown(KeyCode.R) && reloadConditions)
+        if (_inputListener.ReloadKey && reloadConditions)
         {
             StartCoroutine(ReloadRoutine());
         }
@@ -75,10 +79,10 @@ public class CharacterShooting : MonoBehaviour
         IsAiming = false;
 
         // Automatic or single fire
-        bool inputFire = Input.GetKeyDown(KeyCode.Mouse0);
+        bool inputFire = _inputListener.FireKeyDown;
         if (CurrentWeapon.FireRate > 0.0f)
         {
-            inputFire = Input.GetKey(KeyCode.Mouse0);
+            inputFire = _inputListener.FireKey;
         }
 
         bool shootingConditions =  _shootEnabled && CurrentWeapon.CurrentClipSize > 0;
@@ -90,7 +94,7 @@ public class CharacterShooting : MonoBehaviour
         }
 
         // Laser Sights
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (_inputListener.AltFire)
         {
             IsAiming = true;
             EnableLaser();

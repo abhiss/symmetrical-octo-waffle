@@ -4,6 +4,7 @@ using UnityEngine;
 public class TopDownCharacterShooting : MonoBehaviour
 {
     public WeaponManager CurrentWeapon;
+    public bool IsReloading = false;
 
     [Header("Properties")]
     public bool IsAiming = false;
@@ -58,11 +59,16 @@ public class TopDownCharacterShooting : MonoBehaviour
             Debug.Log(CurrentWeapon.CurrentClipSize + " / " + CurrentWeapon.CurrentAmmo);
         }
 
+        InputEvents();
+    }
+
+    private void InputEvents()
+    {
         // Reloading
         bool reloadConditions = _shootEnabled && CurrentWeapon.CurrentClipSize != CurrentWeapon.MaxClipSize && CurrentWeapon.CurrentAmmo > 0;
         if (Input.GetKeyDown(KeyCode.R) && reloadConditions)
         {
-            StartCoroutine(ReloadDelay());
+            StartCoroutine(ReloadRoutine());
         }
 
         // Shooting
@@ -138,7 +144,7 @@ public class TopDownCharacterShooting : MonoBehaviour
         Vector3 newDirection = cursorPosition - transform.position;
 
         // Dead zone
-        float deadZoneDist = Vector3.Distance(newDirection, transform.position);
+        float deadZoneDist = Vector3.Distance(cursorPosition, transform.position);
         if (deadZoneDist <= AimDeadZone)
         {
             newDirection = transform.forward;
@@ -196,10 +202,11 @@ public class TopDownCharacterShooting : MonoBehaviour
         _shootEnabled = true;
     }
 
-    private IEnumerator ReloadDelay()
+    private IEnumerator ReloadRoutine()
     {
         Debug.Log("Reloading...");
         _shootEnabled = false;
+        IsReloading = true;
 
         // Update ammo pool
         int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
@@ -211,12 +218,13 @@ public class TopDownCharacterShooting : MonoBehaviour
         // Update clip
         int newClip = Mathf.Min(CurrentWeapon.MaxClipSize, currentBulletAmount);
         CurrentWeapon.CurrentClipSize = 0;
+        CurrentWeapon.CurrentAmmo = newBulletAmount;
 
         yield return new WaitForSeconds(CurrentWeapon.ReloadTime);
 
-        CurrentWeapon.CurrentAmmo = newBulletAmount;
         CurrentWeapon.CurrentClipSize = newClip;
 
+        IsReloading = false;
         _shootEnabled = true;
         Debug.Log("Reloading... Done");
     }

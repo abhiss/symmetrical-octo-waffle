@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownCharacter : NetworkBehaviour
+public class CharacterMotor : NetworkBehaviour
 {
     [Header("Movement Settings")]
     public float MoveSpeed = 3.0f;
@@ -19,7 +19,7 @@ public class TopDownCharacter : NetworkBehaviour
 
     [Header("Misc Components")]
     private CharacterController _characterController;
-    private TopDownCamera _topDownCamera;
+    private CharacterCamera _characterCamera;
 
     [Header("Debugging")]
     public bool ShowVelocity;
@@ -43,7 +43,7 @@ public class TopDownCharacter : NetworkBehaviour
 		}
 
 		// Controller + Camera
-		_topDownCamera = CameraObject.GetComponent<TopDownCamera>();
+		_characterCamera = CameraObject.GetComponent<CharacterCamera>();
 		_characterController = GetComponent<CharacterController>();
     }
 
@@ -57,9 +57,9 @@ public class TopDownCharacter : NetworkBehaviour
         // Input
         Vector3 input = GetInput();
         _inputVelocity = ProcessInput(input);
-        if (!_topDownCamera.IsInDeadZone())
+        if (!_characterCamera.IsInDeadZone())
         {
-            RotateCharacter(_topDownCamera.cursorWorldPosition);
+            RotateCharacter(_characterCamera.cursorWorldPosition);
         }
 
         // Movement

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class TopDownCharacterShooting : MonoBehaviour
+public class CharacterShooting : MonoBehaviour
 {
     public WeaponManager CurrentWeapon;
     public bool IsReloading = false;

@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class TopDownCharacterAnimator : NetworkBehaviour
+public class CharacterAnimator : NetworkBehaviour
 {
     [Header("Movement")]
     public float DampTime = 0.1f;
@@ -15,7 +15,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
     private float _elaspedAimTime = 0.0f;
     private float _aimWeight = 0.0f;
     private bool _isAimed = false;
-    private TopDownCharacterShooting _shootingComponent;
+    private CharacterShooting _characterShooting;
 
     [Header("Core")]
     private GameObject _model;
@@ -44,7 +44,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
 		_verticalHash = Animator.StringToHash("Vertical");
 
         // Aiming
-        _shootingComponent = GetComponent<TopDownCharacterShooting>();
+        _characterShooting = GetComponent<CharacterShooting>();
     }
 
     private void Update()
@@ -60,7 +60,7 @@ public class TopDownCharacterAnimator : NetworkBehaviour
         AnimatedMovement();
 
         // Aiming
-        bool shotLastFrame = _shootingComponent.IsAiming;
+        bool shotLastFrame = _characterShooting.IsAiming;
         if (shotLastFrame == true)
         {
             _elaspedAimTime = 0;

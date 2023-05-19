@@ -17,7 +17,7 @@ public class AmmoPickup : NetworkBehaviour
             return;
         }
 
-        TopDownCharacterShooting characterShooting = other.GetComponent<TopDownCharacterShooting>();
+        CharacterShooting characterShooting = other.GetComponent<CharacterShooting>();
         WeaponManager currentWeapon = characterShooting.CurrentWeapon;
         if (currentWeapon.CurrentAmmo >= currentWeapon.MaxAmmo)
         {

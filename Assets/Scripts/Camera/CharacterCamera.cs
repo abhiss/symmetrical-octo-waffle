@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-public class TopDownCamera : MonoBehaviour
+public class CharacterCamera : MonoBehaviour
 {
     public GameObject PlayerObject;
 

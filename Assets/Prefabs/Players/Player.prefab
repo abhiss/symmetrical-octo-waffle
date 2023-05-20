@@ -127,13 +127,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b6775f004341104da103493c1fe40f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisablePlayerInput: 0
+  DisableInput: 0
   UseKey: 0
   ReloadKey: 0
   FireKeyDown: 0
   FireKey: 0
   AltFire: 0
   AltFireDown: 0
+  MousePosition: {x: 0, y: 0, z: 0}
 --- !u!114 &9127889449909241548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530586994baa6d04b83b5c7d7fe7f650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentWeapon: {fileID: 11400000, guid: 7949fafd4b8994d4c9c0c9731e9542ca, type: 2}
+  CurrentWeapon: {fileID: 11400000, guid: 6528b1d971b9a7b4083f332a18007bf5, type: 2}
   IsReloading: 0
   IsAiming: 0
   AimDeadZone: 2

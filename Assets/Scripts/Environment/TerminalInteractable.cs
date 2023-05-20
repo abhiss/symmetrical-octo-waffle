@@ -7,18 +7,21 @@ public class TerminalInteractable : NetworkBehaviour
     public GameObject[] Targets;
     public GameObject TerminalScreen;
     private InputListener _inputListener;
+    private AudioSource _audioSrc;
 
     [Header("Rendering")]
     private Renderer _screenRenderer;
     private Color _targetColor;
     private Color _currentColor;
     private Color _startingColor;
+    private bool _playedOnce = false;
 
     [Header("Debugging")]
     public bool ShowConnections;
 
     private void Start()
     {
+        _audioSrc = GetComponent<AudioSource>();
         _screenRenderer = TerminalScreen.GetComponent<Renderer>();
         _startingColor = _screenRenderer.material.color;
         _currentColor = Color.black;
@@ -27,14 +30,31 @@ public class TerminalInteractable : NetworkBehaviour
 
     private void Update()
     {
+        ScreenGlow();
+
+        if (_inputListener == null)
+        {
+            return;
+        }
+
+        if (_inputListener.UseKey)
+        {
+            Interactable.MessageTargets(Targets);
+        }
+
+        if (!_playedOnce)
+        {
+            _audioSrc.Play();
+            _playedOnce = true;
+        }
+    }
+
+    private void ScreenGlow()
+    {
         _targetColor = Color.black;
         if (_inputListener != null)
         {
-           _targetColor = _startingColor;
-            if (_inputListener.UseKey)
-            {
-                Interactable.MessageTargets(Targets);
-            }
+            _targetColor = _startingColor;
         }
 
         _currentColor = Vector4.MoveTowards(_currentColor, _targetColor, Time.deltaTime);
@@ -49,6 +69,7 @@ public class TerminalInteractable : NetworkBehaviour
             return;
         }
 
+        _playedOnce = false;
         _inputListener = other.GetComponent<InputListener>();
     }
 
@@ -59,6 +80,7 @@ public class TerminalInteractable : NetworkBehaviour
             return;
         }
 
+        _playedOnce = false;
         _inputListener = null;
     }
 

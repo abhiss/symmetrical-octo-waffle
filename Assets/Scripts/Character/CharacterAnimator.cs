@@ -32,16 +32,16 @@ public class CharacterAnimator : NetworkBehaviour
     private void Start()
     {
         if (!base.IsOwner)
-		{
+        {
             return;
         }
 
         _model = transform.GetChild(0).gameObject;
-		_animator = _model.GetComponent<Animator>();
+        _animator = _model.GetComponent<Animator>();
 
         // Movement
-		_horizontalHash = Animator.StringToHash("Horizontal");
-		_verticalHash = Animator.StringToHash("Vertical");
+        _horizontalHash = Animator.StringToHash("Horizontal");
+        _verticalHash = Animator.StringToHash("Vertical");
 
         // Aiming
         _characterShooting = GetComponent<CharacterShooting>();
@@ -50,7 +50,7 @@ public class CharacterAnimator : NetworkBehaviour
     private void Update()
     {
         if (!base.IsOwner)
-		{
+        {
             return;
         }
 

@@ -28,27 +28,27 @@ public class CharacterMotor : NetworkBehaviour
     public bool ShowInput;
     public bool ShowInputVelocity;
 
-	private void Start()
+    private void Start()
     {
         if (!base.IsOwner)
-		{
+        {
             Destroy(CameraObject);
             return;
-		}
+        }
 
         // Assert we have a camera
-		if (CameraObject == null)
-		{
-			Debug.LogError("Missing camera object on player, exiting.");
-			return;
-		}
+        if (CameraObject == null)
+        {
+            Debug.LogError("Missing camera object on player, exiting.");
+            return;
+        }
 
         // Input
         _inputListener = GetComponent<InputListener>();
 
-		// Controller + Camera
-		_characterCamera = CameraObject.GetComponent<CharacterCamera>();
-		_characterController = GetComponent<CharacterController>();
+        // Controller + Camera
+        _characterCamera = CameraObject.GetComponent<CharacterCamera>();
+        _characterController = GetComponent<CharacterController>();
     }
 
     public void AddForce(Vector3 force)
@@ -56,7 +56,7 @@ public class CharacterMotor : NetworkBehaviour
         _forceVelocity += force;
     }
 
-	private void Update()
+    private void Update()
     {
         if (!base.IsOwner)
         {

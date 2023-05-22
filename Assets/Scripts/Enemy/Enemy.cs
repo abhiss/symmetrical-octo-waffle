@@ -5,7 +5,7 @@ using UnityEngine;
 class Enemy : MonoBehaviour
 {
     [Header("Stats")]
-    [SerializeField] private float _health;
+    private HealthSystem _health;
     [SerializeField] private float _damage;
     //  This member will later influence the speed at which the enemy moves using the NavMeshAgent.
     [SerializeField] private float _speed;
@@ -14,22 +14,24 @@ class Enemy : MonoBehaviour
     [Header("Movement")]
     private StateMachine _stateHandler;
 
-    /*
     [Header("Animation")]
-    Uncomment after integrating animation for enemy.
     private EnemyAnimationHandler _animationHandler;
-    */
+    private UnityEngine.AI.NavMeshAgent _navMeshAgent;
 
     public float Health
     {
-        get { return _health; }
-        set { _health = value; }
+        get { return _health.currentHealth; }
+        set { _health.currentHealth = value; }
     }
 
     public float Damage 
     {
         get { return _damage; }
-        set { _damage = value; }
+    }
+
+    public float Speed
+    {
+        get { return _speed; }
     }
 
     public bool IsAlive
@@ -39,7 +41,7 @@ class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage) 
     {
-        _health -= damage;
+        _health.TakeDamage(damage);
     }
     
     /*
@@ -52,24 +54,20 @@ class Enemy : MonoBehaviour
     */
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        /*
-        Uncomment after integrating animation for enemy.
         _animationHandler = this.GetComponent<EnemyAnimationHandler>();
-        */
         _stateHandler = this.GetComponent<StateMachine>();
+        _health = this.GetComponent<HealthSystem>();
+        _navMeshAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        _isAlive = _health > 0;
+        _isAlive = Health > 0;
 
-        /*
-        Uncomment after integrating animation for enemy.
         _animationHandler.UpdateAnimationTrigger();
-        */
         // Enemy is dead, so only proceed with die function
         if (!_isAlive)
         {
@@ -79,6 +77,7 @@ class Enemy : MonoBehaviour
 
     void Die()
     {
+        _navMeshAgent.isStopped = true;
         Destroy(gameObject, 2);
     }
 }

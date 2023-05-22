@@ -22,11 +22,6 @@ public class ChaseState : State
 
     }
 
-    public override string GetStateAsString()
-    {
-        return "Chase";
-    }
-
     // Update is called once per frame
     public override State StateFunction(UnityEngine.AI.NavMeshAgent navAgent)
     {

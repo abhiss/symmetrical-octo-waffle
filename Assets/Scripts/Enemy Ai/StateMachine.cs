@@ -8,14 +8,15 @@ public class StateMachine : MonoBehaviour
     [SerializeField] private State CurrentState;
     private NavMeshAgent navAgent;
 
-    public string GetCurrentStateAsString()
+    public State GetCurrentState()
     {
-        return CurrentState.GetStateAsString();
+        return CurrentState;
     }
 
     void Start(){
         navAgent = GetComponent<NavMeshAgent>();
     }
+
     // Update is called once per frame
     void Update()
     {

@@ -7,19 +7,21 @@ public class EnemyAnimationHandler : MonoBehaviour
     private Enemy _enemy;
     private StateMachine _stateMachine;
     private Animator _animator;
-    private string _currentState;
+    private State _currentState;
+    private UnityEngine.AI.NavMeshAgent _navMeshAgent;
 
-    void Start()
+    void Awake()
     {
         _enemy = this.GetComponent<Enemy>();
         _stateMachine = this.GetComponent<StateMachine>();
         _animator = this.GetComponent<Animator>();
-        _currentState = _stateMachine.GetCurrentStateAsString();
+        _navMeshAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        _currentState = _stateMachine.GetCurrentState();
     }
 
     public void UpdateAnimationTrigger()
     {
-        _currentState = _stateMachine.GetCurrentStateAsString();
+        _currentState = _stateMachine.GetCurrentState();
         if (!_enemy.IsAlive)
         {
             _animator.SetTrigger("Die");
@@ -27,13 +29,16 @@ public class EnemyAnimationHandler : MonoBehaviour
         //  Handle enemy movement animations based on current state.
         switch (_currentState)
         {
-            case "Idle":
+            case IdleState:
+                _navMeshAgent.speed = _enemy.Speed;
                 _animator.SetTrigger("Idle");
                 break;
-            case "Chase":
+            case ChaseState:
+                _navMeshAgent.speed = _enemy.Speed * 1.5f;
                 _animator.SetTrigger("Chase");
                 break;
-            case "Attack":
+            case AttackState:
+                _navMeshAgent.speed = 0;
                 _animator.SetTrigger("Attack");
                 break;
             default:

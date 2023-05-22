@@ -18,11 +18,6 @@ public class AttackState : State
         //player = GameObject.Find("TopDownCharacter");
     }
 
-    public override string GetStateAsString()
-    {
-        return "Attack";
-    }
-
     // UnityEngine.AI.NavMeshAgent navAgent
     public override State StateFunction(UnityEngine.AI.NavMeshAgent navAgent)
     {

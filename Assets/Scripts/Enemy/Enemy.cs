@@ -7,12 +7,8 @@ class Enemy : MonoBehaviour
     [Header("Stats")]
     private HealthSystem _health;
     [SerializeField] private float _damage;
-    //  This member will later influence the speed at which the enemy moves using the NavMeshAgent.
     [SerializeField] private float _speed;
     private bool _isAlive;
-
-    [Header("Movement")]
-    private StateMachine _stateHandler;
 
     [Header("Animation")]
     private EnemyAnimationHandler _animationHandler;
@@ -44,31 +40,21 @@ class Enemy : MonoBehaviour
         _health.TakeDamage(damage);
     }
     
-    /*
-    Placeholder function for dealing damage to a GameObject with a player script that contains a TakeDamage function.
-
-    private void DealDamage(Player player)
-    {
-        player.TakeDamage(_damage);
-    }
-    */
-
-    // Start is called before the first frame update
     void Awake()
     {
         _animationHandler = this.GetComponent<EnemyAnimationHandler>();
-        _stateHandler = this.GetComponent<StateMachine>();
         _health = this.GetComponent<HealthSystem>();
         _navMeshAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        //  Update alive status.
         _isAlive = Health > 0;
 
+        // Check for state on every frame and update animation accordingly.
         _animationHandler.UpdateAnimationTrigger();
-        // Enemy is dead, so only proceed with die function
+        // Enemy is dead, so proceed with die function.
         if (!_isAlive)
         {
             Die();
@@ -77,6 +63,7 @@ class Enemy : MonoBehaviour
 
     void Die()
     {
+        //  Stop nav mesh agent now that enemy is dead.
         _navMeshAgent.isStopped = true;
         Destroy(gameObject, 2);
     }

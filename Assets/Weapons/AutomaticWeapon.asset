@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Damage: 5
   FireRate: 0.1
-  CurrentClipSize: 50
   MaxClipSize: 50
-  CurrentAmmo: 200
   MaxAmmo: 250
   ReloadTime: 3
   MaxDistance: 100

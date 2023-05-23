@@ -9,11 +9,11 @@ public class CharacterShooting : MonoBehaviour
 
     [Header("Properties")]
     public bool IsAiming = false;
-    public float AimDeadZone = 3.5f;
+    public float CursorDeadZone = 3.5f;
     public LayerMask PlayerMask;
     public LayerMask EnemyMask;
     private Vector3 _aimDirection;
-    private Ray _cameraRay;
+    private int _newClip = 0;
     private bool _shootEnabled = true;
 
     [Header("Aim Assist")]
@@ -22,6 +22,7 @@ public class CharacterShooting : MonoBehaviour
 
     [Header("Audio and Visuals")]
     public GameObject SfxVfx;
+    public float VfxInterval = 0.09f;
     private Light _gunLight;
     private AudioSource _gunSfx;
 
@@ -29,6 +30,11 @@ public class CharacterShooting : MonoBehaviour
     public Material LaserMaterial;
     public float LaserWidth = 0.5f;
     private LineRenderer _laserLine;
+
+    [Header("Cooldowns")]
+    private float _fireRateCoolDown = 0.0f;
+    private float _vfxCoolDown = 0.0f;
+    private float _reloadDuration = 0.0f;
 
     private void Start()
     {
@@ -54,29 +60,81 @@ public class CharacterShooting : MonoBehaviour
 
     private void Update()
     {
-        // Calculation direction
-        Vector3 mousePosition = Input.mousePosition;
-        _cameraRay = Camera.main.ScreenPointToRay(mousePosition);
-        _aimDirection = CalculateDirection();
-
-        if (_shootEnabled) {
-            Debug.Log(CurrentWeapon.CurrentClipSize + " / " + CurrentWeapon.CurrentAmmo);
-        }
+        Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
+        _aimDirection = GetAimDirection(cursorPosition);
 
         InputEvents();
+
+        if (_shootEnabled)
+        {
+            Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
+        }
+        else if (IsReloading)
+        {
+            Debug.Log("RELOADING");
+        }
+
+        // Gameplay
+        _shootEnabled = _fireRateCoolDown <= 0 && _reloadDuration <= 0;
+        _fireRateCoolDown -= Time.deltaTime;
+        _reloadDuration -= Time.deltaTime;
+
+        if (_reloadDuration <= 0 && _newClip > 0)
+        {
+            CurrentWeapon.CurrentClipSize = _newClip;
+            _newClip = 0;
+        }
+
+        // Misc
+        _vfxCoolDown -= Time.deltaTime;
+
+        if (_reloadDuration <= 0)
+        {
+            _reloadDuration = 0;
+        }
+
+        if (_fireRateCoolDown <= 0)
+        {
+            _fireRateCoolDown = 0;
+        }
+
+        if (_reloadDuration <= 0)
+        {
+            _reloadDuration = 0;
+        }
+
+        if (_vfxCoolDown <= 0)
+        {
+            _vfxCoolDown = 0;
+            _gunLight.enabled = false;
+        }
     }
 
     private void InputEvents()
     {
         // Reloading
-        bool reloadConditions = _shootEnabled && CurrentWeapon.CurrentClipSize != CurrentWeapon.MaxClipSize && CurrentWeapon.CurrentAmmo > 0;
+        bool reloadConditions = !IsReloading && CurrentWeapon.CurrentClipSize != CurrentWeapon.MaxClipSize;
         if (_inputListener.ReloadKey && reloadConditions)
         {
-            StartCoroutine(ReloadRoutine());
-        }
+            if (CurrentWeapon.CurrentAmmo <= 0)
+            {
+                Debug.Log("NO AMMO");
+                return;
+            }
 
-        // Shooting
-        IsAiming = false;
+            int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
+            int newBulletAmount = currentBulletAmount - CurrentWeapon.MaxClipSize;
+            if (newBulletAmount < 0) {
+                newBulletAmount = 0;
+            }
+
+            // Update clip
+            _newClip = Mathf.Min(CurrentWeapon.MaxClipSize, currentBulletAmount);
+            CurrentWeapon.CurrentClipSize = 0;
+            CurrentWeapon.CurrentAmmo = newBulletAmount;
+
+            _reloadDuration = CurrentWeapon.ReloadTime;
+        }
 
         // Automatic or single fire
         bool inputFire = _inputListener.FireKeyDown;
@@ -85,30 +143,25 @@ public class CharacterShooting : MonoBehaviour
             inputFire = _inputListener.FireKey;
         }
 
+        // Shooting
         bool shootingConditions =  _shootEnabled && CurrentWeapon.CurrentClipSize > 0;
         if (inputFire && shootingConditions)
         {
-            StartCoroutine(FireRate());
-            IsAiming = true;
             Shoot();
         }
 
+        IsReloading = _reloadDuration > 0;
+        IsAiming = inputFire && shootingConditions || _inputListener.AltFire;
+
         // Laser Sights
-        if (_inputListener.AltFire)
-        {
-            IsAiming = true;
-            EnableLaser();
-        }
-        else
-        {
-            _laserLine.enabled = false;
-        }
+        DrawLaser();
+        _laserLine.enabled = _inputListener.AltFire;
     }
 
+    // Gameplay
+    // -------------------------------------------------------------------------
     private void Shoot()
     {
-        // Shoot one bullet
-        StartCoroutine(GunVFX());
         if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             // TODO: Flavor Section
@@ -124,16 +177,29 @@ public class CharacterShooting : MonoBehaviour
             }
         }
 
+        // Gameplay
+        _fireRateCoolDown = CurrentWeapon.FireRate;
         --CurrentWeapon.CurrentClipSize;
+
+        // VFX
+        _gunSfx.Play();
+        if (_gunLight.enabled == false)
+        {
+            _vfxCoolDown = VfxInterval;
+            _gunLight.enabled = true;
+        }
     }
 
-    private Vector3 AdjustCursorPostion()
+    // Aim directional Logic
+    // -------------------------------------------------------------------------
+    private Vector3 AdjustCursorPostion(Vector3 mousePosition)
     {
         Vector3 newPosition = transform.position + transform.forward;
+        LayerMask ignoreMask = EnemyMask | PlayerMask;
+        Ray cameraRay = Camera.main.ScreenPointToRay(mousePosition);
 
         // Adjust to the floor
-        LayerMask ignoreMask = EnemyMask | PlayerMask;
-        if (Physics.Raycast(_cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
         {
             newPosition = hit.point;
             newPosition.y += 1.0f; // Player Half Height
@@ -142,14 +208,13 @@ public class CharacterShooting : MonoBehaviour
         return newPosition;
     }
 
-    private Vector3 CalculateDirection()
+    private Vector3 GetAimDirection(Vector3 aimPosition)
     {
-        Vector3 cursorPosition = AdjustCursorPostion();
-        Vector3 newDirection = cursorPosition - transform.position;
+        Vector3 newDirection = aimPosition - transform.position;
 
         // Dead zone
-        float deadZoneDist = Vector3.Distance(cursorPosition, transform.position);
-        if (deadZoneDist <= AimDeadZone)
+        float deadZoneDist = Vector3.Distance(aimPosition, transform.position);
+        if (deadZoneDist <= CursorDeadZone)
         {
             newDirection = transform.forward;
         }
@@ -157,12 +222,12 @@ public class CharacterShooting : MonoBehaviour
         {
             // Aim assist (target closest enemy to cursor)
             float closestDistance = Mathf.Infinity;
-            Vector3 closestPosition = cursorPosition;
-            Collider[] hitColliders = Physics.OverlapSphere(cursorPosition, AssistRaidus, EnemyMask);
+            Vector3 closestPosition = aimPosition;
+            Collider[] hitColliders = Physics.OverlapSphere(aimPosition, AssistRaidus, EnemyMask);
             foreach (var hitCollider in hitColliders)
             {
                 Vector3 hitPosiiton = hitCollider.transform.position;
-                float dist = Vector3.Distance(cursorPosition, hitPosiiton);
+                float dist = Vector3.Distance(aimPosition, hitPosiiton);
                 if (dist <= closestDistance)
                 {
                     closestPosition = hitPosiiton;
@@ -175,7 +240,9 @@ public class CharacterShooting : MonoBehaviour
         return newDirection.normalized;
     }
 
-    private void EnableLaser()
+    // Misc
+    // -------------------------------------------------------------------------
+    private void DrawLaser()
     {
         Vector3 laserEndPoint = transform.position;
         laserEndPoint += _aimDirection * CurrentWeapon.MaxDistance;
@@ -188,48 +255,5 @@ public class CharacterShooting : MonoBehaviour
         }
 
         _laserLine.SetPosition(1, laserEndPoint);
-        _laserLine.enabled = true;
-    }
-
-    private IEnumerator GunVFX()
-    {
-        _gunSfx.Play();
-        _gunLight.enabled = true;
-        yield return new WaitForSeconds(0.05f);
-        _gunLight.enabled = false;
-    }
-
-    private IEnumerator FireRate()
-    {
-        _shootEnabled = false;
-        yield return new WaitForSeconds(CurrentWeapon.FireRate);
-        _shootEnabled = true;
-    }
-
-    private IEnumerator ReloadRoutine()
-    {
-        Debug.Log("Reloading...");
-        _shootEnabled = false;
-        IsReloading = true;
-
-        // Update ammo pool
-        int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
-        int newBulletAmount = currentBulletAmount - CurrentWeapon.MaxClipSize;
-        if (newBulletAmount < 0) {
-            newBulletAmount = 0;
-        }
-
-        // Update clip
-        int newClip = Mathf.Min(CurrentWeapon.MaxClipSize, currentBulletAmount);
-        CurrentWeapon.CurrentClipSize = 0;
-        CurrentWeapon.CurrentAmmo = newBulletAmount;
-
-        yield return new WaitForSeconds(CurrentWeapon.ReloadTime);
-
-        CurrentWeapon.CurrentClipSize = newClip;
-
-        IsReloading = false;
-        _shootEnabled = true;
-        Debug.Log("Reloading... Done");
     }
 }

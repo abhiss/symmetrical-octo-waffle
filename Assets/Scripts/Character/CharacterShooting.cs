@@ -1,10 +1,11 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterShooting : MonoBehaviour
 {
     public WeaponManager CurrentWeapon;
     public bool IsReloading = false;
+    public List<GameObject> AttackModifiers = new List<GameObject>();
     private InputListener _inputListener;
 
     [Header("Properties")]
@@ -14,7 +15,7 @@ public class CharacterShooting : MonoBehaviour
     public LayerMask EnemyMask;
     private Vector3 _aimDirection;
     private int _newClip = 0;
-    private bool _shootEnabled = true;
+    private bool _fireEnabled = true;
 
     [Header("Aim Assist")]
     public bool EnableAimAssist = true;
@@ -38,12 +39,12 @@ public class CharacterShooting : MonoBehaviour
 
     private void Start()
     {
-        // Input
-        _inputListener = GetComponent<InputListener>();
-
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
+
+        // Input
+        _inputListener = GetComponent<InputListener>();
 
         // Laser
         _laserLine = gameObject.AddComponent<LineRenderer>();
@@ -62,10 +63,9 @@ public class CharacterShooting : MonoBehaviour
     {
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
         _aimDirection = GetAimDirection(cursorPosition);
-
         InputEvents();
 
-        if (_shootEnabled)
+        if (_fireEnabled)
         {
             Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
         }
@@ -74,66 +74,20 @@ public class CharacterShooting : MonoBehaviour
             Debug.Log("RELOADING");
         }
 
-        // Gameplay
-        _shootEnabled = _fireRateCoolDown <= 0 && _reloadDuration <= 0;
-        _fireRateCoolDown -= Time.deltaTime;
-        _reloadDuration -= Time.deltaTime;
-
-        if (_reloadDuration <= 0 && _newClip > 0)
-        {
-            CurrentWeapon.CurrentClipSize = _newClip;
-            _newClip = 0;
-        }
-
-        // Misc
-        _vfxCoolDown -= Time.deltaTime;
-
-        if (_reloadDuration <= 0)
-        {
-            _reloadDuration = 0;
-        }
-
-        if (_fireRateCoolDown <= 0)
-        {
-            _fireRateCoolDown = 0;
-        }
-
-        if (_reloadDuration <= 0)
-        {
-            _reloadDuration = 0;
-        }
-
-        if (_vfxCoolDown <= 0)
-        {
-            _vfxCoolDown = 0;
-            _gunLight.enabled = false;
-        }
+        _gunLight.enabled = _vfxCoolDown > 0;
+        DrawLaser();
+        GameplayTimers();
     }
 
     private void InputEvents()
     {
+        _fireEnabled = _fireRateCoolDown <= 0 && _reloadDuration <= 0 && CurrentWeapon.CurrentClipSize > 0;
+
         // Reloading
         bool reloadConditions = !IsReloading && CurrentWeapon.CurrentClipSize != CurrentWeapon.MaxClipSize;
         if (_inputListener.ReloadKey && reloadConditions)
         {
-            if (CurrentWeapon.CurrentAmmo <= 0)
-            {
-                Debug.Log("NO AMMO");
-                return;
-            }
-
-            int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
-            int newBulletAmount = currentBulletAmount - CurrentWeapon.MaxClipSize;
-            if (newBulletAmount < 0) {
-                newBulletAmount = 0;
-            }
-
-            // Update clip
-            _newClip = Mathf.Min(CurrentWeapon.MaxClipSize, currentBulletAmount);
-            CurrentWeapon.CurrentClipSize = 0;
-            CurrentWeapon.CurrentAmmo = newBulletAmount;
-
-            _reloadDuration = CurrentWeapon.ReloadTime;
+            Reload();
         }
 
         // Automatic or single fire
@@ -144,24 +98,30 @@ public class CharacterShooting : MonoBehaviour
         }
 
         // Shooting
-        bool shootingConditions =  _shootEnabled && CurrentWeapon.CurrentClipSize > 0;
-        if (inputFire && shootingConditions)
+        if (inputFire && _fireEnabled)
         {
-            Shoot();
+            Fire();
         }
 
+        // Conditions
         IsReloading = _reloadDuration > 0;
-        IsAiming = inputFire && shootingConditions || _inputListener.AltFire;
+        IsAiming = inputFire || _inputListener.AltFire;
 
-        // Laser Sights
-        DrawLaser();
         _laserLine.enabled = _inputListener.AltFire;
     }
 
     // Gameplay
     // -------------------------------------------------------------------------
-    private void Shoot()
+    private void Fire()
     {
+        // VFX
+        _gunSfx.Play();
+        _vfxCoolDown = VfxInterval;
+
+        // Gameplay
+        _fireRateCoolDown = CurrentWeapon.FireRate;
+        --CurrentWeapon.CurrentClipSize;
+
         if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             // TODO: Flavor Section
@@ -170,23 +130,65 @@ public class CharacterShooting : MonoBehaviour
 
             // Hit an enemy
             Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
-            if (healthSystem != null)
+            if (healthSystem == null)
             {
-                // Deal damage to the object with HealthSystem component
-                healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
+                return;
+            }
+
+            // Deal damage to the object with HealthSystem component
+            healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
+            foreach (var modifer in AttackModifiers)
+            {
+
             }
         }
+    }
 
-        // Gameplay
-        _fireRateCoolDown = CurrentWeapon.FireRate;
-        --CurrentWeapon.CurrentClipSize;
-
-        // VFX
-        _gunSfx.Play();
-        if (_gunLight.enabled == false)
+    private void Reload()
+    {
+        if (CurrentWeapon.CurrentAmmo <= 0)
         {
-            _vfxCoolDown = VfxInterval;
-            _gunLight.enabled = true;
+            Debug.Log("NO AMMO");
+            return;
+        }
+
+        // Remove ammo from ammo pool
+        int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
+        int newBulletAmount = currentBulletAmount - CurrentWeapon.MaxClipSize;
+        if (newBulletAmount < 0) {
+            newBulletAmount = 0;
+        }
+
+        CurrentWeapon.CurrentClipSize = 0;
+        CurrentWeapon.CurrentAmmo = newBulletAmount;
+
+        _newClip = Mathf.Min(CurrentWeapon.MaxClipSize, currentBulletAmount);
+        _reloadDuration = CurrentWeapon.ReloadTime;
+    }
+
+    private void GameplayTimers()
+    {
+        // Gameplay
+        if (_fireRateCoolDown > 0)
+        {
+            _fireRateCoolDown -= Time.deltaTime;
+        }
+
+        if (_reloadDuration > 0)
+        {
+            _reloadDuration -= Time.deltaTime;
+        }
+
+        if (_reloadDuration <= 0 && _newClip > 0)
+        {
+            CurrentWeapon.CurrentClipSize = _newClip;
+            _newClip = 0;
+        }
+
+        // Misc
+        if (_vfxCoolDown > 0)
+        {
+            _vfxCoolDown -= Time.deltaTime;
         }
     }
 

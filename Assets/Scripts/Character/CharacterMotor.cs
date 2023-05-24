@@ -66,9 +66,9 @@ public class CharacterMotor : NetworkBehaviour
         // Input
         _input = _inputListener.GetAxisInput();
         _inputVelocity = ProcessInput(_input);
-        if (!_characterCamera.IsInDeadZone())
+        if (!_characterCamera.CursorWithinDeadzone())
         {
-            RotateCharacter(_characterCamera.cursorWorldPosition);
+            RotateCharacter(_characterCamera.CursorWorldPosition);
         }
 
         // Movement

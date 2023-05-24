@@ -6,23 +6,23 @@ public class CharacterCamera : MonoBehaviour
     private InputListener _inputListener;
 
     [Header("Camera Settings")]
-    public float maxCameraRadius;
-    public float cameraSmoothing;
+    public float MaxCameraRadius = 3.0f;
+    public float CameraSmoothing = 0.3f;
     public float rotateDeadZoneRadius = 1.75f;
 
     [Header("Misc Settings")]
-    public bool lockHeight = false;
-    public float heightLock = 0.0f;
+    public bool LockHeight = false;
+    public float HeightLock = 0.0f;
     private Vector3 _camVelocity = Vector3.zero;
 
     [Header("Rendering")]
-    public LayerMask wallLayer;
+    public LayerMask WallLayer;
     private RaycastHit _currHit;
     private Collider _prevHit;
 
     [Header("Info")]
-    public Vector3 cursorWorldPosition;
-    public bool drawCameraLogic = false;
+    public Vector3 CursorWorldPosition;
+    public bool DrawCameraLogic = false;
     private Vector3 _cameraOffset;
     private Vector3 _cameraPoint;
     private Vector3 _playerPosition;
@@ -45,37 +45,50 @@ public class CharacterCamera : MonoBehaviour
 
         // Get Cursor position in world space
         _playerPosition = PlayerObject.transform.position;
-        _cursorPlane.SetNormalAndPosition(Vector3.down, _playerPosition);
+        _cursorPlane.SetNormalAndPosition(Vector3.up, _playerPosition);
 
         // Get point on plane
         Ray ray = Camera.main.ScreenPointToRay(_inputListener.MousePosition);
         if (_cursorPlane.Raycast(ray, out float dist))
         {
-            cursorWorldPosition = ray.GetPoint(dist);
+            CursorWorldPosition = ray.GetPoint(dist);
         }
 
-        Vector3 diff = (cursorWorldPosition - _playerPosition) / 2;
-        Vector3 dir = Vector3.Normalize(diff);
-        float len = Mathf.Min(maxCameraRadius, diff.magnitude);
-
-        // Lock the camera at the offset
-        _cameraPoint = _playerPosition + dir * len;
-        if (lockHeight)
-        {
-            _cameraPoint.y = heightLock;
-        }
+        _cameraPoint = GetCameraPosition();
+        Vector3 finalPosition = _cameraPoint + _cameraOffset;
+        CameraShake(ref finalPosition);
 
         transform.position = Vector3.SmoothDamp(
             transform.position,
-            _cameraPoint + _cameraOffset,
+            finalPosition,
             ref _camVelocity,
-            cameraSmoothing
+            CameraSmoothing
         );
     }
 
-    public bool IsInDeadZone()
+    private void CameraShake(ref Vector3 cameraPosition)
     {
-        float len = Vector3.Distance(cursorWorldPosition, _playerPosition);
+
+    }
+
+    private Vector3 GetCameraPosition()
+    {
+        Vector3 diff = (CursorWorldPosition - _playerPosition) / 2;
+        Vector3 dir = Vector3.Normalize(diff);
+        float len = Mathf.Min(MaxCameraRadius, diff.magnitude);
+
+        // Lock the camera at the offset
+        Vector3 camPos = _playerPosition + dir * len;
+        if (LockHeight)
+        {
+            camPos.y = HeightLock;
+        }
+        return camPos;
+    }
+
+    public bool CursorWithinDeadzone()
+    {
+        float len = Vector3.Distance(CursorWorldPosition, _playerPosition);
         return len <= rotateDeadZoneRadius;
     }
 
@@ -84,7 +97,7 @@ public class CharacterCamera : MonoBehaviour
         // TODO: Fix logic
         // Detect obstructions
         Vector3 dir = PlayerObject.transform.position - transform.position;
-        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, wallLayer))
+        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, WallLayer))
         {
             GameObject current = _currHit.transform.gameObject;
             if (current.GetComponent<Obstructable>() == null)
@@ -103,14 +116,14 @@ public class CharacterCamera : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (PlayerObject == null || drawCameraLogic == false)
+        if (PlayerObject == null || DrawCameraLogic == false)
         {
             return;
         }
 
         // Draws a blue line from this transform to the target
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(_playerPosition, cursorWorldPosition);
+        Gizmos.DrawLine(_playerPosition, CursorWorldPosition);
         Gizmos.DrawSphere(_cameraPoint, 0.5f);
     }
 }

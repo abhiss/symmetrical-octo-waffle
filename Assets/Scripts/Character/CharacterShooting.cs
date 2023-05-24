@@ -103,11 +103,18 @@ public class CharacterShooting : MonoBehaviour
             Fire();
         }
 
+        _laserLine.enabled = _inputListener.AltFire;
+
         // Conditions
         IsReloading = _reloadDuration > 0;
         IsAiming = inputFire || _inputListener.AltFire;
 
-        _laserLine.enabled = _inputListener.AltFire;
+        // Apply new clip
+        if (_reloadDuration <= 0 && _newClip > 0)
+        {
+            CurrentWeapon.CurrentClipSize = _newClip;
+            _newClip = 0;
+        }
     }
 
     // Gameplay
@@ -177,12 +184,6 @@ public class CharacterShooting : MonoBehaviour
         if (_reloadDuration > 0)
         {
             _reloadDuration -= Time.deltaTime;
-        }
-
-        if (_reloadDuration <= 0 && _newClip > 0)
-        {
-            CurrentWeapon.CurrentClipSize = _newClip;
-            _newClip = 0;
         }
 
         // Misc

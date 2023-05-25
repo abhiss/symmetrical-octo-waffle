@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,14 +7,19 @@ using Shared;
 class Enemy : MonoBehaviour
 {
     [Header("Stats")]
-    private HealthSystem _health;
     [SerializeField] private float _damage;
     [SerializeField] private float _speed;
-    private bool _isAlive;
+    [SerializeField] private float _attackSpeed;
+    private HealthSystem _health;
 
-    [Header("Animation")]
+    private bool _isAlive;
+    private const float DeathTime = 5;
+    [SerializeField] private GameObject _target;
+
     private EnemyAnimationHandler _animationHandler;
-    private UnityEngine.AI.NavMeshAgent _navMeshAgent;
+    private StateMachine _stateMachine;
+    private State _currentState;
+    private Dictionary<Type, Action> _stateActions;
 
     public float Health
     {
@@ -36,36 +42,68 @@ class Enemy : MonoBehaviour
         get { return _isAlive; }
     }
 
-    public void TakeDamage(float damage) 
-    {
-        _health.TakeDamage(gameObject, damage);
-    }
-    
     void Awake()
     {
-        _animationHandler = this.GetComponent<EnemyAnimationHandler>();
-        _health = this.GetComponent<HealthSystem>();
-        _navMeshAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        _animationHandler = GetComponent<EnemyAnimationHandler>();
+        _health = GetComponent<HealthSystem>();
+        _stateMachine = GetComponent<StateMachine>();
+        _currentState = _stateMachine.GetCurrentState();
+        _target = GameObject.Find("TopDownCharacter");
+        _stateActions = new();
+
+        // Map states to their correct functions.
+        _stateActions[typeof(AttackState)] = Attack;
+        _stateActions[typeof(ChaseState)] = Chase;
+        _stateActions[typeof(IdleState)] = Idle;
     }
 
     void Update()
     {
-        //  Update alive status.
+        // Update alive status.
         _isAlive = Health > 0;
+        _target = GameObject.Find("TopDownCharacter");
 
-        // Check for state on every frame and update animation accordingly.
-        _animationHandler.UpdateAnimationTrigger();
-        // Enemy is dead, so proceed with die function.
+        // Take an action based on current state.
+        StartCoroutine(TakeAction());
+    }
+
+    IEnumerator TakeAction()
+    {
+        // Update the current enemy state.
+        _currentState = _stateMachine.GetCurrentState();
+        // If the enemy is dead, begin a Death action and wait for it to finish.
         if (!_isAlive)
         {
             Die();
+            yield return new WaitForSeconds(DeathTime);
         }
+        //  If the enemy is alive, invoke a function based on the current enemy state.
+        _stateActions[_currentState.GetType()].Invoke();
     }
 
     void Die()
     {
-        //  Stop nav mesh agent now that enemy is dead.
-        _navMeshAgent.isStopped = true;
-        Destroy(gameObject, 2);
+        _animationHandler.AnimateDeath();
+        Destroy(gameObject, DeathTime);
+    }
+
+    void Attack()
+    {
+        _animationHandler.AnimateAttack();
+    }
+
+    void Chase()
+    {
+        _animationHandler.AnimateChase();
+    }
+
+    void Idle()
+    {
+        _animationHandler.AnimateIdle();
+    }
+
+    bool IsAttacking()
+    {
+        return _currentState.GetType() == typeof(AttackState);
     }
 }

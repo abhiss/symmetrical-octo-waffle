@@ -12,45 +12,38 @@ public class EnemyAnimationHandler : MonoBehaviour
 
     void Awake()
     {
-        _enemy = this.GetComponent<Enemy>();
-        _stateMachine = this.GetComponent<StateMachine>();
-        _animator = this.GetComponent<Animator>();
-        _navMeshAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        _currentState = _stateMachine.GetCurrentState();
+        _enemy = GetComponent<Enemy>();
+        _animator = GetComponent<Animator>();
+        _navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
-    public void UpdateAnimationTrigger()
+    public void AnimateAttack()
     {
-        _currentState = _stateMachine.GetCurrentState();
-        //  If the enemy is no longer alive, play a death animation.
-        if (!_enemy.IsAlive)
-        {
-            _animator.SetTrigger("Die");
-            return;
-        }
-        //  Handle enemy movement animations based on current state.
-        switch (_currentState)
-        {
-            //  Enemy is idle, so it walks at regular speed and plays an idle animation.
-            case IdleState:
-                _navMeshAgent.speed = _enemy.Speed;
-                _animator.SetTrigger("Idle");
-                break;
-            //  Enemy is chasing the player, so it runs at 1.5x speed and plays a chase animation.
-            case ChaseState:
-                _navMeshAgent.speed = _enemy.Speed * 1.5f;
-                _animator.SetTrigger("Chase");
-                break;
-            //  Enemy is attacking the player, so it halts movement and plays an attack animation.
-            case AttackState:
-                _navMeshAgent.speed = 0;
-                _animator.SetTrigger("Attack");
-                break;
-            default:
-                //  If current state is somehow invalid, just play an idle animation.
-                _animator.SetTrigger("Idle");
-                break;
-        }
+        // Stop the nav mesh agent so the enemy stays in place while playing attack animation.
+        _navMeshAgent.isStopped = true;
+        _animator.SetTrigger("Attack");
     }
-    
+
+    public void AnimateIdle()
+    {
+        // Enable the nav mesh agent and make it move at regular speed while playing idle animation.
+        _navMeshAgent.isStopped = false;
+        _navMeshAgent.speed = _enemy.Speed;
+        _animator.SetTrigger("Idle");
+    }
+
+    public void AnimateChase()
+    {
+        // Enable the nav mesh agent and make it move at a faster speed while playing chase animation.
+        _navMeshAgent.isStopped = false;
+        _navMeshAgent.speed = _enemy.Speed * 1.5f;
+        _animator.SetTrigger("Chase");
+    }
+
+    public void AnimateDeath()
+    {
+        // Disable the nav mesh agent so the enemy stays in place while playing death animation.
+        _navMeshAgent.isStopped = true;
+        _animator.SetTrigger("Die");
+    }
 }

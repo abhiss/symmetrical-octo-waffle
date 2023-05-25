@@ -38,6 +38,7 @@ public class CharacterCamera : MonoBehaviour
     {
         if (PlayerObject == null)
         {
+            Debug.LogError("Player object is null");
             return;
         }
 

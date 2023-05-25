@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CharacterShooting : MonoBehaviour
 {
-    public WeaponManager CurrentWeapon;
+    public WeaponCreator CurrentWeapon;
     public bool IsReloading = false;
     public List<GameObject> AttackModifiers = new List<GameObject>();
     private InputListener _inputListener;

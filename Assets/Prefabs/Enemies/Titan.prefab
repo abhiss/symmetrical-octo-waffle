@@ -1305,11 +1305,11 @@ GameObject:
   - component: {fileID: 4639616347084049350}
   - component: {fileID: 6667106185150239960}
   - component: {fileID: 5183168117318606329}
-  - component: {fileID: 3725186350204389857}
   - component: {fileID: 3638405822791086025}
   - component: {fileID: 8217161173599075421}
   - component: {fileID: 408774374431057509}
   - component: {fileID: 4123987677934442824}
+  - component: {fileID: 2226639813387487149}
   m_Layer: 0
   m_Name: Titan
   m_TagString: Untagged
@@ -1336,7 +1336,7 @@ Transform:
   - {fileID: 1725491823252483429}
   - {fileID: 2084827167240839039}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6667106185150239960
 Animator:
@@ -1373,24 +1373,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damage: 30
   _speed: 2
---- !u!114 &3725186350204389857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7654844840231423068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 217cabcbff4e0bb43af0e4de44ae874c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
-  enemyLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  damageOnCollision: 10
 --- !u!114 &3638405822791086025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1461,6 +1443,24 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &2226639813387487149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7654844840231423068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58490988ff69e8e4a85bcf529f38ef07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 100
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  damageOnCollision: 10
 --- !u!1 &7854784659092803249
 GameObject:
   m_ObjectHideFlags: 0

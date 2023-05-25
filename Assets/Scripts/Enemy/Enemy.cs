@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Shared;
 
 class Enemy : MonoBehaviour
 {
@@ -37,7 +38,7 @@ class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage) 
     {
-        _health.TakeDamage(damage);
+        _health.TakeDamage(gameObject, damage);
     }
     
     void Awake()

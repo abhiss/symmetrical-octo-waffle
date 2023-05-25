@@ -1,103 +1,158 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-// TODO: TEMPORARY: Should be a scriptable object
-public struct PlayerWeapon {
-    public float damage;
-    public float interval;
-    public float maxDistance;
-}
 
 public class TopDownCharacterShooting : MonoBehaviour
 {
-    [Header("TEMP: Weapon Settings")]
-    public float damage = 10.0f;
-    public float interval = 0.5f;
-    public float maxDistance = 100.0f;
-    PlayerWeapon currentWeapon;
+    public WeaponManager CurrentWeapon;
 
-    [Header("Laser Sights Settings")]
-    public Material laserMaterial;
-    public Transform gunNozzle;
+    [Header("Properties")]
+    public bool IsAiming = false;
+    public float AimDeadZone = 3.5f;
+    public LayerMask PlayerMask;
+    public LayerMask EnemyMask;
+    private Vector3 _aimDirection;
+    private Ray _cameraRay;
+    private bool _canShoot = true;
+
+    [Header("Aim Assist")]
+    public bool EnableAimAssist = true;
+    public float AssistRaidus = 0.5f;
+
+    [Header("Audio and Visuals")]
+    public GameObject SfxVfx;
+    private Light _gunLight;
+    private AudioSource _gunSfx;
+
+    [Header("Laser")]
+    public Material LaserMaterial;
+    public float LaserWidth = 0.5f;
     private LineRenderer _laserLine;
-
-    [Header("Animation Settings")]
-    public float aimSpeed = 10.0f;
-    public float holsterSpeed = 2.5f;
-    private bool _isAimed = false;
-    private float _aimWeight = 0.0f;
-    private GameObject _modelObject;
-    private Animator _animator;
 
     private void Start()
     {
-        // TODO: TEMPORARY
-        currentWeapon.damage = damage;
-        currentWeapon.interval = interval;
-        currentWeapon.maxDistance = maxDistance;
-
-        // Animations
-        _modelObject = transform.GetChild(0).gameObject;
-        _animator = _modelObject.GetComponent<Animator>();
-
         // Laser
         _laserLine = gameObject.AddComponent<LineRenderer>();
-        _laserLine.material = laserMaterial;
-        _laserLine.startWidth = 0.05f;
-        _laserLine.endWidth = 0.05f;
+        _laserLine.material = LaserMaterial;
+        _laserLine.startWidth = LaserWidth;
+        _laserLine.endWidth = LaserWidth;
         _laserLine.enabled = false;
+
+        // SFX / VFX
+        _gunLight = SfxVfx.GetComponent<Light>();
+        _gunLight.enabled = false;
+        _gunSfx = SfxVfx.GetComponent<AudioSource>();
     }
 
     private void Update()
     {
+        // Calculation direction
+        Vector3 mousePosition = Input.mousePosition;
+        _cameraRay = Camera.main.ScreenPointToRay(mousePosition);
+        _aimDirection = CalculateDirection();
+
         // Shooting
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        IsAiming = false;
+
+        // Automatic or single fire
+        bool inputFire = Input.GetKeyDown(KeyCode.Mouse0);
+        if (CurrentWeapon.Interval > 0.0f) {
+            inputFire = Input.GetKey(KeyCode.Mouse0);
+        }
+
+        if (inputFire && _canShoot)
         {
-            _isAimed = true;
-            // TODO: Play shoot animation and sound
+            StartCoroutine(AutomaticFire());
+            IsAiming = true;
             Shoot();
         }
 
-        // Aiming
+        // Laser Sights
         if (Input.GetKey(KeyCode.Mouse1))
         {
+            IsAiming = true;
             EnableLaser();
-            _isAimed = true;
         }
         else
         {
             _laserLine.enabled = false;
         }
-
-        AnimateAiming();
     }
 
     private void Shoot()
     {
-        Vector3 direction = transform.forward;
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, currentWeapon.maxDistance))
+        StartCoroutine(GunVFX());
+        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
-            // Raycast hit something
-            // Debug.Log("Hit: " + hit.collider.gameObject.name);
+            // TODO: Flavor Section
+            // - Create particle at hit point for debrie or sparks
+            // End of flavor Section
 
-            //HealthSystem healthSystem = hit.collider.GetComponent<HealthSystem>();
-            //if (healthSystem != null)
-            //{
-            //    // Deal damage to the object with HealthSystem component
-            //    healthSystem.TakeDamage(currentWeapon.damage);
-            //}
+            // Hit an enemy
+            Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
+            if (healthSystem != null)
+            {
+                // Deal damage to the object with HealthSystem component
+                healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
+            }
         }
+    }
+
+    private Vector3 AdjustCursorPostion()
+    {
+        Vector3 newPosition = transform.position + transform.forward;
+
+        // Adjust to the floor
+        LayerMask ignoreMask = EnemyMask | PlayerMask;
+        if (Physics.Raycast(_cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
+        {
+            newPosition = hit.point;
+            newPosition.y += 1.0f; // Player Half Height
+        }
+
+        return newPosition;
+    }
+
+    private Vector3 CalculateDirection()
+    {
+        Vector3 cursorPosition = AdjustCursorPostion();
+        Vector3 newDirection = cursorPosition - transform.position;
+
+        // Dead zone
+        float deadZoneDist = Vector3.Distance(newDirection, transform.position);
+        if (deadZoneDist <= AimDeadZone)
+        {
+            newDirection = transform.forward;
+        }
+        else if (EnableAimAssist)
+        {
+            // Aim assist (target closest enemy to cursor)
+            float closestDistance = Mathf.Infinity;
+            Vector3 closestPosition = cursorPosition;
+            Collider[] hitColliders = Physics.OverlapSphere(cursorPosition, AssistRaidus, EnemyMask);
+            foreach (var hitCollider in hitColliders)
+            {
+                Vector3 hitPosiiton = hitCollider.transform.position;
+                float dist = Vector3.Distance(cursorPosition, hitPosiiton);
+                if (dist <= closestDistance)
+                {
+                    closestPosition = hitPosiiton;
+                }
+            }
+
+            newDirection = closestPosition - transform.position;
+        }
+
+        return newDirection.normalized;
     }
 
     private void EnableLaser()
     {
-        Vector3 origin = gunNozzle.position;
-        Vector3 direction = transform.forward;
-        Vector3 laserEndPoint = origin + direction * currentWeapon.maxDistance;
+        Vector3 laserEndPoint = transform.position;
+        laserEndPoint += _aimDirection * CurrentWeapon.MaxDistance;
 
-        _laserLine.SetPosition(0, origin);
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, currentWeapon.maxDistance))
+        // Shrink laser to wall hit
+        _laserLine.SetPosition(0, transform.position);
+        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             laserEndPoint = hit.point;
         }
@@ -106,18 +161,18 @@ public class TopDownCharacterShooting : MonoBehaviour
         _laserLine.enabled = true;
     }
 
-    private void AnimateAiming()
+    private IEnumerator GunVFX()
     {
-        if (_isAimed)
-        {
-            _aimWeight = Mathf.Lerp(_aimWeight, 1, Time.deltaTime * aimSpeed);
-        }
-        else
-        {
-            _aimWeight = Mathf.Lerp(_aimWeight, 0, Time.deltaTime * holsterSpeed);
-        }
+        _gunSfx.Play();
+        _gunLight.enabled = true;
+        yield return new WaitForSeconds(0.05f);
+        _gunLight.enabled = false;
+    }
 
-        // ANIMATION LAYERS: Base: 0, Aiming: 1
-        _animator.SetLayerWeight(1, _aimWeight);
+    private IEnumerator AutomaticFire()
+    {
+        _canShoot = false;
+        yield return new WaitForSeconds(CurrentWeapon.Interval);
+        _canShoot = true;
     }
 }

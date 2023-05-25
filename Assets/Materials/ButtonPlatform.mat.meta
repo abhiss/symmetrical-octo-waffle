@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Materials/ButtonPlatform.mat.meta
 guid: 827f1d932a1e46a46a571395443c5354
+========
+guid: 6b118bdde176a7e4bb0a9f7b1c485467
+>>>>>>>> main:Assets/Materials/Player/Laser.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000

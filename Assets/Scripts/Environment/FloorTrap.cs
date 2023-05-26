@@ -4,18 +4,33 @@ using UnityEngine;
 using Unity.Netcode;
 using Shared;
 
-public class FloorTrap : MonoBehaviour
+public class FloorTrap : NetworkBehaviour
 {
-    [SerializeField] private float _damage = 2f;
+    [SerializeField] private float _damage = 1f;
+    private AudioSource _audio;
 
-    void OnTriggerEnter(Collider other)
+    private void Awake()
     {
-        Debug.Log("Triggered floor trap collider");
-        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        _audio = GetComponent<AudioSource>();
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
             GameObject player = other.gameObject;
             TriggerTrapOnPlayer(player);
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        _audio.Play();
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        _audio.Stop();
     }
 
     private void TriggerTrapOnPlayer(GameObject player)

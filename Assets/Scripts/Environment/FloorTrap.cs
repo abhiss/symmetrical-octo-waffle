@@ -8,7 +8,7 @@ public class FloorTrap : MonoBehaviour
 {
     [SerializeField] private float _damage = 2f;
 
-    void OnControllerColliderHit(ControllerColliderHit other)
+    void OnTriggerEnter(Collider other)
     {
         Debug.Log("Triggered floor trap collider");
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))

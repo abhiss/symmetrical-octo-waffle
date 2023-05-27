@@ -277,9 +277,6 @@ public class CharacterShooting : MonoBehaviour
     // -------------------------------------------------------------------------
     private void DebugMode()
     {
-        if (_fireEnabled)
-        {
-            Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
-        }
+        Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
     }
 }

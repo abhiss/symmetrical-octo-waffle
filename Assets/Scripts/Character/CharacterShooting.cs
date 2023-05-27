@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CharacterShooting : MonoBehaviour
 {
@@ -7,9 +7,14 @@ public class CharacterShooting : MonoBehaviour
     public Transform WeaponDrawer;
     private InputListener _inputListener;
 
+    [Header("Laser")]
+    public Material LaserMaterial;
+    public float LaserWidth = 0.5f;
+    private LineRenderer _laserLine;
+
     [Header("Conditions")]
-    public bool IsReloading = false;
-    public bool IsAiming = false;
+    [NonSerialized] public bool IsReloading = false;
+    [NonSerialized] public bool IsAiming = false;
 
     [Header("Properties")]
     public float CursorDeadZone = 3.5f;
@@ -28,11 +33,6 @@ public class CharacterShooting : MonoBehaviour
     private Transform weaponTransform;
     private AudioSource _playerAudioSrc;
     private Light _muzzleFlash;
-
-    [Header("Laser")]
-    public Material LaserMaterial;
-    public float LaserWidth = 0.5f;
-    private LineRenderer _laserLine;
 
     [Header("Cooldowns")]
     private float _fireRateCoolDown = 0.0f;
@@ -68,14 +68,14 @@ public class CharacterShooting : MonoBehaviour
         _aimDirection = GetAimDirection(cursorPosition);
         InputEvents();
 
-        _muzzleFlash.enabled = _vfxCoolDown > 0;
-        DrawLaser();
-        GameplayTimers();
-
         if (EnableDebugging)
         {
             DebugMode();
         }
+
+        _muzzleFlash.enabled = _vfxCoolDown > 0;
+        DrawLaser();
+        GameplayTimers();
     }
 
     private void InputEvents()

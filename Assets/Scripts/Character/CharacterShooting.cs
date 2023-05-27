@@ -4,12 +4,14 @@ using UnityEngine;
 public class CharacterShooting : MonoBehaviour
 {
     public WeaponCreator CurrentWeapon;
-    public bool IsReloading = false;
-    public List<GameObject> AttackModifiers = new List<GameObject>();
+    public Transform WeaponDrawer;
     private InputListener _inputListener;
 
-    [Header("Properties")]
+    [Header("Conditions")]
+    public bool IsReloading = false;
     public bool IsAiming = false;
+
+    [Header("Properties")]
     public float CursorDeadZone = 3.5f;
     public LayerMask PlayerMask;
     public LayerMask EnemyMask;
@@ -22,10 +24,10 @@ public class CharacterShooting : MonoBehaviour
     public float AssistRaidus = 0.5f;
 
     [Header("Audio and Visuals")]
-    public GameObject SfxVfx;
     public float VfxInterval = 0.09f;
-    private Light _gunLight;
-    private AudioSource _gunSfx;
+    private Transform weaponTransform;
+    private AudioSource _playerAudioSrc;
+    private Light _muzzleFlash;
 
     [Header("Laser")]
     public Material LaserMaterial;
@@ -37,11 +39,15 @@ public class CharacterShooting : MonoBehaviour
     private float _vfxCoolDown = 0.0f;
     private float _reloadDuration = 0.0f;
 
+    [Header("Debugging")]
+    public bool EnableDebugging = true;
+
     private void Start()
     {
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
+        SetActiveWeapon(CurrentWeapon.WeaponName);
 
         // Input
         _inputListener = GetComponent<InputListener>();
@@ -53,10 +59,7 @@ public class CharacterShooting : MonoBehaviour
         _laserLine.endWidth = LaserWidth;
         _laserLine.enabled = false;
 
-        // SFX / VFX
-        _gunLight = SfxVfx.GetComponent<Light>();
-        _gunLight.enabled = false;
-        _gunSfx = SfxVfx.GetComponent<AudioSource>();
+        _playerAudioSrc = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -65,18 +68,14 @@ public class CharacterShooting : MonoBehaviour
         _aimDirection = GetAimDirection(cursorPosition);
         InputEvents();
 
-        if (_fireEnabled)
-        {
-            Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
-        }
-        else if (IsReloading)
-        {
-            Debug.Log("RELOADING");
-        }
-
-        _gunLight.enabled = _vfxCoolDown > 0;
+        _muzzleFlash.enabled = _vfxCoolDown > 0;
         DrawLaser();
         GameplayTimers();
+
+        if (EnableDebugging)
+        {
+            DebugMode();
+        }
     }
 
     private void InputEvents()
@@ -108,13 +107,6 @@ public class CharacterShooting : MonoBehaviour
         // Conditions
         IsReloading = _reloadDuration > 0;
         IsAiming = inputFire || _inputListener.AltFire;
-
-        // Apply new clip
-        if (_reloadDuration <= 0 && _newClip > 0)
-        {
-            CurrentWeapon.CurrentClipSize = _newClip;
-            _newClip = 0;
-        }
     }
 
     // Gameplay
@@ -122,7 +114,7 @@ public class CharacterShooting : MonoBehaviour
     private void Fire()
     {
         // VFX
-        _gunSfx.Play();
+        _playerAudioSrc.PlayOneShot(CurrentWeapon.FireSound);
         _vfxCoolDown = VfxInterval;
 
         // Gameplay
@@ -144,10 +136,6 @@ public class CharacterShooting : MonoBehaviour
 
             // Deal damage to the object with HealthSystem component
             healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
-            foreach (var modifer in AttackModifiers)
-            {
-
-            }
         }
     }
 
@@ -155,14 +143,17 @@ public class CharacterShooting : MonoBehaviour
     {
         if (CurrentWeapon.CurrentAmmo <= 0)
         {
-            Debug.Log("NO AMMO");
+            _playerAudioSrc.PlayOneShot(CurrentWeapon.NoAmmoSound);
             return;
         }
+
+        _playerAudioSrc.PlayOneShot(CurrentWeapon.ReloadSound);
 
         // Remove ammo from ammo pool
         int currentBulletAmount = CurrentWeapon.CurrentAmmo + CurrentWeapon.CurrentClipSize;
         int newBulletAmount = currentBulletAmount - CurrentWeapon.MaxClipSize;
-        if (newBulletAmount < 0) {
+        if (newBulletAmount < 0)
+        {
             newBulletAmount = 0;
         }
 
@@ -184,6 +175,13 @@ public class CharacterShooting : MonoBehaviour
         if (_reloadDuration > 0)
         {
             _reloadDuration -= Time.deltaTime;
+        }
+
+        // Apply new clip
+        if (_reloadDuration <= 0 && _newClip > 0)
+        {
+            CurrentWeapon.CurrentClipSize = _newClip;
+            _newClip = 0;
         }
 
         // Misc
@@ -258,5 +256,30 @@ public class CharacterShooting : MonoBehaviour
         }
 
         _laserLine.SetPosition(1, laserEndPoint);
+    }
+
+    private void SetActiveWeapon(string weaponName)
+    {
+        if (weaponTransform != null)
+        {
+            weaponTransform.gameObject.SetActive(false);
+        }
+
+        // Needs to be like this with current setup
+        Transform newWeapon = WeaponDrawer.Find(weaponName);
+        newWeapon.gameObject.SetActive(true);
+        weaponTransform = newWeapon;
+
+        _muzzleFlash = newWeapon.Find("MuzzleLocation").GetComponent<Light>();
+    }
+
+    // Debugging
+    // -------------------------------------------------------------------------
+    private void DebugMode()
+    {
+        if (_fireEnabled)
+        {
+            Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
+        }
     }
 }

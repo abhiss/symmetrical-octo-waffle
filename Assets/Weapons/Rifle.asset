@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c3a400ac9077964a83496755bc20df4, type: 3}
+  m_Name: Rifle
+  m_EditorClassIdentifier: 
+  Damage: 5
+  FireRate: 0.1
+  MaxClipSize: 50
+  MaxAmmo: 250
+  ReloadTime: 3
+  MaxDistance: 100
+  GameModel: {fileID: 4995997753162158654, guid: 87904cabade306c48a1c8887fb52e280,
+    type: 3}
+  FireSound: {fileID: 8300000, guid: 349b4d58da38918409eca4ae5ea477ca, type: 3}
+  ReloadSound: {fileID: 0}
+  NoAmmoSound: {fileID: 0}

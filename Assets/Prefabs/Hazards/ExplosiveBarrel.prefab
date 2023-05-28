@@ -96,7 +96,8 @@ GameObject:
   - component: {fileID: 3055884487560884216}
   - component: {fileID: 930244802858869144}
   - component: {fileID: 1231736960314500342}
-  - component: {fileID: 8797009959002340612}
+  - component: {fileID: 2906780124530722827}
+  - component: {fileID: 7349666140080525074}
   m_Layer: 0
   m_Name: ExplosiveBarrel
   m_TagString: Destructible
@@ -111,9 +112,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2460647694388781311}
-  m_LocalRotation: {x: 0.000000021855694, y: 0.000000014901161, z: -0.00000004470349,
-    w: 1}
-  m_LocalPosition: {x: -2.5172799, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -211,7 +211,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   damageOnCollision: 10
---- !u!114 &8797009959002340612
+--- !u!114 &2906780124530722827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2460647694388781311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &7349666140080525074
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,10 +239,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e533d6f7e1bde4d6d92651097f7d8053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _explosionDamage: 100
   _explosionPrefab: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
     type: 3}
-  _explosionRadius: 5
 --- !u!1 &3251696991464217187
 GameObject:
   m_ObjectHideFlags: 0

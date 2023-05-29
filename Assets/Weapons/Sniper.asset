@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3a400ac9077964a83496755bc20df4, type: 3}
   m_Name: Sniper
   m_EditorClassIdentifier: 
+  WeaponName: Sniper
   Damage: 50
   FireRate: 1.2
   MaxClipSize: 5
   MaxAmmo: 20
   ReloadTime: 1
   MaxDistance: 1000
-  GameModel: {fileID: 1467118231008665786, guid: 57d184a904e2a924ea8449261e7e158f,
-    type: 3}
   FireSound: {fileID: 8300000, guid: 0f7008d6fb32c384ca0808ffbd695a8f, type: 3}
   ReloadSound: {fileID: 8300000, guid: 0ffd8dc277606854097c992f9de5b703, type: 3}
   NoAmmoSound: {fileID: 8300000, guid: 8850b8e137275704296d74db7c4fa80b, type: 3}

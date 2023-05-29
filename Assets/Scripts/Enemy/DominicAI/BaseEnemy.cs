@@ -77,7 +77,7 @@ namespace EnemyMachine
             // TODO: Doesnt work
             if (Physics.SphereCast(transform.position, 1.0f, Vector3.up, out RaycastHit hit, 0.1f, targetMask))
             {
-                TopDownCharacter player = hit.transform.gameObject.GetComponent<TopDownCharacter>();
+                CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
                 if (player != null)
                 {
                     Debug.Log("pushing");
@@ -154,7 +154,7 @@ namespace EnemyMachine
             // TODO: Play animation
             if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, attackRange, targetMask))
             {
-                TopDownCharacter player = hit.transform.gameObject.GetComponent<TopDownCharacter>();
+                CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
                 if (player != null)
                 {
                     // Debug.Log("Attacking");

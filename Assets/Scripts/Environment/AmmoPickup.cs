@@ -6,18 +6,19 @@ public class AmmoPickup : NetworkBehaviour
     public int AmmoStock = 50;
     public float RotationSpeed = 2.0f;
     private AudioSource _audioSrc;
-    private MeshRenderer _meshRenderer;
+    private GameObject _model;
+    private bool _oneShot = false;
 
     private void Start()
     {
         _audioSrc = GetComponent<AudioSource>();
-        _meshRenderer = GetComponent<MeshRenderer>();
+        _model = transform.GetChild(0).gameObject;
     }
 
     private void Update()
     {
         transform.Rotate(Vector3.up * (RotationSpeed * Time.deltaTime));
-        if (!_audioSrc.isPlaying && !_meshRenderer.enabled)
+        if (!_audioSrc.isPlaying && _oneShot)
         {
             Destroy(gameObject);
         }
@@ -32,7 +33,7 @@ public class AmmoPickup : NetworkBehaviour
 
         CharacterShooting characterShooting = other.GetComponent<CharacterShooting>();
         WeaponCreator currentWeapon = characterShooting.CurrentWeapon;
-        if (currentWeapon.CurrentAmmo >= currentWeapon.MaxAmmo || !_meshRenderer.enabled)
+        if (currentWeapon.CurrentAmmo >= currentWeapon.MaxAmmo || _oneShot)
         {
             return;
         }
@@ -40,6 +41,7 @@ public class AmmoPickup : NetworkBehaviour
         characterShooting.CurrentWeapon.CurrentAmmo += AmmoStock;
         currentWeapon.CurrentAmmo = Mathf.Min(currentWeapon.CurrentAmmo, currentWeapon.MaxAmmo);
         _audioSrc.Play();
-        _meshRenderer.enabled = false;
+        _oneShot = true;
+        _model.SetActive(false);
     }
 }

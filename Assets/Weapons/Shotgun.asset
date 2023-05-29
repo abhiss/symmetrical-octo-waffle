@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3a400ac9077964a83496755bc20df4, type: 3}
   m_Name: Shotgun
   m_EditorClassIdentifier: 
-  WeaponName: 
-  Damage: 1
-  FireRate: 0
-  MaxClipSize: 30
-  MaxAmmo: 300
-  ReloadTime: 1
+  WeaponName: Shotgun
+  Damage: 20
+  FireRate: 1.25
+  MaxClipSize: 10
+  MaxAmmo: 30
+  ReloadTime: 3
   MaxDistance: 100
-  FireSound: {fileID: 0}
-  ReloadSound: {fileID: 0}
-  NoAmmoSound: {fileID: 0}
+  FireSound: {fileID: 8300000, guid: ed3f4f877e8475045aecf7296b968467, type: 3}
+  ReloadSound: {fileID: 8300000, guid: 403ad70e8cf000c4b8f149b5a516c5f0, type: 3}
+  NoAmmoSound: {fileID: 8300000, guid: ac8fcf8018727e946a075bb11659aad6, type: 3}

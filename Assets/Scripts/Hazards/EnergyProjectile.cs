@@ -6,15 +6,11 @@ using Unity.Netcode;
 public class EnergyProjectile : NetworkBehaviour
 {
     [SerializeField] private float _speed;
-    // Position for the projectile to move towards.
     private Vector3 _targetPosition;
     private const float CollisionRadius = 0.5f;
-    // Prefab for explosion that will be spawned once projectile is ready to explode.
     [SerializeField] private GameObject _explosionPrefab;
 
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // Checks if sphere is colliding with anything. Used in lieu of SphereCollider because SphereCollider doesn't work here.
         Collider[] collidersInRadius = Physics.OverlapSphere(transform.position, CollisionRadius);
@@ -30,7 +26,7 @@ public class EnergyProjectile : NetworkBehaviour
     }
 
     // Required initialization for projectile to have a target to move towards.
-    public void InitializeWithTargetPos(Vector3 pos)
+    public void SetTargetPosition(Vector3 pos)
     {
         _targetPosition = pos;
     }

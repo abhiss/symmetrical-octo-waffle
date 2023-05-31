@@ -208,7 +208,7 @@ MonoBehaviour:
   MaxHealth: 50
   CurrentHealth: 50
   UseShield: 0
-  MaxShield: 100
+  MaxShield: 0
   CurrentShield: 0
   RechargeDelay: 5
   RechargeRate: 1

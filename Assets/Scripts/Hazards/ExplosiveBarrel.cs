@@ -7,6 +7,7 @@ using Shared;
 public class ExplosiveBarrel : NetworkBehaviour
 {
     private HealthSystem _health;
+    // Prefab for explosion that will be spawned on turret death.
     [SerializeField] private GameObject _explosionPrefab;
 
     void Awake()
@@ -19,15 +20,9 @@ public class ExplosiveBarrel : NetworkBehaviour
         // If the barrel is dead, cause it to explode.
         if (_health.CurrentHealth <= 0)
         {
-            CreateExplosion();
+            // Create an explosion at the position of the barrel and destroy the barrel.
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
-    }
-
-    private GameObject CreateExplosion()
-    {
-        // Instantiate an explosion based off an explosion prefab at the location of the barrel.
-        GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        return explosion;
     }
 }

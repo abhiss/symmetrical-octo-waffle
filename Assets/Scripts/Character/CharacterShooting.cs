@@ -136,14 +136,14 @@ public class CharacterShooting : NetworkBehaviour
             // End of flavor Section
 
             // Hit an enemy
-            Shared.HealthSystem healthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
-            if (healthSystem == null)
+            Shared.HealthSystem enemyHealthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
+            if (enemyHealthSystem == null)
             {
                 return;
             }
 
             // Deal damage to the object with HealthSystem component
-            healthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
+            enemyHealthSystem.TakeDamage(gameObject, CurrentWeapon.Damage);
         }
     }
 
@@ -288,6 +288,6 @@ public class CharacterShooting : NetworkBehaviour
     // -------------------------------------------------------------------------
     private void DebugMode()
     {
-        Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
+        //Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
     }
 }

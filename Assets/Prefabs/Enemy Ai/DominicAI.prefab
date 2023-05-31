@@ -74,14 +74,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   destination: {x: 0, y: 0, z: 0}
-  pushVelocity: {x: 0, y: 0, z: 0}
   targetMask:
     serializedVersion: 2
     m_Bits: 64
   stopThreshold: 1
   detectionRadius: 5
   patrolRadius: 10
-  patrolHoldTime: 3
+  patrolHoldTime: 1
   attackForce: 5
   attackTime: 1
   attackRange: 1
@@ -128,12 +127,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58490988ff69e8e4a85bcf529f38ef07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 0
-  enemyLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  damageOnCollision: 10
+  MaxHealth: 100
+  CurrentHealth: 0
+  UseShield: 0
+  MaxShield: 100
+  CurrentShield: 0
+  RechargeDelay: 5
+  RechargeRate: 1
 --- !u!136 &6715761143312627255
 CapsuleCollider:
   m_ObjectHideFlags: 0

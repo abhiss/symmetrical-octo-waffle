@@ -187,12 +187,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58490988ff69e8e4a85bcf529f38ef07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  currentHealth: 50
-  enemyLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  damageOnCollision: 10
+  MaxHealth: 100
+  CurrentHealth: 100
+  UseShield: 0
+  MaxShield: 100
+  CurrentShield: 0
+  RechargeDelay: 5
+  RechargeRate: 1
 --- !u!82 &7491523707910771657
 AudioSource:
   m_ObjectHideFlags: 0

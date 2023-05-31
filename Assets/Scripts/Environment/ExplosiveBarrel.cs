@@ -17,7 +17,7 @@ public class ExplosiveBarrel : NetworkBehaviour
     void Update()
     {
         // If the barrel is dead, cause it to explode.
-        if (_health.currentHealth <= 0)
+        if (_health.CurrentHealth <= 0)
         {
             CreateExplosion();
             Destroy(gameObject);

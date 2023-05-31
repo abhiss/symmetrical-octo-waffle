@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Shared
@@ -108,7 +108,10 @@ namespace Shared
                 Die();
             }
 
-            OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
+            if (OnDamageEvent != null)
+            {
+                OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
+            }
         }
 
         private void Die()

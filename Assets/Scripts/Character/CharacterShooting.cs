@@ -59,7 +59,7 @@ public class CharacterShooting : MonoBehaviour
         _laserLine.endWidth = LaserWidth;
         _laserLine.enabled = false;
 
-        _playerAudioSrc = GetComponent<AudioSource>();
+        _playerAudioSrc = gameObject.AddComponent<AudioSource>();
     }
 
     private void Update()

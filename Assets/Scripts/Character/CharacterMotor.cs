@@ -10,6 +10,11 @@ public class CharacterMotor : NetworkBehaviour
     private InputListener _inputListener;
     private Vector3 _input;
 
+    [Header("Gravity")]
+    public bool isGrounded;
+    public float MaxVelocityMagnitude = 10.0f;
+    [System.NonSerialized] public bool DisableGrounding = false;
+
     [Header("Game Objects")]
     public GameObject CameraObject;
 
@@ -30,6 +35,7 @@ public class CharacterMotor : NetworkBehaviour
 
     private void Start()
     {
+        // Multiplayer clone
         if (!base.IsOwner)
         {
             Destroy(CameraObject);
@@ -43,17 +49,10 @@ public class CharacterMotor : NetworkBehaviour
             return;
         }
 
-        // Input
+        // Get core components
         _inputListener = GetComponent<InputListener>();
-
-        // Controller + Camera
         _characterCamera = CameraObject.GetComponent<CharacterCamera>();
         _characterController = GetComponent<CharacterController>();
-    }
-
-    public void AddForce(Vector3 force)
-    {
-        _forceVelocity += force;
     }
 
     private void Update()
@@ -65,21 +64,24 @@ public class CharacterMotor : NetworkBehaviour
 
         // Input
         _input = _inputListener.GetAxisInput();
-        _inputVelocity = ProcessInput(_input);
+        _inputVelocity = ProcessInput(_input) * MoveSpeed;
         if (!_characterCamera.CursorWithinDeadzone())
         {
             RotateCharacter(_characterCamera.CursorWorldPosition);
         }
 
         // Movement
-        GravityForce();
-        _velocity = _forceVelocity + _inputVelocity * MoveSpeed;
+        isGrounded = Grounded();
+        Gravity(ref _forceVelocity);
+        _velocity = _forceVelocity + _inputVelocity;
         _characterController.Move(_velocity * Time.deltaTime);
     }
 
+    // Input Dependent
+    // -------------------------------------------------------------------------
     private Vector3 ProcessInput(Vector3 input)
     {
-        // Keep the input vector normalized
+        // Keep the input vector normalized but allow input acceleartion
         input = Vector3.ClampMagnitude(input, 1.0f);
 
         // Project input to surface
@@ -117,21 +119,49 @@ public class CharacterMotor : NetworkBehaviour
         transform.eulerAngles = lockedAxis;
     }
 
-    private void GravityForce()
+    // Gravity
+    // -------------------------------------------------------------------------
+    public void SetForce(Vector3 force)
     {
-        _forceVelocity = OrthogonalToSurfaceNormal(_forceVelocity);
-        _forceVelocity.y += Time.deltaTime * Physics.gravity.y;
+        _forceVelocity = force;
+    }
 
-        // Give player control over their deceleration rate
-        float decelerationRate = _forceVelocity.magnitude;
-        if (_inputVelocity.magnitude > 0.0f)
+    private bool Grounded()
+    {
+        if (_velocity.y > 1.0f)
         {
-            decelerationRate *= DecelerateInputInfluence;
+            return false;
         }
 
-        if (_characterController.isGrounded) {
-            _forceVelocity = Vector3.MoveTowards(_forceVelocity, Vector3.zero, decelerationRate * Time.deltaTime);
-            _forceVelocity.y = -0.5f;
+        return _characterController.isGrounded;
+    }
+
+    private void Gravity(ref Vector3 velocity)
+    {
+        // velocity = OrthogonalToSurfaceNormal(velocity);
+        velocity.y += Time.deltaTime * Physics.gravity.y;
+
+        // Give player control over their deceleration rate
+        if (_inputVelocity.magnitude > 0.0f)
+        {
+            velocity = Vector3.MoveTowards(
+                velocity,
+                Vector3.zero,
+                DecelerateInputInfluence * Time.deltaTime
+            );
+        }
+
+        // Exceeded max falling velocity
+        if (velocity.magnitude > MaxVelocityMagnitude && velocity.y < 0.0f && _characterController.isGrounded)
+        {
+            velocity = Vector3.zero;
+            DisableGrounding = false;
+        }
+
+        // Keep controller grounded
+        if (_characterController.isGrounded && DisableGrounding == false)
+        {
+            velocity.y = -0.5f;
         }
     }
 
@@ -163,6 +193,8 @@ public class CharacterMotor : NetworkBehaviour
         return inVector;
     }
 
+    // Debugging
+    // -------------------------------------------------------------------------
     public void OnDrawGizmos()
     {
         if (ShowInput)

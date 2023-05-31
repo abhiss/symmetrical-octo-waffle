@@ -12,7 +12,26 @@ public class InputListener : MonoBehaviour
     public bool FireKey = false;
     public bool AltFire = false;
     public bool AltFireDown = false;
+    public bool SpaceDown = false;
     public Vector3 MousePosition;
+
+    public Vector3 MousePlanePosition()
+    {
+        if (DisableInput)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 planePosition = transform.position;
+        Plane cursorPlane = new Plane(transform.position, Vector3.up);
+
+        Ray ray = Camera.main.ScreenPointToRay(MousePosition);
+        if (cursorPlane.Raycast(ray, out float dist))
+        {
+            planePosition = ray.GetPoint(dist);
+        }
+        return planePosition;
+    }
 
     public Vector3 GetAxisInput()
     {
@@ -36,6 +55,7 @@ public class InputListener : MonoBehaviour
             FireKeyDown = false;
             AltFire = false;
             AltFireDown = false;
+            SpaceDown = false;
             return;
         }
 
@@ -49,5 +69,7 @@ public class InputListener : MonoBehaviour
 
         AltFire = Input.GetKey(KeyCode.Mouse1);
         AltFireDown = Input.GetKeyDown(KeyCode.Mouse1);
+
+        SpaceDown = Input.GetKeyDown(KeyCode.Space);
     }
 }

@@ -25,7 +25,7 @@ public class Turret : NetworkBehaviour
 
     void Update()
     {
-        if (_health.currentHealth <= 0)
+        if (_health.CurrentHealth <= 0)
         {
             Die();
             return;

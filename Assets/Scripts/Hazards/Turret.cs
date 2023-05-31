@@ -16,22 +16,18 @@ public class Turret : NetworkBehaviour
     private float _timeToNextTargetCheck;
     private float _targetCheckTime = 0.05f;
 
-    // Prefab for explosion that will be spawned on turret death.
     [SerializeField] private GameObject _explosionPrefab;
-    // Prefab for projectile that will be shot from the turret.
     [SerializeField] private GameObject _projectilePrefab;
-    // Location for projectiles to be spawned from, should be a location in front of the turret.
     [SerializeField] private GameObject _projectileSpawn;
-    // An audio source that provides a "detection" sound for the turret.
     private AudioSource _audio;
 
-    void Awake()
+    private void Start()
     {
         _health = GetComponent<HealthSystem>();
         _audio = GetComponent<AudioSource>();
     }
 
-    void Update()
+    private void Update()
     {
         // If the turret's health is 0, make it explode and destroy itself.
         if (_health.CurrentHealth <= 0)
@@ -65,12 +61,12 @@ public class Turret : NetworkBehaviour
         // Create an energy projectile and initialize it with a target position.
         GameObject projectileObj = Instantiate(_projectilePrefab, _projectileSpawn.transform.position, Quaternion.identity);
         EnergyProjectile projectile = projectileObj.GetComponent<EnergyProjectile>();
-        projectile.InitializeWithTargetPos(target.transform.position);
+        projectile.SetTargetPosition(target.transform.position);
     }
 
     private void Die()
     {
-        // Create an explosion at the turret's location and destroy itself.
+        // Create an explosion at the turret's location and destroy the turret.
         Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -78,7 +74,7 @@ public class Turret : NetworkBehaviour
     private GameObject FindTarget()
     {
         Collider[] collidersInRange = Physics.OverlapSphere(transform.position, _detectionRadius);
-        // Find a target within detection range of the turret.
+        // Find targets within detection range of the turret.
         foreach (Collider collider in collidersInRange)
         {
             bool isValidTarget = collider.CompareTag("Player");

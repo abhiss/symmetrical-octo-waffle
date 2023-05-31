@@ -9,7 +9,7 @@ public class FloorTrap : NetworkBehaviour
     [SerializeField] private float _damage = 1f;
     private AudioSource _audio;
 
-    private void Awake()
+    private void Start()
     {
         _audio = GetComponent<AudioSource>();
     }

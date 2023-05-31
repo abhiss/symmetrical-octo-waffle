@@ -11,7 +11,7 @@ public class Explosion : NetworkBehaviour
     private const float _explosionDuration = 2f;
     private AudioSource _explosionAudio;
 
-    void Awake()
+    private void Start()
     {
         _explosionAudio = GetComponent<AudioSource>();
         // Explode as soon as the explosion is instantiated.

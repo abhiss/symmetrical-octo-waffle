@@ -60,6 +60,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2217587029086244474}
   - component: {fileID: 8373175083879619147}
+  - component: {fileID: 8754976721351771052}
   - component: {fileID: 3682091231530256069}
   - component: {fileID: 9127889449909241548}
   - component: {fileID: 5986054516681673575}
@@ -67,6 +68,7 @@ GameObject:
   - component: {fileID: 7815612474361838623}
   - component: {fileID: 5688000099644499388}
   - component: {fileID: 2778264019685445592}
+  - component: {fileID: 3635922393408981424}
   m_Layer: 6
   m_Name: Character
   m_TagString: Player
@@ -116,6 +118,25 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8754976721351771052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58490988ff69e8e4a85bcf529f38ef07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 100
+  CurrentHealth: 0
+  UseShield: 0
+  MaxShield: 100
+  CurrentShield: 0
+  RechargeDelay: 5
+  RechargeRate: 1
 --- !u!114 &3682091231530256069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +358,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3635922393408981424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ec4491424432884fb0490026dc2461a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4998724704745278403
 GameObject:
   m_ObjectHideFlags: 0

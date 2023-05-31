@@ -748,6 +748,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DominicAI (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4740366880187179920, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5222241229588481809, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
         type: 3}
       propertyPath: m_RootOrder
@@ -920,6 +925,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DominicAI (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740366880187179920, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5222241229588481809, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
         type: 3}
@@ -1416,6 +1426,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DominicAI (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4740366880187179920, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5222241229588481809, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
         type: 3}
       propertyPath: m_RootOrder
@@ -1470,6 +1485,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497889963621049019, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: patrolHoldTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497889963621049019, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: detectionRadius
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1933,6 +1958,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497889963621049019, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: attackTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497889963621049019, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497889963621049019, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: showPatrolInfo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6945478096663812530, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_Acceleration
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

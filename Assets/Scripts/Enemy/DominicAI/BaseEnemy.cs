@@ -24,7 +24,7 @@ namespace EnemyMachine
         public float detectionRadius = 5.0f;
 
         [Header("Patrol Properties")]
-        public float patrolRadius = 2.5f;
+        public float patrolRadius = 2.5f; // if within radius switch from idle to attack
         public float patrolHoldTime = 1.0f;
         private Vector3 _patrolCenter = Vector3.zero;
         private float _patrolIdleTime = 0.0f;
@@ -34,9 +34,11 @@ namespace EnemyMachine
 
         [Header("Attack Properties")]
         public float attackForce = 2.0f;
-        public float attackTime = 1.0f;
+        public float AttackDamage = 5.0f;
+        public float attackCD = 1.0f;
         public float attackRange = 1.0f;
-        private bool _isAttacking = false;
+        private float _attackTimer;
+        //private bool _isAttacking = false;
 
         [Header("Debugging")]
         public bool showPatrolInfo;
@@ -45,12 +47,13 @@ namespace EnemyMachine
 
         void Start()
         {
+            _attackTimer = attackCD;
             _agent = GetComponent<NavMeshAgent>();
             _healthSystem = GetComponent<HealthSystem>();
             _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => {
-                if(args.newHealth < 0)
+                if(args.newHealth <= 0)
                 {
-                    //dead
+                    //dead, death animation/code here. 
                     Debug.Log("Enemy dead.");
                     Destroy(gameObject);
                 }
@@ -75,18 +78,16 @@ namespace EnemyMachine
             };
 
             // TODO: Doesnt work
-            if (Physics.SphereCast(transform.position, 1.0f, Vector3.up, out RaycastHit hit, 0.1f, targetMask))
-            {
-                CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
-                if (player != null)
-                {
-                    Debug.Log("pushing");
-                    Vector3 dir = hit.transform.position - transform.position;
-                    player.AddForce(dir);
-                }
-            }
-
-            _agent.SetDestination(destination);
+            // if (Physics.SphereCast(transform.position, 1.0f, Vector3.up, out RaycastHit hit, 0.1f, targetMask))
+            // {
+            //     CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
+            //     if (player != null)
+            //     {
+            //         Debug.Log("pushing");
+            //         Vector3 dir = hit.transform.position - transform.position;
+            //         player.AddForce(dir);
+            //     }
+            // }
             _previousState = currentState;
         }
 
@@ -107,27 +108,37 @@ namespace EnemyMachine
         private void Patrol()
         {
             // Start a timer at position
+            // if stopped at destination (within the range) start timer
             if (_agent.remainingDistance <= _agent.stoppingDistance + stopThreshold)
             {
                 _patrolIdleTime += Time.deltaTime;
             }
 
-            // Update when timer is finished
+            // Update when timer is finished (get new destination)
             if (_patrolIdleTime >= patrolHoldTime)
             {
-                 _patrolTargetPoint = _patrolCenter + UnityEngine.Random.insideUnitSphere * patrolRadius;
-                 _patrolIdleTime = 0.0f;
+                _patrolTargetPoint = _patrolCenter + UnityEngine.Random.insideUnitSphere * patrolRadius;
+                _patrolIdleTime = 0.0f;
             }
             destination = _patrolTargetPoint;
+            _agent.SetDestination(destination);
         }
 
         public EnemyState ChasingStateHandler()
         {
+            if(CheckPlayerDead())
+            {
+                return EnemyState.Idle;
+            }
+
             destination = _targetObject.transform.position;
+            _agent.SetDestination(destination);
             // 1.0f = Player Radius + Enemy Radius
+            // currentDistance = attack range
             float currentDistance = _agent.stoppingDistance + stopThreshold + 1.0f;
             if (_agent.remainingDistance <= currentDistance)
             {
+                Rotate();
                 return EnemyState.Attacking;
             }
 
@@ -136,34 +147,73 @@ namespace EnemyMachine
 
         public EnemyState AttackingStateHandler()
         {
-            if (!_isAttacking) {
-                StartCoroutine(AttackCoroutine());
-            }
-            else
+            if(CheckPlayerDead())
             {
-                return EnemyState.Attacking;
+                return EnemyState.Idle;
             }
 
+            if(_attackTimer < attackCD){
+                _attackTimer += Time.deltaTime;
+                return EnemyState.Chasing;
+            }
+
+            if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) <= attackRange) 
+            {
+                Attack();
+                return EnemyState.Attacking;
+            }
             return EnemyState.Chasing;
         }
 
-        private IEnumerator AttackCoroutine()
+        private void Attack()
         {
-            _isAttacking = true;
-
+            // TODO: fix when player right on top of monster/ doesn't get hit by raytracing.
             // TODO: Play animation
             if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, attackRange, targetMask))
             {
                 CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
+                Shared.HealthSystem playerHealthSystem = hit.collider.GetComponent<Shared.HealthSystem>();
                 if (player != null)
                 {
                     // Debug.Log("Attacking");
+                    playerHealthSystem.TakeDamage(gameObject, AttackDamage);
+                    _attackTimer = 0f;
                     player.AddForce(transform.forward * attackForce);
+                    return;
                 }
             }
+            //if player is inside the enemy, (within radius but not hitable by raycast)
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 0.5f, targetMask);
+            foreach (var hitCollider in hitColliders)
+            {
+                GameObject player = hitCollider.gameObject;
+                CharacterMotor playerMotor = player.GetComponent<CharacterMotor>();
+                Shared.HealthSystem playerHealthSystem = player.GetComponent<Shared.HealthSystem>();
+                if (player != null)
+                {
+                    // Debug.Log("Attacking");
+                    playerHealthSystem.TakeDamage(gameObject, AttackDamage);
+                    _attackTimer = 0f;
+                    playerMotor.AddForce(transform.forward * attackForce);
+                    return;
+                }
+            }
+        }
 
-            yield return new WaitForSeconds(attackTime);
-            _isAttacking = false;
+        private bool CheckPlayerDead()
+        {
+            if (_targetObject == null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void Rotate()
+        {
+
+            Vector3 direction = new Vector3(_targetObject.transform.position.x, transform.position.y, _targetObject.transform.position.z);
+            transform.LookAt(direction);
         }
 
         private void OnDrawGizmos()

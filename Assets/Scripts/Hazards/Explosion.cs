@@ -14,6 +14,7 @@ public class Explosion : NetworkBehaviour
     void Awake()
     {
         _explosionAudio = GetComponent<AudioSource>();
+        // Explode as soon as the explosion is instantiated.
         Explode();
     }
 

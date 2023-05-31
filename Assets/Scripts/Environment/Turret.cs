@@ -11,38 +11,44 @@ public class Turret : NetworkBehaviour
     [SerializeField] private float _detectionRadius;
     [SerializeField] private float _attackCooldown;
     private float _cooldownProgress;
+
+    // Throttles polling for targets in detection radius. No reason for turret to reorient itself on every single frame.
     private float _timeToNextTargetCheck;
-    // Throttles polling for targets in detection radius.
     private float _targetCheckTime = 0.05f;
+
+    // Prefab for explosion that will be spawned on turret death.
     [SerializeField] private GameObject _explosionPrefab;
-    private AudioSource _audioSource;
+    // Prefab for projectile that will be shot from the turret.
+    [SerializeField] private GameObject _projectilePrefab;
+    // Location for projectiles to be spawned from, should be a location in front of the turret.
+    [SerializeField] private GameObject _projectileSpawn;
+    // An audio source that provides a "detection" sound for the turret.
+    private AudioSource _audio;
 
     void Awake()
     {
         _health = GetComponent<HealthSystem>();
-        _audioSource = GetComponent<AudioSource>();
+        _audio = GetComponent<AudioSource>();
     }
 
     void Update()
     {
+        // If the turret's health is 0, make it explode and destroy itself.
         if (_health.CurrentHealth <= 0)
         {
             Die();
             return;
         }
-        // If turret is ready to check for targets, reset its time towards the next check.
+        // If turret is ready to check for targets, reset its time towards the next check and try to find a target.
         if (_timeToNextTargetCheck >= _targetCheckTime)
         {
             _timeToNextTargetCheck = 0;
             GameObject player = FindTarget();
-            // If a valid player target exists, and turret is not on cooldown, look at them.
-            if (player != null)
+            // If a player is found and turret is not on cooldown, shoot at the player and reset cooldown progress.
+            if (player != null  && _cooldownProgress >= _attackCooldown)
             {
-                // If turret is not on cooldown, shoot at the player.
-                if (_cooldownProgress >= _attackCooldown)
-                {
-                    Shoot(player);
-                }
+                Shoot(player);
+                _cooldownProgress = 0;
             }
         }
         // Update the cooldown of the turret.
@@ -50,15 +56,16 @@ public class Turret : NetworkBehaviour
         {
             _cooldownProgress += Time.deltaTime;
         }
-        // Increment time towards the next target check.
+        // Progress time towards the next target check.
         _timeToNextTargetCheck += Time.deltaTime;
     }
 
     private void Shoot(GameObject target)
     {
-        // Generate an explosion at the target's location. Placeholder implementation, later will shoot a projecitle.
-        Instantiate(_explosionPrefab, target.transform.position, Quaternion.identity);
-        _cooldownProgress = 0;
+        // Create an energy projectile and initialize it with a target position.
+        GameObject projectileObj = Instantiate(_projectilePrefab, _projectileSpawn.transform.position, Quaternion.identity);
+        EnergyProjectile projectile = projectileObj.GetComponent<EnergyProjectile>();
+        projectile.InitializeWithTargetPos(target.transform.position);
     }
 
     private void Die()
@@ -71,22 +78,22 @@ public class Turret : NetworkBehaviour
     private GameObject FindTarget()
     {
         Collider[] collidersInRange = Physics.OverlapSphere(transform.position, _detectionRadius);
-        // Find a target within range of the turret.
+        // Find a target within detection range of the turret.
         foreach (Collider collider in collidersInRange)
         {
             bool isValidTarget = collider.CompareTag("Player");
             // If a collider is a valid target, look at it and play a beeping detection sound.
             if (isValidTarget)
             {
-                if (!_audioSource.isPlaying)
+                if (!_audio.isPlaying)
                 {
-                    _audioSource.Play();
+                    _audio.Play();
                 }
                 transform.LookAt(collider.transform);
                 return collider.gameObject;
             }
         }
-        _audioSource.Stop();
+        _audio.Stop();
         return null;
     }
 }

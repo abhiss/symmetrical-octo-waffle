@@ -108,6 +108,7 @@ namespace Shared
                 Die();
             }
 
+            // This null check needs to happen, otherwise it will break anything that uses this function.
             if (OnDamageEvent != null)
             {
                 OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });

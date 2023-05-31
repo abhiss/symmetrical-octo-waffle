@@ -2878,16 +2878,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3485655316834009163, guid: 9bd56f37c85ed49128fb4e6b2d8e86e9,
-        type: 3}
-      propertyPath: _projectilePrefab
-      value: 
-      objectReference: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
-        type: 3}
     - target: {fileID: 3613045235710034597, guid: 9bd56f37c85ed49128fb4e6b2d8e86e9,
         type: 3}
       propertyPath: m_Name
       value: Turret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7981060953087110034, guid: 9bd56f37c85ed49128fb4e6b2d8e86e9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

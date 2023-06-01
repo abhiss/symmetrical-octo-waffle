@@ -71,7 +71,7 @@ public class CharacterMotor : NetworkBehaviour
         }
 
         // Movement
-        isGrounded = Grounded();
+        isGrounded = CustomIsGrounded();
         Gravity(ref _forceVelocity);
         _velocity = _forceVelocity + _inputVelocity;
         _characterController.Move(_velocity * Time.deltaTime);
@@ -121,14 +121,19 @@ public class CharacterMotor : NetworkBehaviour
 
     // Gravity
     // -------------------------------------------------------------------------
+    public void AddForce(Vector3 force)
+    {
+        _forceVelocity += force;
+    }
+
     public void SetForce(Vector3 force)
     {
         _forceVelocity = force;
     }
 
-    private bool Grounded()
+    private bool CustomIsGrounded()
     {
-        if (_velocity.y > 1.0f)
+        if (_velocity.y > 0.0f)
         {
             return false;
         }
@@ -144,11 +149,16 @@ public class CharacterMotor : NetworkBehaviour
         // Give player control over their deceleration rate
         if (_inputVelocity.magnitude > 0.0f)
         {
+            // Don't let player influence their Y Axis
+            float savedHeight = velocity.y;
+
             velocity = Vector3.MoveTowards(
                 velocity,
                 Vector3.zero,
                 DecelerateInputInfluence * Time.deltaTime
             );
+
+            velocity.y = savedHeight;
         }
 
         // Exceeded max falling velocity
@@ -159,7 +169,7 @@ public class CharacterMotor : NetworkBehaviour
         }
 
         // Keep controller grounded
-        if (_characterController.isGrounded && DisableGrounding == false)
+        if (isGrounded && velocity.y < 0.0f)
         {
             velocity.y = -0.5f;
         }

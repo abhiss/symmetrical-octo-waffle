@@ -241,6 +241,23 @@ public class CharacterShooting : MonoBehaviour
         return newDirection.normalized;
     }
 
+    // Weapon Specific
+    // -------------------------------------------------------------------------
+    private void SetActiveWeapon(string weaponName)
+    {
+        if (weaponTransform != null)
+        {
+            weaponTransform.gameObject.SetActive(false);
+        }
+
+        // Needs to be like this with current setup
+        Transform newWeapon = WeaponDrawer.Find(weaponName);
+        newWeapon.gameObject.SetActive(true);
+        weaponTransform = newWeapon;
+
+        _muzzleFlash = newWeapon.Find("MuzzleLocation").GetComponent<Light>();
+    }
+
     // Misc
     // -------------------------------------------------------------------------
     private void DrawLaser()
@@ -256,21 +273,6 @@ public class CharacterShooting : MonoBehaviour
         }
 
         _laserLine.SetPosition(1, laserEndPoint);
-    }
-
-    private void SetActiveWeapon(string weaponName)
-    {
-        if (weaponTransform != null)
-        {
-            weaponTransform.gameObject.SetActive(false);
-        }
-
-        // Needs to be like this with current setup
-        Transform newWeapon = WeaponDrawer.Find(weaponName);
-        newWeapon.gameObject.SetActive(true);
-        weaponTransform = newWeapon;
-
-        _muzzleFlash = newWeapon.Find("MuzzleLocation").GetComponent<Light>();
     }
 
     // Debugging

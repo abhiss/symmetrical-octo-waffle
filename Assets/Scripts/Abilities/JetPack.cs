@@ -15,6 +15,9 @@ public class JetPack : MonoBehaviour
     public AudioClip LandClip;
     private AudioSource _audioSrc;
 
+    [Header("Debugging")]
+    private Vector3 _targetPosition;
+
     private void Start()
     {
         _character = GetComponent<CharacterMotor>();
@@ -24,6 +27,7 @@ public class JetPack : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log("PLAYER: " + transform.position + " TARGET: " + _targetPosition);
         if (_hasLaunched && _character.isGrounded)
         {
             _hasLaunched = false;
@@ -39,6 +43,8 @@ public class JetPack : MonoBehaviour
                 return;
             }
 
+            _targetPosition = cursorPosition;
+            // Vector3 velocity = OldWay(cursorPosition);
             Vector3 velocity = TrajectoryVelocity(cursorPosition, MaxHeight);
             _character.DisableGrounding = true;
             _character.SetForce(velocity);
@@ -54,7 +60,7 @@ public class JetPack : MonoBehaviour
         Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         // Hit floor
-        if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity))
+        if (Physics.Raycast(cameraRay, out RaycastHit hit))
         {
             target = hit.point;
         }
@@ -68,6 +74,12 @@ public class JetPack : MonoBehaviour
         // Goal: Return initial velocity
         // 3 Knowns: Height, horizontal displacement, vertical displacement
         // Find: Up, Down, Right Velocity
+
+        // Want the players feet position not their center
+        Vector3 playerPosition = transform.position;
+        playerPosition.y -= 1.0f;
+
+        Vector3 sRight = targetPosition - transform.position;
         float a = Physics.gravity.y;
 
         // Up (final velocity = 0)
@@ -77,16 +89,14 @@ public class JetPack : MonoBehaviour
         float tUp = Mathf.Sqrt(-2 * height / a);
 
         // Down (inital velocity = 0)
-        // tDown = sqrt(2*s/a)
-        float sDown = targetPosition.y - height;
-        float tDown = Mathf.Sqrt(2 * sDown / a);
+        // tDown = sqrt(2s/a)
+        float tDown = Mathf.Sqrt(2 * (sRight.y - height) / a);
 
         // Time
         float t = tUp + tDown;
 
         // Right (acceleration = 0)
         // vRight = s/t
-        Vector3 sRight = targetPosition - transform.position;
         Vector3 vRight = sRight / t;
 
         Vector3 initialVelocity = vRight;

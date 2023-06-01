@@ -45,17 +45,23 @@ namespace EnemyMachine
         public bool showAttackInfo;
         public bool showChaseInfo;
 
+        [Header("Animation")]
+        private Animator _animator;
+        [SerializeField] private GameObject _animatorModel;
+
         void Start()
         {
             _attackTimer = attackCD;
             _agent = GetComponent<NavMeshAgent>();
+            _animator = _animatorModel.GetComponent<Animator>();
             _healthSystem = GetComponent<HealthSystem>();
             _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => {
                 if(args.newHealth <= 0)
                 {
-                    //dead, death animation/code here. 
+                    _agent.isStopped = true;
+                    _animator.SetTrigger("Die");
                     Debug.Log("Enemy dead.");
-                    Destroy(gameObject);
+                    Destroy(gameObject, 2);
                 }
                 //taking damage
                 Debug.Log($"Enemy taking damage. Remaining health: {args.newHealth}");
@@ -100,7 +106,7 @@ namespace EnemyMachine
                 _targetObject = hitCollider.gameObject;
                 return EnemyState.Chasing;
             }
-
+            _animator.SetTrigger("Patrol");
             Patrol();
             return EnemyState.Idle;
         }
@@ -117,6 +123,7 @@ namespace EnemyMachine
             // Update when timer is finished (get new destination)
             if (_patrolIdleTime >= patrolHoldTime)
             {
+                _animator.SetTrigger("Idle");
                 _patrolTargetPoint = _patrolCenter + UnityEngine.Random.insideUnitSphere * patrolRadius;
                 _patrolIdleTime = 0.0f;
             }
@@ -130,7 +137,7 @@ namespace EnemyMachine
             {
                 return EnemyState.Idle;
             }
-
+            _animator.SetTrigger("Chase");
             destination = _targetObject.transform.position;
             _agent.SetDestination(destination);
             // 1.0f = Player Radius + Enemy Radius
@@ -168,7 +175,7 @@ namespace EnemyMachine
         private void Attack()
         {
             // TODO: fix when player right on top of monster/ doesn't get hit by raytracing.
-            // TODO: Play animation
+            _animator.SetTrigger("Attack");
             if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, attackRange, targetMask))
             {
                 CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();

@@ -803,6 +803,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6715761143312627255, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_Height
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6945478096663812530, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6945478096663812530, guid: 7ef1e3acd565b9d4dac449e6fd17dc5b,
         type: 3}
       propertyPath: m_AutoBraking

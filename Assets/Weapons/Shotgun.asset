@@ -15,8 +15,8 @@ MonoBehaviour:
   WeaponName: Shotgun
   Damage: 20
   FireRate: 1.25
-  MaxClipSize: 10
-  MaxAmmo: 30
+  MaxClipSize: 50
+  MaxAmmo: 200
   ReloadTime: 3
   MaxDistance: 100
   FireSound: {fileID: 8300000, guid: ed3f4f877e8475045aecf7296b968467, type: 3}

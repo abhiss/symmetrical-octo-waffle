@@ -82,7 +82,7 @@ namespace EnemyMachine
                 {
                     Debug.Log("pushing");
                     Vector3 dir = hit.transform.position - transform.position;
-                    player.AddForce(dir);
+                    player.SetForce(dir);
                 }
             }
 
@@ -158,7 +158,7 @@ namespace EnemyMachine
                 if (player != null)
                 {
                     // Debug.Log("Attacking");
-                    player.AddForce(transform.forward * attackForce);
+                    player.SetForce(transform.forward * attackForce);
                 }
             }
 

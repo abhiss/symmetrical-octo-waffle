@@ -1246,7 +1246,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -334000983
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 480
@@ -1296,11 +1296,10 @@ MonoBehaviour:
     m_Bits: 64
   stopThreshold: 0.5
   detectionRadius: 5
-  patrolRadius: 2.5
-  patrolHoldTime: 1
-  attackForce: 5
-  AttackDamage: 5
-  attackCD: 1
+  patrolRadius: 5
+  patrolHoldTime: 2
+  attackForce: 20
+  AttackDamage: 50
   attackRange: 3
   showPatrolInfo: 0
   showAttackInfo: 0

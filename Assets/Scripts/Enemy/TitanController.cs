@@ -35,9 +35,7 @@ public class TitanController : MonoBehaviour, IEnemyMachine
     [Header("Attack Properties")]
     public float attackForce = 2.0f;
     public float AttackDamage = 5.0f;
-    public float attackCD = 1.0f;
     public float attackRange = 1.0f;
-    private float _attackTimer;
     private bool _attackAnimation = false; // true when attacking animation is playing
 
     [Header("Debugging")]
@@ -51,7 +49,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
 
     void Start()
     {
-        _attackTimer = attackCD;
         _agent = GetComponent<NavMeshAgent>();
         _animator = _animatorModel.GetComponent<Animator>();
         _healthSystem = GetComponent<HealthSystem>();
@@ -63,8 +60,12 @@ public class TitanController : MonoBehaviour, IEnemyMachine
                 Debug.Log("Enemy dead.");
                 Destroy(gameObject, 2);
             }
-            //taking damage
-            //aniation here
+            //taking damage hit feed back here
+            _targetObject = args.attacker;
+            if(currentState == EnemyState.Idle)
+            {
+                currentState = EnemyState.Chasing;
+            }
             Debug.Log($"Enemy taking damage. Remaining health: {args.newHealth}");
         });
         destination = transform.position;
@@ -146,7 +147,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         float currentDistance = attackRange;
         if (_agent.remainingDistance <= currentDistance)
         {
-            Rotate();
             return EnemyState.Attacking;
         }
 
@@ -163,13 +163,16 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         Rotate();
         if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) >= attackRange) 
         {
-            _animator.ResetTrigger("Attack");
-            return EnemyState.Chasing;
+            if( !_attackAnimation)
+            {
+                _animator.ResetTrigger("Attack");
+                return EnemyState.Chasing;
+            }
+            return EnemyState.Attacking;
         }
         
         if(!_attackAnimation)
         {
-            
             CallAttackAnimation();
         }
         
@@ -193,7 +196,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
             {
                 // Debug.Log("Attacking");
                 playerHealthSystem.TakeDamage(gameObject, AttackDamage);
-                _attackTimer = 0f;
                 player.AddForce(transform.forward * attackForce);
                 return;
             }
@@ -209,7 +211,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
             {
                 // Debug.Log("Attacking");
                 playerHealthSystem.TakeDamage(gameObject, AttackDamage);
-                _attackTimer = 0f;
                 playerMotor.AddForce(transform.forward * attackForce);
                 return;
             }

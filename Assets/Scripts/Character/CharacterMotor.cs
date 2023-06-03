@@ -12,8 +12,8 @@ public class CharacterMotor : NetworkBehaviour
 
     [Header("Gravity")]
     public bool isGrounded;
-    public float MaxVelocityMagnitude = 10.0f;
-    [System.NonSerialized] public bool DisableGrounding = false;
+    public float MaxGroundedVelocity = 5.0f;
+    private bool _disableGrounding = false;
 
     [Header("Game Objects")]
     public GameObject CameraObject;
@@ -123,11 +123,13 @@ public class CharacterMotor : NetworkBehaviour
     // -------------------------------------------------------------------------
     public void AddForce(Vector3 force)
     {
+        _disableGrounding = true;
         _forceVelocity += force;
     }
 
     public void SetForce(Vector3 force)
     {
+        _disableGrounding = true;
         _forceVelocity = force;
     }
 
@@ -143,7 +145,6 @@ public class CharacterMotor : NetworkBehaviour
 
     private void Gravity(ref Vector3 velocity)
     {
-        // velocity = OrthogonalToSurfaceNormal(velocity);
         velocity.y += Time.deltaTime * Physics.gravity.y;
 
         // Give player control over their deceleration rate
@@ -161,15 +162,22 @@ public class CharacterMotor : NetworkBehaviour
             velocity.y = savedHeight;
         }
 
-        // Exceeded max falling velocity
-        if (velocity.magnitude > MaxVelocityMagnitude && velocity.y < 0.0f && _characterController.isGrounded)
+        if (_disableGrounding)
+        {
+            _disableGrounding = false;
+            return;
+        }
+
+        velocity = OrthogonalToSurfaceNormal(velocity);
+
+        // Exceeded max grounded velocity
+        if (velocity.magnitude > MaxGroundedVelocity && isGrounded)
         {
             velocity = Vector3.zero;
-            DisableGrounding = false;
         }
 
         // Keep controller grounded
-        if (isGrounded && velocity.y < 0.0f)
+        if (isGrounded)
         {
             velocity.y = -0.5f;
         }

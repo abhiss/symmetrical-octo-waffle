@@ -13,6 +13,7 @@ public class CharacterShooting : MonoBehaviour
     private LineRenderer _laserLine;
 
     [Header("Conditions")]
+    [NonSerialized] public bool IsShooting = false;
     [NonSerialized] public bool IsReloading = false;
     [NonSerialized] public bool IsAiming = false;
 
@@ -32,6 +33,7 @@ public class CharacterShooting : MonoBehaviour
     public float VfxInterval = 0.09f;
     private Transform weaponTransform;
     private AudioSource _playerAudioSrc;
+    private Transform _muzzleTransform;
     private Light _muzzleFlash;
 
     [Header("Cooldowns")]
@@ -102,11 +104,12 @@ public class CharacterShooting : MonoBehaviour
             Fire();
         }
 
-        _laserLine.enabled = _inputListener.AltFire;
+        _laserLine.enabled = !IsReloading;
 
         // Conditions
         IsReloading = _reloadDuration > 0;
         IsAiming = inputFire || _inputListener.AltFire;
+        IsShooting = _vfxCoolDown > 0;
     }
 
     // Gameplay
@@ -255,7 +258,8 @@ public class CharacterShooting : MonoBehaviour
         newWeapon.gameObject.SetActive(true);
         weaponTransform = newWeapon;
 
-        _muzzleFlash = newWeapon.Find("MuzzleLocation").GetComponent<Light>();
+        _muzzleTransform = newWeapon.Find("MuzzleLocation");
+        _muzzleFlash = _muzzleTransform.GetComponent<Light>();
     }
 
     // Misc
@@ -266,7 +270,7 @@ public class CharacterShooting : MonoBehaviour
         laserEndPoint += _aimDirection * CurrentWeapon.MaxDistance;
 
         // Shrink laser to wall hit
-        _laserLine.SetPosition(0, transform.position);
+        _laserLine.SetPosition(0, _muzzleTransform.position);
         if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             laserEndPoint = hit.point;

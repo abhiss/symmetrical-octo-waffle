@@ -7,12 +7,13 @@ public class CharacterAnimator : NetworkBehaviour
     public float DampTime = 0.1f;
     private Vector3 _velocity;
     private Vector3 _previousPositon;
+    private CharacterMotor _characterMotor;
 
     [Header("Aiming")]
-    public float AimDuration = 5.0f;
-    public float AimSpeed = 10.0f;
-    public float HolsterSpeed = 2.5f;
-    private float _elaspedAimTime = 0.0f;
+    // public float AimDuration = 5.0f;
+    // public float AimSpeed = 10.0f;
+    // public float HolsterSpeed = 2.5f;
+    // private float _elaspedAimTime = 0.0f;
     private float _aimWeight = 0.0f;
     private bool _isAimed = false;
     private CharacterShooting _characterShooting;
@@ -24,6 +25,10 @@ public class CharacterAnimator : NetworkBehaviour
     [Header("Hashes")]
     private int _horizontalHash;
     private int _verticalHash;
+    private int _speedHash;
+    private int _groundedHash;
+    private int _shootHash;
+    private int _reloadHash;
 
     [Header("Debugging")]
     public bool ShowAnimationDirection;
@@ -40,10 +45,16 @@ public class CharacterAnimator : NetworkBehaviour
         _animator = _model.GetComponent<Animator>();
 
         // Movement
-        _horizontalHash = Animator.StringToHash("Horizontal");
-        _verticalHash = Animator.StringToHash("Vertical");
+        _horizontalHash = Animator.StringToHash("X");
+        _verticalHash = Animator.StringToHash("Y");
+        _speedHash = Animator.StringToHash("Speed");
+        _groundedHash = Animator.StringToHash("OnGround");
 
-        // Aiming
+        // Shooting
+        _reloadHash = Animator.StringToHash("Reloading");
+        _shootHash = Animator.StringToHash("Shoot");
+
+        _characterMotor = GetComponent<CharacterMotor>();
         _characterShooting = GetComponent<CharacterShooting>();
     }
 
@@ -57,16 +68,9 @@ public class CharacterAnimator : NetworkBehaviour
         // Movement
         _velocity = (transform.position - _previousPositon) / Time.deltaTime;
         _previousPositon = transform.position;
-        AnimatedMovement();
 
-        // Aiming
-        bool shotLastFrame = _characterShooting.IsAiming;
-        if (shotLastFrame == true)
-        {
-            _elaspedAimTime = 0;
-            _isAimed = true;
-        }
-        AnimateAiming();
+        AnimatedMovement();
+        AnimatedGun();
     }
 
     private void AnimatedMovement()
@@ -75,34 +79,23 @@ public class CharacterAnimator : NetworkBehaviour
         Vector3 forward = transform.forward.normalized * _velocity.z;
         Vector3 right = transform.right.normalized * _velocity.x;
 
-        // Set animation floats
+        // Movement floats
         Vector3 animationDir = forward - right;
         _animator.SetFloat(_horizontalHash, animationDir.x, DampTime, Time.deltaTime);
         _animator.SetFloat(_verticalHash, animationDir.z, DampTime, Time.deltaTime);
+        _animator.SetFloat(_speedHash, _velocity.magnitude, DampTime, Time.deltaTime);
+
+        // Movement events
+        _animator.SetBool(_groundedHash, _characterMotor.isGrounded);
 
         // Debugging
         _gizmoAnimationDir = animationDir.normalized;
     }
 
-    private void AnimateAiming()
+    private void AnimatedGun()
     {
-        if (_elaspedAimTime >= AimDuration) {
-            _isAimed = false;
-        }
-
-        if (_isAimed)
-        {
-            _elaspedAimTime += Time.deltaTime;
-            _aimWeight = Mathf.MoveTowards(_aimWeight, 1, Time.deltaTime * AimSpeed);
-        }
-        else
-        {
-            _elaspedAimTime = 0;
-            _aimWeight = Mathf.MoveTowards(_aimWeight, 0, Time.deltaTime * HolsterSpeed);
-        }
-
-        // ANIMATION LAYERS: Base: 0, Aiming: 1
-        _animator.SetLayerWeight(1, _aimWeight);
+        _animator.SetBool(_reloadHash, _characterShooting.IsReloading);
+        _animator.SetBool(_shootHash, _characterShooting.IsShooting);
     }
 
     public void OnDrawGizmos()

@@ -163,25 +163,23 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         Rotate();
         if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) >= attackRange) 
         {
+            _animator.ResetTrigger("Attack");
             return EnemyState.Chasing;
         }
-
-        if(_attackTimer > attackCD){
-            
-            
-        }
-        else
+        
+        if(!_attackAnimation)
         {
-            _attackTimer += Time.deltaTime;
-            _animator.SetTrigger("Patrol");
+            
+            CallAttackAnimation();
         }
-        // if( _animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") )
-        // {
-        //     return EnemyState.Attacking;
-        // }
-        _animator.SetTrigger("Attack");
+        
         return EnemyState.Attacking;
         
+    }
+
+    private void CallAttackAnimation()
+    {
+        _animator.SetTrigger("Attack");
     }
 
     public void Attack()
@@ -221,7 +219,12 @@ public class TitanController : MonoBehaviour, IEnemyMachine
     // attack animation------------------------------------
     public void AttackAnimationEnd()
     {
-        // _attackTimer = 0f;
+        _attackAnimation = false;
+    }
+
+    public void AttackAnimationStart()
+    {
+        _attackAnimation = true;
     }
 
 

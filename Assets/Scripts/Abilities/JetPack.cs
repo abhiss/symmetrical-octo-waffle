@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class JetPack : MonoBehaviour
 {
+    [Header("Settings")]
     public float MaxJumpDistance = 20.0f;
     public float MaxHeight = 5.0f;
+
+    [Header("Conditionals")]
+    public bool HasLaunched = false;
+    private bool _launchQueued = false;
+
+    [Header("Core")]
     private CharacterMotor _character;
     private InputListener _inputListener;
-    private bool _hasLaunched = false;
-    private bool _launchQueued = false;
     private AudioSource _loopSrc;
 
     [Header("Sound")]
@@ -30,15 +35,15 @@ public class JetPack : MonoBehaviour
         // Lets us skip a frame so isGrounded updates
         if (_launchQueued)
         {
-            _hasLaunched = true;
+            HasLaunched = true;
             _launchQueued = false;
             return;
         }
 
         // Landing
-        if (_hasLaunched && _character.isGrounded)
+        if (HasLaunched && _character.isGrounded)
         {
-            _hasLaunched = false;
+            HasLaunched = false;
             Destroy(_loopSrc);
             _audioSrc.PlayOneShot(LandClip);
         }

@@ -17,6 +17,8 @@ public class CharacterAnimator : NetworkBehaviour
     private float _aimWeight = 0.0f;
     private bool _isAimed = false;
     private CharacterShooting _characterShooting;
+    [Header("JetPack")]
+    private JetPack _jetPack;
 
     [Header("Core")]
     private GameObject _model;
@@ -29,6 +31,7 @@ public class CharacterAnimator : NetworkBehaviour
     private int _groundedHash;
     private int _shootHash;
     private int _reloadHash;
+    private int _jetpackHash;
 
     [Header("Debugging")]
     public bool ShowAnimationDirection;
@@ -45,8 +48,8 @@ public class CharacterAnimator : NetworkBehaviour
         _animator = _model.GetComponent<Animator>();
 
         // Movement
-        _horizontalHash = Animator.StringToHash("X");
-        _verticalHash = Animator.StringToHash("Y");
+        _horizontalHash = Animator.StringToHash("Horizontal");
+        _verticalHash = Animator.StringToHash("Vertical");
         _speedHash = Animator.StringToHash("Speed");
         _groundedHash = Animator.StringToHash("OnGround");
 
@@ -54,6 +57,10 @@ public class CharacterAnimator : NetworkBehaviour
         _reloadHash = Animator.StringToHash("Reloading");
         _shootHash = Animator.StringToHash("Shoot");
 
+        // Misc
+        _jetpackHash = Animator.StringToHash("UseJetpack");
+
+        _jetPack = GetComponent<JetPack>();
         _characterMotor = GetComponent<CharacterMotor>();
         _characterShooting = GetComponent<CharacterShooting>();
     }
@@ -71,6 +78,7 @@ public class CharacterAnimator : NetworkBehaviour
 
         AnimatedMovement();
         AnimatedGun();
+        AnimatedMisc();
     }
 
     private void AnimatedMovement()
@@ -96,6 +104,11 @@ public class CharacterAnimator : NetworkBehaviour
     {
         _animator.SetBool(_reloadHash, _characterShooting.IsReloading);
         _animator.SetBool(_shootHash, _characterShooting.IsShooting);
+    }
+
+    private void AnimatedMisc()
+    {
+        _animator.SetBool(_jetpackHash, _jetPack.HasLaunched);
     }
 
     public void OnDrawGizmos()

@@ -23,6 +23,7 @@ public class CharacterAnimator : NetworkBehaviour
     private int _reloadHash;
     private int _jetpackHash;
     private int _dashHash;
+    private int _groundedHash;
 
     [Header("Debugging")]
     public bool ShowAnimationDirection;
@@ -41,6 +42,7 @@ public class CharacterAnimator : NetworkBehaviour
         // Movement
         _horizontalHash = Animator.StringToHash("Horizontal");
         _verticalHash = Animator.StringToHash("Vertical");
+        _groundedHash = Animator.StringToHash("IsGrounded");
 
         // Shooting
         _reloadHash = Animator.StringToHash("Reloading");
@@ -82,6 +84,7 @@ public class CharacterAnimator : NetworkBehaviour
         Vector3 animationDir = forward - right;
         _animator.SetFloat(_horizontalHash, animationDir.x, DampTime, Time.deltaTime);
         _animator.SetFloat(_verticalHash, animationDir.z, DampTime, Time.deltaTime);
+        _animator.SetBool(_groundedHash, _characterMotor.isGrounded);
 
         // Debugging
         _gizmoAnimationDir = animationDir.normalized;

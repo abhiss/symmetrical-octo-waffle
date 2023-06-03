@@ -1190,7 +1190,7 @@ Transform:
   - {fileID: 6247158636150887728}
   - {fileID: 7983491633291051594}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6667106185150239960
 Animator:
@@ -1298,10 +1298,10 @@ MonoBehaviour:
   detectionRadius: 5
   patrolRadius: 2.5
   patrolHoldTime: 1
-  attackForce: 2
+  attackForce: 5
   AttackDamage: 5
   attackCD: 1
-  attackRange: 1
+  attackRange: 3
   showPatrolInfo: 0
   showAttackInfo: 0
   showChaseInfo: 0

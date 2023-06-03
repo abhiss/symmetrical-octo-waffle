@@ -179,7 +179,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         // {
         //     return EnemyState.Attacking;
         // }
-        Debug.Log(" trigger attack");
         _animator.SetTrigger("Attack");
         return EnemyState.Attacking;
         

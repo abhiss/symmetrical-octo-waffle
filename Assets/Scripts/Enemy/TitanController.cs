@@ -167,8 +167,7 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         }
 
         if(_attackTimer > attackCD){
-            
-            
+            _animator.SetTrigger("Attack");
         }
         else
         {
@@ -179,7 +178,6 @@ public class TitanController : MonoBehaviour, IEnemyMachine
         // {
         //     return EnemyState.Attacking;
         // }
-        _animator.SetTrigger("Attack");
         return EnemyState.Attacking;
         
     }

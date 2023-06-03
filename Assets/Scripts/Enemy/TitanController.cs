@@ -9,7 +9,7 @@ using EnemyMachine;
 
 
 [RequireComponent(typeof(Shared.HealthSystem))]
-public class BaseEnemy : MonoBehaviour, IEnemyMachine
+public class TitanController : MonoBehaviour, IEnemyMachine
 {
     public EnemyState currentState = EnemyState.Idle;
     public Vector3 destination;
@@ -38,7 +38,7 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
     public float attackCD = 1.0f;
     public float attackRange = 1.0f;
     private float _attackTimer;
-    //private bool _isAttacking = false;
+    private bool _attackAnimation = false; // true when attacking animation is playing
 
     [Header("Debugging")]
     public bool showPatrolInfo;
@@ -64,6 +64,7 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
                 Destroy(gameObject, 2);
             }
             //taking damage
+            //aniation here
             Debug.Log($"Enemy taking damage. Remaining health: {args.newHealth}");
         });
         destination = transform.position;
@@ -142,7 +143,7 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
         _agent.SetDestination(destination);
         // 1.0f = Player Radius + Enemy Radius
         // currentDistance = attack range
-        float currentDistance = _agent.stoppingDistance + stopThreshold + 1.0f;
+        float currentDistance = attackRange;
         if (_agent.remainingDistance <= currentDistance)
         {
             Rotate();
@@ -159,23 +160,34 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
             return EnemyState.Idle;
         }
 
-        if(_attackTimer < attackCD){
-            _attackTimer += Time.deltaTime;
+        Rotate();
+        if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) >= attackRange) 
+        {
             return EnemyState.Chasing;
         }
 
-        if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) <= attackRange) 
-        {
-            Attack();
-            return EnemyState.Attacking;
+        if(_attackTimer > attackCD){
+            
+            
         }
-        return EnemyState.Chasing;
+        else
+        {
+            _attackTimer += Time.deltaTime;
+            _animator.SetTrigger("Patrol");
+        }
+        // if( _animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") )
+        // {
+        //     return EnemyState.Attacking;
+        // }
+        Debug.Log(" trigger attack");
+        _animator.SetTrigger("Attack");
+        return EnemyState.Attacking;
+        
     }
 
-    private void Attack()
+    public void Attack()
     {
         // TODO: fix when player right on top of monster/ doesn't get hit by raytracing.
-        _animator.SetTrigger("Attack");
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, attackRange, targetMask))
         {
             CharacterMotor player = hit.transform.gameObject.GetComponent<CharacterMotor>();
@@ -190,7 +202,7 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
             }
         }
         //if player is inside the enemy, (within radius but not hitable by raycast)
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 0.5f, targetMask);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange, targetMask);
         foreach (var hitCollider in hitColliders)
         {
             GameObject player = hitCollider.gameObject;
@@ -206,6 +218,13 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
             }
         }
     }
+
+    // attack animation------------------------------------
+    public void AttackAnimationEnd()
+    {
+        // _attackTimer = 0f;
+    }
+
 
     private bool CheckPlayerDead()
     {
@@ -252,4 +271,3 @@ public class BaseEnemy : MonoBehaviour, IEnemyMachine
         }
     }
 }
-

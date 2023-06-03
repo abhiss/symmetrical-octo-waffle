@@ -13,6 +13,7 @@ public class InputListener : MonoBehaviour
     public bool AltFire = false;
     public bool AltFireDown = false;
     public bool SpaceDown = false;
+    public bool ShiftKey = false;
     public Vector3 MousePosition;
 
     public Vector3 MousePlanePosition()
@@ -56,6 +57,7 @@ public class InputListener : MonoBehaviour
             AltFire = false;
             AltFireDown = false;
             SpaceDown = false;
+            ShiftKey = false;
             return;
         }
 
@@ -71,5 +73,6 @@ public class InputListener : MonoBehaviour
         AltFireDown = Input.GetKeyDown(KeyCode.Mouse1);
 
         SpaceDown = Input.GetKeyDown(KeyCode.Space);
+        ShiftKey = Input.GetKeyDown(KeyCode.LeftShift);
     }
 }

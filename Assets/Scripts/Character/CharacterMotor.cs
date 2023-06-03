@@ -7,6 +7,7 @@ public class CharacterMotor : NetworkBehaviour
     public float MoveSpeed = 3.0f;
     public float RotateSpeed = 20.0f;
     public float DecelerateInputInfluence = 5.0f;
+    [System.NonSerialized] public Vector3 DashInputOverride;
     private InputListener _inputListener;
     private Vector3 _input;
 
@@ -64,6 +65,13 @@ public class CharacterMotor : NetworkBehaviour
 
         // Input
         _input = _inputListener.GetAxisInput();
+        // Keep the input vector normalized but allow input acceleartion
+        _input = Vector3.ClampMagnitude(_input, 1.0f);
+        if (DashInputOverride != Vector3.zero)
+        {
+            _input = DashInputOverride;
+        }
+
         _inputVelocity = ProcessInput(_input) * MoveSpeed;
         if (!_characterCamera.CursorWithinDeadzone())
         {
@@ -81,9 +89,6 @@ public class CharacterMotor : NetworkBehaviour
     // -------------------------------------------------------------------------
     private Vector3 ProcessInput(Vector3 input)
     {
-        // Keep the input vector normalized but allow input acceleartion
-        input = Vector3.ClampMagnitude(input, 1.0f);
-
         // Project input to surface
         float height = _characterController.height;
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, height))

@@ -7,31 +7,22 @@ public class CharacterAnimator : NetworkBehaviour
     public float DampTime = 0.1f;
     private Vector3 _velocity;
     private Vector3 _previousPositon;
-    private CharacterMotor _characterMotor;
-
-    [Header("Aiming")]
-    // public float AimDuration = 5.0f;
-    // public float AimSpeed = 10.0f;
-    // public float HolsterSpeed = 2.5f;
-    // private float _elaspedAimTime = 0.0f;
-    private float _aimWeight = 0.0f;
-    private bool _isAimed = false;
-    private CharacterShooting _characterShooting;
-    [Header("JetPack")]
-    private JetPack _jetPack;
 
     [Header("Core")]
     private GameObject _model;
     private Animator _animator;
+    private CharacterMotor _characterMotor;
+    private CharacterShooting _characterShooting;
+    private JetPack _jetPack;
+    private Dash _dash;
 
     [Header("Hashes")]
     private int _horizontalHash;
     private int _verticalHash;
-    private int _speedHash;
-    private int _groundedHash;
     private int _shootHash;
     private int _reloadHash;
     private int _jetpackHash;
+    private int _dashHash;
 
     [Header("Debugging")]
     public bool ShowAnimationDirection;
@@ -50,8 +41,6 @@ public class CharacterAnimator : NetworkBehaviour
         // Movement
         _horizontalHash = Animator.StringToHash("Horizontal");
         _verticalHash = Animator.StringToHash("Vertical");
-        _speedHash = Animator.StringToHash("Speed");
-        _groundedHash = Animator.StringToHash("OnGround");
 
         // Shooting
         _reloadHash = Animator.StringToHash("Reloading");
@@ -59,8 +48,10 @@ public class CharacterAnimator : NetworkBehaviour
 
         // Misc
         _jetpackHash = Animator.StringToHash("UseJetpack");
+        _dashHash = Animator.StringToHash("IsDashing");
 
         _jetPack = GetComponent<JetPack>();
+        _dash = GetComponent<Dash>();
         _characterMotor = GetComponent<CharacterMotor>();
         _characterShooting = GetComponent<CharacterShooting>();
     }
@@ -91,10 +82,6 @@ public class CharacterAnimator : NetworkBehaviour
         Vector3 animationDir = forward - right;
         _animator.SetFloat(_horizontalHash, animationDir.x, DampTime, Time.deltaTime);
         _animator.SetFloat(_verticalHash, animationDir.z, DampTime, Time.deltaTime);
-        _animator.SetFloat(_speedHash, _velocity.magnitude, DampTime, Time.deltaTime);
-
-        // Movement events
-        _animator.SetBool(_groundedHash, _characterMotor.isGrounded);
 
         // Debugging
         _gizmoAnimationDir = animationDir.normalized;
@@ -109,6 +96,7 @@ public class CharacterAnimator : NetworkBehaviour
     private void AnimatedMisc()
     {
         _animator.SetBool(_jetpackHash, _jetPack.HasLaunched);
+        _animator.SetBool(_dashHash, _dash.IsDashing);
     }
 
     public void OnDrawGizmos()

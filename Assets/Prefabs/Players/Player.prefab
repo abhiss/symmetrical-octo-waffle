@@ -63,10 +63,10 @@ GameObject:
   - component: {fileID: 3682091231530256069}
   - component: {fileID: 9127889449909241548}
   - component: {fileID: 5986054516681673575}
-  - component: {fileID: 7082143008650128012}
   - component: {fileID: 7815612474361838623}
   - component: {fileID: 5688000099644499388}
   - component: {fileID: 3222529734208309475}
+  - component: {fileID: 5826547424268810394}
   m_Layer: 6
   m_Name: Character
   m_TagString: Player
@@ -136,6 +136,7 @@ MonoBehaviour:
   AltFire: 0
   AltFireDown: 0
   SpaceDown: 0
+  ShiftKey: 0
   MousePosition: {x: 0, y: 0, z: 0}
 --- !u!114 &9127889449909241548
 MonoBehaviour:
@@ -189,18 +190,6 @@ MonoBehaviour:
   AssistRaidus: 0.2
   VfxInterval: 0.09
   EnableDebugging: 0
---- !u!114 &7082143008650128012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3656713175936252363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f4bd52088cd6794ab82ed94e59d315d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7815612474361838623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,9 +244,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxJumpDistance: 20
   MaxHeight: 5
+  HasLaunched: 0
   LaunchClip: {fileID: 8300000, guid: 698a83bccafc22344b58cfec39f2e512, type: 3}
   LoopClip: {fileID: 8300000, guid: 68eff49091cea804eb82446116cbf8ee, type: 3}
   LandClip: {fileID: 8300000, guid: c72a27876eb5d2848afacff7a3b35cdd, type: 3}
+--- !u!114 &5826547424268810394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20605f0df66d8334b83b21829f35bfba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DashForce: 3
+  IsDashing: 0
 --- !u!1 &4998724704745278403
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +737,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: RobotPolice_WholeBody_SkeletalMesh
       objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c7b5ce2caa1943b41865798246c5bc91, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: c7b5ce2caa1943b41865798246c5bc91, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[4]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9cabae0fa739ed246aca374ce3f3c7b9, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[5]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3e63ff75a79fb434ab942c37f8904e9e, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[6]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1f7322557e9b2d64093afdb896f4b2bd, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[7]
+      value: 
+      objectReference: {fileID: 2100000, guid: e86ee0a49aaff7f41a9d85682fab9518, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[8]
+      value: 
+      objectReference: {fileID: 2100000, guid: dce36b4f181b0754fa8e7db5889342db, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 137c9bb99764e734cb681d146643001f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[10]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7027909c099390d45bde9964527af0cc, type: 2}
     - target: {fileID: 5866666021909216657, guid: 137c9bb99764e734cb681d146643001f,
         type: 3}
       propertyPath: m_Controller

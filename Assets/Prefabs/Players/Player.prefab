@@ -873,26 +873,6 @@ MonoBehaviour:
     TriggerNameHash: -1316629574
     TransitionIndex: 0
   m_Animator: {fileID: 474122193657312462}
---- !u!114 &8100386072696079446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6575141001975772174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35381bb4c412a5b4289329d756c68b2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList:
-  - Layer: 1
-    OriginatingState: -1459219776
-    DestinationState: -1691164935
-    TransitionDuration: 0
-    TriggerNameHash: -1316629574
-    TransitionIndex: 0
-  m_Animator: {fileID: 474122193657312462}
 --- !u!1001 &7132903488298900656
 PrefabInstance:
   m_ObjectHideFlags: 0

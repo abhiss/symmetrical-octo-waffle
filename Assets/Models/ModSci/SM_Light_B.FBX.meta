@@ -3,7 +3,22 @@ guid: 0fe41d483f0841a489694aa5f2beb932
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Base_Light_White
+    second: {fileID: 2100000, guid: 87fe42395353f9147a02435b07aceb1b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Light_B
+    second: {fileID: 2100000, guid: d46e69ccebf9d3842a01ab0384750291, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Trim_A_Shiny3
+    second: {fileID: 2100000, guid: 35867a7af8b48f84cb1d3af10c1207e0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

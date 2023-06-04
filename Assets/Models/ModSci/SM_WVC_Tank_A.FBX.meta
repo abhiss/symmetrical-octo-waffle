@@ -3,7 +3,22 @@ guid: a8f1230391dbc514f86d3b509dad5864
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_FloorPadding2
+    second: {fileID: 2100000, guid: e0fd33836196c5243a6694c834f8f623, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Trim_A_Red
+    second: {fileID: 2100000, guid: 91938166a7b98fa48a719d1b4525bdee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_WVC_Tank
+    second: {fileID: 2100000, guid: f452d2b93623cd942a92bc7369e6ece8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -3,7 +3,22 @@ guid: 2cb17af78a619d149bc29d52287663ef
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_PowerCellLight
+    second: {fileID: 2100000, guid: 97d157df3babea742b5d8f36c6db1583, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_PowerCells
+    second: {fileID: 2100000, guid: f898ad8ca988b9047a0f1e876cadac37, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Trim_A_Shiny
+    second: {fileID: 2100000, guid: 35867a7af8b48f84cb1d3af10c1207e0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -861,7 +861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TransitionStateInfoList:
-  - Layer: 1
+  - Layer: 2
     OriginatingState: -1459219776
     DestinationState: -1691164935
     TransitionDuration: 0

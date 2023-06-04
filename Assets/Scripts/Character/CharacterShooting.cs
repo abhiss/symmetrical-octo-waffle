@@ -7,6 +7,7 @@ public class CharacterShooting : NetworkBehaviour
     public WeaponCreator CurrentWeapon;
     public Transform WeaponDrawer;
     private InputListener _inputListener;
+    [NonSerialized] public Vector3 AimDirection;
 
     [Header("Laser")]
     public Material LaserMaterial;
@@ -22,7 +23,6 @@ public class CharacterShooting : NetworkBehaviour
     public float CursorDeadZone = 3.5f;
     public LayerMask PlayerMask;
     public LayerMask EnemyMask;
-    private Vector3 _aimDirection;
     private int _newClip = 0;
     private bool _fireEnabled = true;
 
@@ -72,7 +72,7 @@ public class CharacterShooting : NetworkBehaviour
         if (!IsOwner) return;
 
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
-        _aimDirection = GetAimDirection(cursorPosition);
+        AimDirection = GetAimDirection(cursorPosition);
         InputEvents();
 
         if (EnableDebugging)
@@ -129,7 +129,7 @@ public class CharacterShooting : NetworkBehaviour
         _fireRateCoolDown = CurrentWeapon.FireRate;
         --CurrentWeapon.CurrentClipSize;
 
-        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
+        if (Physics.Raycast(transform.position, AimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             // TODO: Flavor Section
             // - Create particle at hit point for debrie or sparks
@@ -272,11 +272,11 @@ public class CharacterShooting : NetworkBehaviour
     private void DrawLaser()
     {
         Vector3 laserEndPoint = transform.position;
-        laserEndPoint += _aimDirection * CurrentWeapon.MaxDistance;
+        laserEndPoint += AimDirection * CurrentWeapon.MaxDistance;
 
         // Shrink laser to wall hit
         _laserLine.SetPosition(0, _muzzleTransform.position);
-        if (Physics.Raycast(transform.position, _aimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
+        if (Physics.Raycast(transform.position, AimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             laserEndPoint = hit.point;
         }

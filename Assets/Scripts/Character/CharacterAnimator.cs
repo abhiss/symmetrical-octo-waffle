@@ -24,6 +24,9 @@ public class CharacterAnimator : NetworkBehaviour
     private int _jetpackHash;
     private int _dashHash;
     private int _groundedHash;
+    private int _verticalAimHash;
+    private int _horizontalAimHash;
+    private int _aimUpDownHash;
 
     [Header("Debugging")]
     public bool ShowAnimationDirection;
@@ -47,6 +50,9 @@ public class CharacterAnimator : NetworkBehaviour
         // Shooting
         _reloadHash = Animator.StringToHash("Reloading");
         _shootHash = Animator.StringToHash("Shoot");
+        _verticalAimHash = Animator.StringToHash("VerticalAim");
+        _horizontalAimHash = Animator.StringToHash("HorizontalAim");
+        _aimUpDownHash = Animator.StringToHash("AimUpDown");
 
         // Misc
         _jetpackHash = Animator.StringToHash("UseJetpack");
@@ -92,8 +98,19 @@ public class CharacterAnimator : NetworkBehaviour
 
     private void AnimatedGun()
     {
+        // Get move direction relative to players rotation
+        Vector3 forward = transform.forward.normalized * _characterShooting.AimDirection.z;
+        Vector3 right = transform.right.normalized * _characterShooting.AimDirection.x;
+
+        // Movement floats
+        Vector3 aimDir = forward - right;
+
         _animator.SetBool(_reloadHash, _characterShooting.IsReloading);
         _animator.SetBool(_shootHash, _characterShooting.IsShooting);
+
+        _animator.SetFloat(_horizontalAimHash, aimDir.z, DampTime, Time.deltaTime);
+        _animator.SetFloat(_verticalAimHash, aimDir.x, DampTime, Time.deltaTime);
+        _animator.SetFloat(_aimUpDownHash, _characterShooting.AimDirection.y, DampTime, Time.deltaTime);
     }
 
     private void AnimatedMisc()

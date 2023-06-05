@@ -47,13 +47,8 @@ public class LobbyButtons : MonoBehaviour
             usernameInputField.text = PlayerPrefs.GetString("username");
         }
     }
-    private void OnApplicationQuit()
+    private void OnApplicationQuit() //will work once the game is built 
     {
         PlayerPrefs.DeleteKey("username");
     }
-    private void OnDisable()
-    {
-        PlayerPrefs.DeleteKey("username");
-    }
-
 }

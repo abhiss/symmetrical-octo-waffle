@@ -31,6 +31,7 @@ public class EnergyProjectile : NetworkBehaviour
         _targetPosition = pos;
     }
 
+    // Create an explosion at the location of the projectile and destroy the projectile.
     private void Explode()
     {
         Instantiate(_explosionPrefab, transform.position, Quaternion.identity);

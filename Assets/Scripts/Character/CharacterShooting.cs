@@ -1,7 +1,8 @@
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
-public class CharacterShooting : MonoBehaviour
+public class CharacterShooting : NetworkBehaviour
 {
     public WeaponCreator CurrentWeapon;
     public Transform WeaponDrawer;
@@ -45,7 +46,8 @@ public class CharacterShooting : MonoBehaviour
     public bool EnableDebugging = true;
 
     private void Start()
-    {
+    {   
+        if (!IsOwner) return; 
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
@@ -66,6 +68,8 @@ public class CharacterShooting : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
+
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
         _aimDirection = GetAimDirection(cursorPosition);
         InputEvents();

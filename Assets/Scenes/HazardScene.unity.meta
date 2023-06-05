@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/HazardScene.unity.meta
 guid: 5ff5b6efe7c914df5ac14ff6428d44c7
+========
+guid: 9334723cd07c57a4cbf1b9221134799b
+>>>>>>>> 9b539d4 (Moved files to their correct destinations):Assets/Scenes/Pictures.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

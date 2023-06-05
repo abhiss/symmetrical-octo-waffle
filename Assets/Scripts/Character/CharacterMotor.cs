@@ -24,7 +24,7 @@ public class CharacterMotor : NetworkBehaviour
     [SerializeField] private Vector3 _inputVelocity;
     [SerializeField] private Vector3 _forceVelocity;
 
-    [Header("Misc Components")]
+    [Header("Components")]
     private CharacterController _characterController;
     private CharacterCamera _characterCamera;
 
@@ -63,7 +63,6 @@ public class CharacterMotor : NetworkBehaviour
             return;
         }
 
-        // Input
         _input = _inputListener.GetAxisInput();
         // Keep the input vector normalized but allow input acceleartion
         _input = Vector3.ClampMagnitude(_input, 1.0f);

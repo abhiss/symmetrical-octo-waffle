@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class CharacterCamera : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class CharacterCamera : MonoBehaviour
     private Vector3 _cameraPoint;
     private Vector3 _playerPosition;
     private Plane _cursorPlane = new Plane(Vector3.down, Vector3.zero);
+
+    [Header("CameraShake")]
+    private float _shakeIntensity = 0;
+    private float _shakeDecay = 0;
 
     public void Start()
     {
@@ -67,9 +72,27 @@ public class CharacterCamera : MonoBehaviour
         );
     }
 
+    // Camera shake function
+    public void Explosion(float intensity, float duration)
+    {
+        _shakeIntensity = intensity;
+        _shakeDecay = intensity / duration;
+        StartCoroutine(StopShake(duration));
+    }
+
     private void CameraShake(ref Vector3 cameraPosition)
     {
+        if (_shakeIntensity > 0)
+        {
+            cameraPosition += Random.insideUnitSphere * _shakeIntensity;
+            _shakeIntensity -= _shakeDecay * Time.deltaTime;
+        }
+    }
 
+    private IEnumerator StopShake(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _shakeIntensity = 0;
     }
 
     private Vector3 GetCameraPosition()
@@ -98,7 +121,7 @@ public class CharacterCamera : MonoBehaviour
         // TODO: Fix logic
         // Detect obstructions
         Vector3 dir = PlayerObject.transform.position - transform.position;
-        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, WallLayer))
+        if (Physics.Raycast(transform.position, dir.normalized, out _currHit, dir.magnitude, WallLayer))
         {
             GameObject current = _currHit.transform.gameObject;
             if (current.GetComponent<Obstructable>() == null)

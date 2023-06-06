@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class InputListener : MonoBehaviour
+public class InputListener : NetworkBehaviour
 {
     [Header("Settings")]
     public bool DisableInput = false;
@@ -47,6 +48,8 @@ public class InputListener : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
+
         // TODO: This should really be a singleton. But I dont think we have the time.
         if (DisableInput)
         {

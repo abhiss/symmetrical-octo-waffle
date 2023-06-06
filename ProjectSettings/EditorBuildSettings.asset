@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EnemyTester.unity
     guid: 9ea9d781f851c0149be4839064aec761
+  - enabled: 1
+    path: Assets/Scenes/HazardScene.unity
+    guid: 5ff5b6efe7c914df5ac14ff6428d44c7
   m_configObjects: {}

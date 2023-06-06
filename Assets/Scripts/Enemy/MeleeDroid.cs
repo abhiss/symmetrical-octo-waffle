@@ -125,7 +125,6 @@ public class MeleeDroid : MonoBehaviour, IEnemyMachine
         {
             return EnemyState.Idle;
         }
-        transform.LookAt(_targetObject.transform);
         // Check if we leave attack range.
         if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) >= attackRange) 
         {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using SharedMath;
 
 public class JetPack : NetworkBehaviour
 {
@@ -68,9 +69,11 @@ public class JetPack : NetworkBehaviour
                 return;
             }
 
+            // Calculate trajectory
+            LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxHeight);
+
             // Launch the player
-            Vector3 initialVelocity = TrajectoryVelocity(cursorPosition, MaxHeight);
-            _character.SetForce(initialVelocity);
+            _character.SetForce(launchData.InitalVelocity);
             _launchQueued = true;
 
             _audioSrc.PlayOneShot(LaunchClip);
@@ -116,42 +119,6 @@ public class JetPack : NetworkBehaviour
         }
 
         return target;
-    }
-
-    private Vector3 TrajectoryVelocity(Vector3 targetPosition, float height)
-    {
-        // Using S U V A T
-        // Goal: Return initial velocity
-        // 3 Knowns: Height, horizontal displacement, vertical displacement
-        // Find: Up, Down, Right Velocity
-
-        // Want the players feet position not their center: -1
-        Vector3 playerPosition = transform.position;
-        playerPosition.y -= 1.0f;
-
-        Vector3 sRight = targetPosition - transform.position;
-        float a = Physics.gravity.y;
-
-        // Up (final velocity = 0)
-        // vUp = sqrt(-2as)
-        // tUp = sqrt(-2s/a)
-        float vUp = Mathf.Sqrt(-2 * a * height);
-        float tUp = Mathf.Sqrt(-2 * height / a);
-
-        // Down (inital velocity = 0)
-        // tDown = sqrt(2s/a)
-        float tDown = Mathf.Sqrt(2 * (sRight.y - height) / a);
-
-        // Time
-        float t = tUp + tDown;
-
-        // Right (acceleration = 0)
-        // vRight = s/t
-        Vector3 vRight = sRight / t;
-
-        Vector3 initialVelocity = vRight;
-        initialVelocity.y = vUp;
-        return initialVelocity;
     }
 
     public void OnDrawGizmos()

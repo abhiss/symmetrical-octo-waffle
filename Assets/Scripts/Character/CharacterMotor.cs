@@ -98,7 +98,8 @@ public class CharacterMotor : NetworkBehaviour
 
             float slope = projectedDir.y;
             float slopeLimit = -0.1f * _characterController.slopeLimit;
-            if (slope < 0 && slope > slopeLimit) {
+            if (slope < 0 && slope > slopeLimit)
+            {
                 return projectedDir * input.magnitude;
             }
         }
@@ -173,6 +174,7 @@ public class CharacterMotor : NetworkBehaviour
             return;
         }
 
+        // Make velocity orthogonal to surface
         velocity = OrthogonalToSurfaceNormal(velocity);
 
         // Exceeded max grounded velocity

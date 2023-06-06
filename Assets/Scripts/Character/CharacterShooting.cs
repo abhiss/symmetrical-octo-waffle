@@ -46,8 +46,9 @@ public class CharacterShooting : NetworkBehaviour
     public bool EnableDebugging = true;
 
     private void Start()
-    {   
-        if (!IsOwner) return; 
+    {
+        if (!IsOwner) return;
+
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;

@@ -31,6 +31,13 @@ public class GlobalNetworkManager : NetworkBehaviour
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
 
+        isMainScene = SceneManager.GetActiveScene().name == "MainScene";
+        if (!isMainScene)
+        {
+            Debug.Log("not main scene");
+            player.transform.position = spawnLocation.Value;
+            return;
+        }
         if (IsServer)
         {
             Debug.Log("in isserver");
@@ -44,13 +51,7 @@ public class GlobalNetworkManager : NetworkBehaviour
             player.transform.position = spawnLocation.Value;
         }
 
-        isMainScene = SceneManager.GetActiveScene().name == "MainScene";
-        if (!isMainScene)
-        {
-            Debug.Log("not main scene");
-            player.transform.position = spawnLocation.Value;
-            return;
-        }
+
 
     }
 

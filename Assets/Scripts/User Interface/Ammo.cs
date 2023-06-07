@@ -5,7 +5,7 @@ using TMPro; // Namespace for TextMeshPro
 
 public class Ammo : MonoBehaviour
 {
-    public TopDownCharacterShooting characterShooting;
+    // public TopDownCharacterShooting characterShooting;
     private TextMeshProUGUI ammoText;
 
     private void Start()
@@ -13,12 +13,12 @@ public class Ammo : MonoBehaviour
         ammoText = GetComponent<TextMeshProUGUI>();
     }
 
-    private void Update()
-    {
-        if (characterShooting != null)
-        {
-            var currentWeapon = characterShooting.GetCurrentWeapon();
-            ammoText.text = currentWeapon.currentAmmo.ToString() + "/" + currentWeapon.maxAmmo.ToString();
-        }
-    }
+    // private void Update()
+    // {
+    //     if (characterShooting != null)
+    //     {
+    //         var currentWeapon = characterShooting.GetCurrentWeapon();
+    //         ammoText.text = currentWeapon.currentAmmo.ToString() + "/" + currentWeapon.maxAmmo.ToString();
+    //     }
+    // }
 }

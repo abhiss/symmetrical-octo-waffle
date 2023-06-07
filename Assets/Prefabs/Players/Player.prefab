@@ -249,6 +249,7 @@ MonoBehaviour:
   LaunchClip: {fileID: 8300000, guid: 698a83bccafc22344b58cfec39f2e512, type: 3}
   LoopClip: {fileID: 8300000, guid: 68eff49091cea804eb82446116cbf8ee, type: 3}
   LandClip: {fileID: 8300000, guid: c72a27876eb5d2848afacff7a3b35cdd, type: 3}
+  EnableDebugging: 0
 --- !u!114 &5826547424268810394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,7 +711,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 137c9bb99764e734cb681d146643001f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: -1.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 137c9bb99764e734cb681d146643001f,
         type: 3}

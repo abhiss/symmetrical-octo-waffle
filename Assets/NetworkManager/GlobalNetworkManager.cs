@@ -30,13 +30,13 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
-
+        spawnLocation.Value = Vector3.zero;
         if (IsServer)
         {
             Debug.Log("in isserver");
             map = new GenLayout(Instantiate, gameObject, 0);
             Debug.Log("map spawnlocation: " + map.PlayerSpawnLocation);
-            spawnLocation.Value = map.PlayerSpawnLocation;
+            //spawnLocation.Value = map.PlayerSpawnLocation;
         }
         if (IsClient)
         {
@@ -54,8 +54,8 @@ public class GlobalNetworkManager : NetworkBehaviour
 
     }
 
-    // Should only be called on the current client. 
-    // id is clientid (only makes sense to use on server). 
+    // Should only be called on the current client.
+    // id is clientid (only makes sense to use on server).
     private void OnClientConnected(ulong id) {
 
     }

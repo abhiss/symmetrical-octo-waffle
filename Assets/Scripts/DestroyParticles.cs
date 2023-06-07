@@ -10,5 +10,4 @@ public class DestroyParticles : MonoBehaviour
         Destroy(gameObject, 1f);
     }
 
-
 }

@@ -16,6 +16,7 @@ public class JetPack : NetworkBehaviour
     private CharacterMotor _character;
     private InputListener _inputListener;
     private AudioSource _loopSrc;
+    private float _elaspedTime = 0.0f;
 
     [Header("Sound")]
     public AudioClip LaunchClip;
@@ -41,7 +42,7 @@ public class JetPack : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        // Lets us skip a frame so isGrounded updates
+        // Skip a frame so isGrounded updates
         if (_launchQueued)
         {
             HasLaunched = true;

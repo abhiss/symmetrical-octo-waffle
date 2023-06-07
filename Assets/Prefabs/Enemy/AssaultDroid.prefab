@@ -115,7 +115,7 @@ Animator:
   m_GameObject: {fileID: 772981208468871829}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2f9c5af03f24b6d488828d11e1dc8233, type: 3}
-  m_Controller: {fileID: 9100000, guid: 47e91c546109b48b58bf931bc14eb215, type: 2}
+  m_Controller: {fileID: 9100000, guid: ed01af26c88415e4ea04c28e7b0f64db, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -202,18 +202,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe8e1d4fd5ce476b9b67c69ee33cb79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
-  destination: {x: 0, y: 0, z: 0}
-  targetMask:
+  AttackDamage: 10
+  _hitboxOffset: {x: 0, y: 0, z: 0}
+  _hitbox: {x: 10, y: 5, z: 10}
+  TargetMask:
     serializedVersion: 2
     m_Bits: 64
-  stopThreshold: 0.5
-  detectionRadius: 20
-  patrolRadius: 2.5
-  patrolHoldTime: 1
-  attackForce: 2
-  AttackDamage: 10
-  attackRange: 10
+  _detectionRadius: 10
+  currentState: 0
+  _target: {fileID: 0}
+  _patrolRadius: 20
+  _timeToRoam: 5
+  _hurtSound: {fileID: 8300000, guid: 8820235e2c64dd54dbddc7ab5c568545, type: 3}
+  _missSound: {fileID: 8300000, guid: a9e231567626341c3b4d11002ba5ca6e, type: 3}
+  _hitSound: {fileID: 8300000, guid: a9e231567626341c3b4d11002ba5ca6e, type: 3}
+  _explosionPrefab: {fileID: 1827493406786650123, guid: 9f801d9bb8d1903479985b6030d180c9,
+    type: 3}
+  _sparksPrefab: {fileID: 1000011396044746, guid: 96b2ec0239d11fa4b9792311efceb8ed,
+    type: 3}
+  _showHitbox: 1
+  _showPatrolRadius: 0
+  _showDetectionRadius: 0
 --- !u!82 &340604060749617439
 AudioSource:
   m_ObjectHideFlags: 0
@@ -224,7 +233,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: a9e231567626341c3b4d11002ba5ca6e, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1

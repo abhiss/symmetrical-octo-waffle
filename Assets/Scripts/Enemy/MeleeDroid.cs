@@ -5,181 +5,224 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SubsystemsImplementation;
-using EnemyMachine;
-
 
 [RequireComponent(typeof(Shared.HealthSystem))]
-public class MeleeDroid : MonoBehaviour, IEnemyMachine
+public class MeleeDroid : MonoBehaviour
 {
-    public EnemyState currentState = EnemyState.Idle;
-    public Vector3 destination;
-
-    [Header("General Settings")]
-    public LayerMask targetMask;
-    public float stopThreshold = 0.5f;
-    private GameObject _targetObject;
-    private HealthSystem _healthSystem;
-
-    [Header("Idle Properties")]
-    public float detectionRadius = 5.0f;
-
-    [Header("Patrol Properties")]
-    public float patrolRadius = 2.5f; // if within radius switch from idle to attack
-    public float patrolHoldTime = 1.0f;
-    private Vector3 _patrolCenter = Vector3.zero;
-    private float _patrolIdleTime = 0.0f;
-    private Vector3 _patrolTargetPoint;
-    private EnemyState _previousState;
-    private NavMeshAgent _agent;
-
-    [Header("Attack Properties")]
-    public float attackForce = 2.0f;
+    private enum State
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+    }
+    [Header("Stats")]
     public float AttackDamage = 5.0f;
-    public float attackRange = 1.0f;
+    private HealthSystem _healthSystem;
+    [SerializeField] private Vector3 _hitboxOffset;
+    [SerializeField] private Vector3 _hitbox;
 
-    [Header("Animation")]
+    [Header("AI")]
+    public LayerMask TargetMask;
+    [SerializeField] private float _detectionRadius = 5.0f;
+    [SerializeField] private State currentState;
+    [SerializeField] private GameObject _target;
+    private NavMeshAgent _agent;
+    private Vector3 _destination;
+    //Patrolling
+    [SerializeField] public float _patrolRadius = 2.5f; 
+    [SerializeField] private float _timeToRoam;
+    private float _timeRoamed;
+
+    [Header("Animation/Sound/VFX")]
     private Animator _animator;
+    private AudioSource _audio;
+    [SerializeField] private AudioClip _hurtSound;
+    [SerializeField] private AudioClip _missSound;
+    [SerializeField] private AudioClip _hitSound;
+    [SerializeField] private GameObject _explosionPrefab;
+    [SerializeField] private GameObject _sparksPrefab;
 
-    [Header("Sound")]
-    private AudioSource _attackSound;
+    [Header("Gizmos")]
+    [SerializeField] private bool _showHitbox;
+    [SerializeField] private bool _showPatrolRadius;
+    [SerializeField] private bool _showDetectionRadius;
 
     void Start()
     {
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
-        _attackSound = GetComponent<AudioSource>();
+        _audio = GetComponent<AudioSource>();
         _healthSystem = GetComponent<HealthSystem>();
-        _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => {
-            if(args.newHealth <= 0)
+        _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
+        {
+            // Emit sparks when getting hit.
+            Destroy(Instantiate(_sparksPrefab, transform.position, Quaternion.identity), 0.25f);
+            // If we are dead, spawn an explosion and destroy ourselves.
+            if (args.newHealth <= 0)
             {
-                _agent.isStopped = true;
-                _animator.SetTrigger("Die");
-                Destroy(gameObject, 2);
+                Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+                Destroy(gameObject);
+                return;
             }
-            //taking damage hit feed back here
-            _targetObject = args.attacker;
-            if(currentState == EnemyState.Idle)
+            // Play a hurt sound when getting hit.
+            _audio.clip = _hurtSound;
+            _audio.Play();
+            // If we get hit, start chasing the enemy.
+            if (_target == null && (currentState == State.Idle || currentState == State.Patrol))
             {
-                currentState = EnemyState.Chasing;
+                _target = args.attacker;
+                currentState = State.Chase;
             }
         });
-        destination = transform.position;
-        _patrolCenter = transform.position;
-        _patrolTargetPoint = transform.position;
+        currentState = State.Idle;
     }
 
     void Update()
     {
         currentState = currentState switch
         {
-            EnemyState.Idle => IdleStateHandler(),
-            EnemyState.Chasing => ChasingStateHandler(),
-            EnemyState.Attacking => AttackingStateHandler(),
-            _ => IdleStateHandler()
+            State.Idle => IdleState(),
+            State.Patrol => PatrolState(),
+            State.Chase => ChaseState(),
+            State.Attack => AttackState(),
+            _ => IdleState()
         };
-        _previousState = currentState;
     }
 
-
-    public EnemyState IdleStateHandler()
+    private State PatrolState()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, patrolRadius, targetMask);
+        // Play a patrol animation.
+        _animator.SetTrigger("Patrol");
+        // If we're close enough to our destination or we've roamed for long enough, patrol somewhere else.
+        if (Vector3.Distance(transform.position, _destination) <= 1 || _timeRoamed > _timeToRoam)
+        {
+            RefreshPatrolPoint();
+        }
+        // If there are enemies in our detection radius, and enter chase state if they are.
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _detectionRadius, TargetMask);
         if (hitColliders.Length > 0)
         {
-            _targetObject = hitColliders[0].gameObject;
-            return EnemyState.Chasing;
+            _target = hitColliders[0].gameObject;
+            return State.Chase;
         }
-        _animator.SetTrigger("Patrol");
-        Patrol();
-        return EnemyState.Idle;
+        // If there are no enemies in detection radius, continue patrolling.
+        else
+        {
+            _timeRoamed += Time.deltaTime;
+            return State.Patrol;
+        }
     }
 
-    public EnemyState ChasingStateHandler()
+    private void RefreshPatrolPoint()
     {
-        // If player is dead, return to being idle.
-        if(CheckPlayerDead())
+        Vector3 _patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+        _patrolTargetPoint.y = transform.position.y;
+        _destination = _patrolTargetPoint;
+        _agent.SetDestination(_destination);
+        _timeRoamed = 0;
+    }
+
+    private State IdleState()
+    {
+        // If there are enemies in detection radius, enter a chase state. Otherwise, enter a patrol state.
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _detectionRadius, TargetMask);
+        if (hitColliders.Length > 0)
         {
-            return EnemyState.Idle;
+            _target = hitColliders[0].gameObject;
+            return State.Chase;
         }
-        // Play a chase animation since we are now in a chase state.
+        return State.Patrol;
+    }
+
+    private State ChaseState()
+    {
+        // Play a chase animation.
         _animator.SetTrigger("Chase");
 
         // Navigate towards the player.
-        destination = _targetObject.transform.position;
-        _agent.SetDestination(destination);
+        _destination = _target.transform.position;
+        _agent.SetDestination(_destination);
 
         // If we are within range to attack, enter attack state.
-        if (_agent.remainingDistance <= attackRange)
+        Collider[] hitColliders = Physics.OverlapBox(transform.position+_hitboxOffset, _hitbox, transform.rotation, TargetMask);
+        if (hitColliders.Length > 0)
         {
-            return EnemyState.Attacking;
+            return State.Attack;
         }
 
-        // Stay in chase state if we're not going to attack or idle.
-        return EnemyState.Chasing;
+        // Stay in chase state if we're not going to attack.
+        return State.Chase;
     }
 
-    public EnemyState AttackingStateHandler()
+    // Note: Due to NavMesh agent, the droid may slide as it is attacking. This needs to be fixed.
+    private State AttackState()
     {
-        // If player is dead, return to being idle.
-        if(CheckPlayerDead())
+        // If we are in attack range, attack and stay in attack state.
+        Collider[] hitColliders = Physics.OverlapBox(transform.position+_hitboxOffset, _hitbox, transform.rotation, TargetMask);
+        RotateTowardsTarget(_target);
+        if (hitColliders.Length > 0)
         {
-            return EnemyState.Idle;
+            // Play an attack animation.
+            _animator.SetTrigger("Attack");
+            return State.Attack;
         }
-        // Check if we leave attack range.
-        if (Vector3.Distance(gameObject.transform.position, _targetObject.transform.position) >= attackRange) 
+        // If we are no longer in attack range, enter a chase state.
+        else
         {
             _animator.ResetTrigger("Attack");
-            return EnemyState.Chasing;
+            return State.Chase;
         }
-        // If we are in attack range and we are not attacking, attack and stay in attack state.
-        _animator.SetTrigger("Attack");
-        return EnemyState.Attacking;
     }
 
-    private void Patrol()
+    void RotateTowardsTarget(GameObject target)
     {
-        // Start a timer at position
-        // if stopped at destination (within the range) start timer
-        if (_agent.remainingDistance <= _agent.stoppingDistance + stopThreshold)
-        {
-            _patrolIdleTime += Time.deltaTime;
-        }
-
-        // Update when timer is finished (get new destination)
-        if (_patrolIdleTime >= patrolHoldTime)
-        {
-            _animator.SetTrigger("Idle");
-            _patrolTargetPoint = _patrolCenter + UnityEngine.Random.insideUnitSphere * patrolRadius;
-            _patrolIdleTime = 0.0f;
-        }
-        destination = _patrolTargetPoint;
-        _agent.SetDestination(destination);
+        Vector3 direction = target.transform.position - transform.position;
+        float rotateSpeed = 5f;
+        float step = rotateSpeed * Time.deltaTime;
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, step, 0.0f);
+        transform.rotation = Quaternion.LookRotation(newDirection);
     }
 
     public void Attack()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange, targetMask);
+        // Attack and deal damage to any valid players within our hitbox.
+        Collider[] hitColliders = Physics.OverlapBox(transform.position+_hitboxOffset, _hitbox, transform.rotation, TargetMask);
         foreach (var hitCollider in hitColliders)
         {
             GameObject player = hitCollider.gameObject;
-            CharacterMotor playerMotor = player.GetComponent<CharacterMotor>();
             Shared.HealthSystem playerHealthSystem = player.GetComponent<HealthSystem>();
             if (player != null)
             {
-                _attackSound.Play();
+                _audio.clip = _hitSound;
+                _audio.Play();
                 playerHealthSystem.TakeDamage(gameObject, AttackDamage);
-                playerMotor.AddForce(transform.forward * attackForce);
                 return;
             }
         }
+        _audio.clip = _missSound;
+        _audio.Play();
     }
 
-    private bool CheckPlayerDead()
+    void OnDrawGizmos()
     {
-        if (_targetObject == null)
+        if (_showHitbox)
         {
-            return true;
+            var oldMatrix = Gizmos.matrix;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position+_hitboxOffset, transform.rotation, _hitbox);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+            Gizmos.matrix = oldMatrix;
         }
-        return false;
+        if (_showPatrolRadius)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(transform.position, _patrolRadius);
+        }
+        if (_showDetectionRadius)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawSphere(transform.position, _detectionRadius);
+        }
     }
 }

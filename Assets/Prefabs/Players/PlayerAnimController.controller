@@ -98,7 +98,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: JetPackLand
+  m_Name: Land
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -950,7 +950,7 @@ AnimatorStateMachine:
     m_Position: {x: 420, y: 410, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3644025494827801190}
-    m_Position: {x: 940, y: 260, z: 0}
+    m_Position: {x: 930, y: 260, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6152410891899587740}
     m_Position: {x: 1100, y: 340, z: 0}

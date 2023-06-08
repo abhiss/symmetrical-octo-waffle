@@ -1,6 +1,7 @@
 using UnityEngine;
-using System;
+using UnityEngine.VFX;
 using Unity.Netcode;
+using System;
 
 public class CharacterShooting : NetworkBehaviour
 {
@@ -36,6 +37,7 @@ public class CharacterShooting : NetworkBehaviour
     private AudioSource _playerAudioSrc;
     private Transform _muzzleTransform;
     private Light _muzzleFlash;
+    private VisualEffect _vfx;
 
     [Header("Cooldowns")]
     private float _fireRateCoolDown = 0.0f;
@@ -81,7 +83,11 @@ public class CharacterShooting : NetworkBehaviour
         }
 
         _muzzleFlash.enabled = _vfxCoolDown > 0;
-        DrawLaser();
+        if(_inputListener.DisableInput == false)
+        {
+            DrawLaser();
+        }
+
         GameplayTimers();
     }
 
@@ -109,7 +115,7 @@ public class CharacterShooting : NetworkBehaviour
             Fire();
         }
 
-        _laserLine.enabled = !IsReloading;
+        _laserLine.enabled = !IsReloading && !_inputListener.DisableInput;
 
         // Conditions
         IsReloading = _reloadDuration > 0;
@@ -124,6 +130,7 @@ public class CharacterShooting : NetworkBehaviour
         // VFX
         _playerAudioSrc.PlayOneShot(CurrentWeapon.FireSound);
         _vfxCoolDown = VfxInterval;
+        _vfx.Play();
 
         // Gameplay
         _fireRateCoolDown = CurrentWeapon.FireRate;
@@ -267,6 +274,7 @@ public class CharacterShooting : NetworkBehaviour
 
         _muzzleTransform = newWeaponTransform.Find("MuzzleLocation");
         _muzzleFlash = _muzzleTransform.GetComponent<Light>();
+        _vfx = _muzzleFlash.GetComponent<VisualEffect>();
     }
 
     // Misc

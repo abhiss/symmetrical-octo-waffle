@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class JetPack : MonoBehaviour
+public class JetPack : NetworkBehaviour
 {
     [Header("Settings")]
     public float MaxJumpDistance = 20.0f;
@@ -23,8 +22,15 @@ public class JetPack : MonoBehaviour
     public AudioClip LandClip;
     private AudioSource _audioSrc;
 
+    [Header("Debugging")]
+    public bool EnableDebugging = false;
+    private Vector3 _targetPosition;
+    private Vector3 _originPosition;
+
     private void Start()
     {
+        if (!IsOwner) return;
+
         _character = GetComponent<CharacterMotor>();
         _inputListener = GetComponent<InputListener>();
         _audioSrc = GetComponent<AudioSource>();
@@ -32,6 +38,8 @@ public class JetPack : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
+
         // Lets us skip a frame so isGrounded updates
         if (_launchQueued)
         {
@@ -48,8 +56,6 @@ public class JetPack : MonoBehaviour
             _audioSrc.PlayOneShot(LandClip);
         }
 
-        // Input
-        // TODO: Clearance checks, distance checks, etc.
         if (_inputListener.SpaceDown && _character.isGrounded)
         {
             Vector3 cursorPosition = CursorWorldPosition();
@@ -58,6 +64,7 @@ public class JetPack : MonoBehaviour
             if (invalidJump)
             {
                 // Invalid jump
+                // Place a projection at cursorPosition
                 return;
             }
 
@@ -67,12 +74,22 @@ public class JetPack : MonoBehaviour
             _launchQueued = true;
 
             _audioSrc.PlayOneShot(LaunchClip);
-            _loopSrc = gameObject.AddComponent<AudioSource>();
-            _loopSrc.loop = true;
-            _loopSrc.clip = LoopClip;
-            _loopSrc.pitch = 0.25f;
-            _loopSrc.Play();
+            LoopSound();
+
+            _originPosition = transform.position;
+            _targetPosition = cursorPosition;
+
+            // Place a projection at cursorPosition
         }
+    }
+
+    private void LoopSound()
+    {
+        _loopSrc = gameObject.AddComponent<AudioSource>();
+        _loopSrc.loop = true;
+        _loopSrc.clip = LoopClip;
+        _loopSrc.pitch = 0.25f;
+        _loopSrc.Play();
     }
 
     private bool HeadClearance()
@@ -139,6 +156,12 @@ public class JetPack : MonoBehaviour
 
     public void OnDrawGizmos()
     {
-
+        if (EnableDebugging)
+        {
+            // Points
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_targetPosition, 0.1f);
+            Gizmos.DrawSphere(_originPosition, 0.1f);
+        }
     }
 }

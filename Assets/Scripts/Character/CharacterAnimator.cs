@@ -1,5 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Netcode.Components;
+
 
 public class CharacterAnimator : NetworkBehaviour
 {
@@ -31,10 +33,7 @@ public class CharacterAnimator : NetworkBehaviour
 
     private void Start()
     {
-        if (!base.IsOwner)
-        {
-            return;
-        }
+        if (!IsOwner) return;
 
         _model = transform.GetChild(0).gameObject;
         _animator = _model.GetComponent<Animator>();
@@ -60,10 +59,7 @@ public class CharacterAnimator : NetworkBehaviour
 
     private void Update()
     {
-        if (!base.IsOwner)
-        {
-            return;
-        }
+        if (!IsOwner) return;
 
         // Movement
         _velocity = (transform.position - _previousPositon) / Time.deltaTime;

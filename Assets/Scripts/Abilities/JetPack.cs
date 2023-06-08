@@ -16,15 +16,13 @@ public class JetPack : NetworkBehaviour
     private CharacterMotor _character;
     private InputListener _inputListener;
     private AudioSource _loopSrc;
+    private Vector3 _previousPosition;
 
     [Header("Sound")]
     public AudioClip LaunchClip;
     public AudioClip LoopClip;
     public AudioClip LandClip;
     private AudioSource _audioSrc;
-
-    [Header("Edge Case")]
-    private Vector3 _previousPosition;
 
     [Header("Debugging")]
     public bool EnableDebugging = false;

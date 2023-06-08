@@ -1,5 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using MoreMountains.Tools;
+using System;
 
 namespace Shared
 {
@@ -18,6 +19,9 @@ namespace Shared
         private float _rechargeTimer = 0.0f;
         private bool _rechargeTimerReset = false;
 
+        // ProgressBar
+        public MMProgressBar healthBar;
+
         // Event Handler
         // ---------------------------------------------------------------------
         public class OnDamageArgs : EventArgs
@@ -28,19 +32,24 @@ namespace Shared
         }
 
         public event EventHandler<OnDamageArgs> OnDamageEvent;
-
         // ---------------------------------------------------------------------
 
-        public void BuffHealth(float multipler)
+        public void BuffHealth(float multiplier)
         {
-            float buffAmount = MaxHealth - MaxHealth * multipler;
+            float buffAmount = MaxHealth - MaxHealth * multiplier;
             MaxHealth += buffAmount;
             CurrentHealth += buffAmount;
+
+            // Update the health bar
+            if (healthBar != null)
+            {
+                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
         }
 
-        public void BuffShield(float multipler)
+        public void BuffShield(float multiplier)
         {
-            float buffAmount = MaxShield - MaxShield * multipler;
+            float buffAmount = MaxShield - MaxShield * multiplier;
             MaxShield += buffAmount;
             CurrentShield += buffAmount;
         }
@@ -49,6 +58,12 @@ namespace Shared
         {
             CurrentHealth = MaxHealth;
             CurrentShield = MaxShield;
+
+            // Initialize the health bar
+            if (healthBar != null)
+            {
+                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
         }
 
         private void Update()
@@ -79,11 +94,6 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Used to apply damage to an HealthSystem instance.
-        /// </summary>
-        /// <param name="attacker"> Source of Damage. </param>
-        /// <param name="damage"> Amount of damage to apply to target. </param>
         public void TakeDamage(GameObject attacker, float damage)
         {
             _rechargeTimerReset = true;
@@ -96,11 +106,10 @@ namespace Shared
                 CurrentHealth -= damage;
             }
 
-            // Left over damage carries to health
             if (CurrentShield < 0)
             {
                 CurrentHealth -= CurrentShield;
-                CurrentHealth = 0;
+                CurrentShield = 0;
             }
 
             if (CurrentHealth <= 0)
@@ -108,7 +117,12 @@ namespace Shared
                 Die();
             }
 
-            // This null check needs to happen, otherwise it will break anything that uses this function.
+            // Update the health bar
+            if (healthBar != null)
+            {
+                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
+
             if (OnDamageEvent != null)
             {
                 OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
@@ -117,7 +131,7 @@ namespace Shared
 
         private void Die()
         {
-
+            // Implement dying behavior here
         }
     }
 }

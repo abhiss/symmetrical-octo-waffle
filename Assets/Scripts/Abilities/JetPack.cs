@@ -16,13 +16,15 @@ public class JetPack : NetworkBehaviour
     private CharacterMotor _character;
     private InputListener _inputListener;
     private AudioSource _loopSrc;
-    private float _elaspedTime = 0.0f;
 
     [Header("Sound")]
     public AudioClip LaunchClip;
     public AudioClip LoopClip;
     public AudioClip LandClip;
     private AudioSource _audioSrc;
+
+    [Header("Edge Case")]
+    private Vector3 _previousPosition;
 
     [Header("Debugging")]
     public bool EnableDebugging = false;
@@ -47,44 +49,74 @@ public class JetPack : NetworkBehaviour
         {
             HasLaunched = true;
             _launchQueued = false;
+            _previousPosition = transform.position;
             return;
         }
 
-        // Landing
-        if (HasLaunched && _character.isGrounded)
+        // Edge case
+        if (HasLaunched)
         {
-            HasLaunched = false;
-            Destroy(_loopSrc);
-            _audioSrc.PlayOneShot(LandClip);
+            LandPlayer();
         }
 
         if (_inputListener.SpaceDown && _character.isGrounded)
         {
-            Vector3 cursorPosition = CursorWorldPosition();
-            float jumpDistance = GetJumpDistanceXZ(cursorPosition, transform.position);
-            bool invalidJump = cursorPosition == Vector3.zero || jumpDistance > MaxJumpDistance || HeadClearance();
-            if (invalidJump)
-            {
-                // Invalid jump
-                // Place a projection at cursorPosition
-                return;
-            }
-
-            // Calculate trajectory
-            LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxHeight);
-
-            // Launch the player
-            _character.SetForce(launchData.InitalVelocity);
-            _launchQueued = true;
-
-            _audioSrc.PlayOneShot(LaunchClip);
-            LoopSound();
-
-            _originPosition = transform.position;
-            _targetPosition = cursorPosition;
-
-            // Place a projection at cursorPosition
+            LaunchPlayer();
         }
+    }
+
+    private void LaunchPlayer()
+    {
+        Vector3 cursorPosition = CursorWorldPosition();
+        float jumpDistance = GetJumpDistanceXZ(cursorPosition, transform.position);
+        bool invalidJump = cursorPosition == Vector3.zero || jumpDistance > MaxJumpDistance || HeadClearance();
+        if (invalidJump)
+        {
+            // Invalid jump
+            // Place a projection at cursorPosition
+            return;
+        }
+
+        // Calculate trajectory
+        LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxHeight);
+
+        // Launch the player
+        _character.SetForce(launchData.InitalVelocity);
+        _launchQueued = true;
+
+        _audioSrc.PlayOneShot(LaunchClip);
+        LoopSound();
+
+        _originPosition = transform.position;
+        _targetPosition = cursorPosition;
+
+        // Place projection at target position
+    }
+
+    // This is a edge case. If the player jumps in a corner to a point higher
+    // than them, they will be stuck forever. Would fix properly given more time
+    private void LandPlayer()
+    {
+        // Land normally
+        if (_character.isGrounded)
+        {
+            Land();
+        }
+
+        // Edge case, abort jetpack
+        Vector3 playerVelocity = (transform.position - _previousPosition) / Time.deltaTime;
+        if (playerVelocity == Vector3.zero)
+        {
+            Land();
+            _character.SetForce(Vector3.zero);
+        }
+    }
+
+    private void Land()
+    {
+        HasLaunched = false;
+        Destroy(_loopSrc);
+        _audioSrc.PlayOneShot(LandClip);
     }
 
     private void LoopSound()

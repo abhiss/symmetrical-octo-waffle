@@ -19,11 +19,11 @@ namespace Shared
         private float _rechargeTimer = 0.0f;
         private bool _rechargeTimerReset = false;
 
-        // ProgressBar
-        public MMProgressBar healthBar;
+        // ProgressBars
+        public MMProgressBar MainPlayerHealthBar;
+        public HealthBarController AllInformationHealthBar;
 
         // Event Handler
-        // ---------------------------------------------------------------------
         public class OnDamageArgs : EventArgs
         {
             public float damage;
@@ -32,38 +32,14 @@ namespace Shared
         }
 
         public event EventHandler<OnDamageArgs> OnDamageEvent;
-        // ---------------------------------------------------------------------
-
-        public void BuffHealth(float multiplier)
-        {
-            float buffAmount = MaxHealth - MaxHealth * multiplier;
-            MaxHealth += buffAmount;
-            CurrentHealth += buffAmount;
-
-            // Update the health bar
-            if (healthBar != null)
-            {
-                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
-            }
-        }
-
-        public void BuffShield(float multiplier)
-        {
-            float buffAmount = MaxShield - MaxShield * multiplier;
-            MaxShield += buffAmount;
-            CurrentShield += buffAmount;
-        }
 
         private void Start()
         {
             CurrentHealth = MaxHealth;
             CurrentShield = MaxShield;
 
-            // Initialize the health bar
-            if (healthBar != null)
-            {
-                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
-            }
+            // Initialize the health bars
+            UpdateHealthBars();
         }
 
         private void Update()
@@ -72,6 +48,7 @@ namespace Shared
             {
                 Shield();
             }
+            UpdateHealthBars();
         }
 
         private void Shield()
@@ -91,6 +68,21 @@ namespace Shared
             if (CurrentShield >= MaxShield)
             {
                 CurrentShield = MaxShield;
+            }
+        }
+
+        private void UpdateHealthBars()
+        {
+            // Main player health bar
+            if (MainPlayerHealthBar != null)
+            {
+                MainPlayerHealthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
+
+            // All information health bar
+            if (AllInformationHealthBar != null)
+            {
+                AllInformationHealthBar.ChangeValue(CurrentHealth / MaxHealth);
             }
         }
 
@@ -117,16 +109,9 @@ namespace Shared
                 Die();
             }
 
-            // Update the health bar
-            if (healthBar != null)
-            {
-                healthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
-            }
+            UpdateHealthBars();
 
-            if (OnDamageEvent != null)
-            {
-                OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
-            }
+            OnDamageEvent?.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
         }
 
         private void Die()

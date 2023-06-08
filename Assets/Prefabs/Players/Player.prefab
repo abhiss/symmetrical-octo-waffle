@@ -474,7 +474,7 @@ MonoBehaviour:
   HeightLock: 0
   WallLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   CursorWorldPosition: {x: 0, y: 0, z: 0}
   DrawCameraLogic: 0
 --- !u!1001 &711389597837419479

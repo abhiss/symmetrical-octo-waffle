@@ -52,7 +52,7 @@ public class CharacterShooting : NetworkBehaviour
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
-        SetActiveWeapon(CurrentWeapon.WeaponName);
+        SetActiveWeapon(CurrentWeapon);
 
         // Input
         _inputListener = GetComponent<InputListener>();
@@ -251,19 +251,21 @@ public class CharacterShooting : NetworkBehaviour
 
     // Weapon Specific
     // -------------------------------------------------------------------------
-    private void SetActiveWeapon(string weaponName)
+    private void SetActiveWeapon(WeaponCreator newWeapon)
     {
         if (weaponTransform != null)
         {
             weaponTransform.gameObject.SetActive(false);
         }
 
-        // Needs to be like this with current setup
-        Transform newWeapon = WeaponDrawer.Find(weaponName);
-        newWeapon.gameObject.SetActive(true);
-        weaponTransform = newWeapon;
+        CurrentWeapon = newWeapon;
 
-        _muzzleTransform = newWeapon.Find("MuzzleLocation");
+        // Needs to be like this with current setup
+        Transform newWeaponTransform = WeaponDrawer.Find(newWeapon.WeaponName);
+        newWeaponTransform.gameObject.SetActive(true);
+        weaponTransform = newWeaponTransform;
+
+        _muzzleTransform = newWeaponTransform.Find("MuzzleLocation");
         _muzzleFlash = _muzzleTransform.GetComponent<Light>();
     }
 

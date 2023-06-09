@@ -35,7 +35,7 @@ public abstract class Enemy : NetworkBehaviour
     private float _timeRoamed;
 
     [Header("Effects")]
-    private AudioClip _hurtSound;
+    [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private GameObject _deathExplosion;
     [SerializeField] private GameObject _sparksPrefab;
     private AudioSource _audio;

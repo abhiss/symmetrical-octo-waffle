@@ -90,7 +90,6 @@ namespace Shared
             if ( UseShield && CurrentShield > 0)
             {
                 CurrentShield -= damage;
-                Debug.Log("player got hit");
             }
             else
             {

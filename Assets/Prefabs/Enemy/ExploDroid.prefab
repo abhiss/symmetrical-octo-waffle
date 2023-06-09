@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 4693448690866132066}
   - component: {fileID: 6167825688026520183}
   - component: {fileID: 5253100136164640145}
+  - component: {fileID: 6291184517615849703}
   m_Layer: 0
   m_Name: ExploDroid
   m_TagString: Untagged
@@ -63,7 +64,7 @@ Transform:
   m_GameObject: {fileID: 279994263432126980}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2949173981764563527}
@@ -169,27 +170,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4692c1468e77b432fa5965fb7257d131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hitboxOffset: {x: 0, y: 0.75, z: 0}
+  _attackDamage: 0
   _hitbox: {x: 3, y: 1, z: 3}
-  TargetMask:
+  _hitboxOffset: {x: 0, y: 0.75, z: 0}
+  _targetMask:
     serializedVersion: 2
     m_Bits: 64
-  _detectionRadius: 5
-  currentState: 0
   _target: {fileID: 0}
+  _detectionRadius: 5
+  _currentState: 0
   _patrolRadius: 5
   _timeToRoam: 2
-  _warningSound: {fileID: 8300000, guid: 270afff1807f14531abb86011f4881f7, type: 3}
-  _hurtSound: {fileID: 8300000, guid: 8820235e2c64dd54dbddc7ab5c568545, type: 3}
-  _detonationExplosion: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
-    type: 3}
-  _deathExplosion: {fileID: 1827493406786650123, guid: 9f801d9bb8d1903479985b6030d180c9,
+  _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
     type: 3}
   _sparksPrefab: {fileID: 1000011396044746, guid: 96b2ec0239d11fa4b9792311efceb8ed,
     type: 3}
   _showHitbox: 1
-  _showPatrolRadius: 1
-  _showDetectionRadius: 1
+  _showPatrolRadius: 0
+  _showDetectionRadius: 0
+  _detonationExplosion: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
+    type: 3}
+  _warningSound: {fileID: 8300000, guid: 270afff1807f14531abb86011f4881f7, type: 3}
 --- !u!82 &5253100136164640145
 AudioSource:
   m_ObjectHideFlags: 0
@@ -201,7 +202,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -286,6 +287,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6291184517615849703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279994263432126980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &748439324697408692
 GameObject:
   m_ObjectHideFlags: 0

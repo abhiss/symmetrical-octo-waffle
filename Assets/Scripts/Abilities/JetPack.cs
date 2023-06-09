@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using SharedMath;
+using UnityEngine.VFX;
 
 public class JetPack : NetworkBehaviour
 {
@@ -13,7 +14,7 @@ public class JetPack : NetworkBehaviour
     private bool _launchQueued = false;
 
     [Header("Core")]
-    private CharacterMotor _character;
+    private CharacterMotor _characterMotor;
     private InputListener _inputListener;
     private AudioSource _loopSrc;
     private Vector3 _previousPosition;
@@ -24,6 +25,11 @@ public class JetPack : NetworkBehaviour
     public AudioClip LandClip;
     private AudioSource _audioSrc;
 
+    [Header("Visuals")]
+    public float VFXPlaySpeed = 4.0f;
+    public VisualEffect jetpackVFX_L;
+    public VisualEffect jetpackVFX_R;
+
     [Header("Debugging")]
     public bool EnableDebugging = false;
     private Vector3 _targetPosition;
@@ -33,7 +39,10 @@ public class JetPack : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        _character = GetComponent<CharacterMotor>();
+        jetpackVFX_L.playRate = VFXPlaySpeed;
+        jetpackVFX_R.playRate = VFXPlaySpeed;
+
+        _characterMotor = GetComponent<CharacterMotor>();
         _inputListener = GetComponent<InputListener>();
         _audioSrc = GetComponent<AudioSource>();
     }
@@ -57,7 +66,7 @@ public class JetPack : NetworkBehaviour
             LandPlayer();
         }
 
-        if (_inputListener.SpaceDown && _character.isGrounded)
+        if (_inputListener.SpaceDown && _characterMotor.isGrounded)
         {
             LaunchPlayer();
         }
@@ -79,15 +88,17 @@ public class JetPack : NetworkBehaviour
         LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxHeight);
 
         // Launch the player
-        _character.SetForce(launchData.InitalVelocity);
+        _characterMotor.SetForce(launchData.InitalVelocity);
         _launchQueued = true;
-
-        _audioSrc.PlayOneShot(LaunchClip);
-        LoopSound();
 
         _originPosition = transform.position;
         _targetPosition = cursorPosition;
 
+        // Visuals & Sounds
+        jetpackVFX_L.SendEvent(VisualEffectAsset.PlayEventID);
+        jetpackVFX_R.SendEvent(VisualEffectAsset.PlayEventID);
+        _audioSrc.PlayOneShot(LaunchClip);
+        LoopSound();
         // Place projection at target position
     }
 
@@ -96,7 +107,7 @@ public class JetPack : NetworkBehaviour
     private void LandPlayer()
     {
         // Land normally
-        if (_character.isGrounded)
+        if (_characterMotor.isGrounded)
         {
             Land();
         }
@@ -106,12 +117,15 @@ public class JetPack : NetworkBehaviour
         if (playerVelocity == Vector3.zero)
         {
             Land();
-            _character.SetForce(Vector3.zero);
+            _characterMotor.SetForce(Vector3.zero);
         }
     }
 
     private void Land()
     {
+        jetpackVFX_L.SendEvent(VisualEffectAsset.StopEventID);
+        jetpackVFX_R.SendEvent(VisualEffectAsset.StopEventID);
+
         HasLaunched = false;
         Destroy(_loopSrc);
         _audioSrc.PlayOneShot(LandClip);

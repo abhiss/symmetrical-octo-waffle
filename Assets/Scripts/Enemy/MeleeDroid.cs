@@ -24,7 +24,6 @@ public class MeleeDroid : Enemy
     // Note: Due to NavMesh agent, the droid may slide as it is attacking. This needs to be fixed.
     protected override State AttackState()
     {
-        Debug.Log("Entered melee droid attack state");
         // If we are in attack range, attack and stay in attack state.
         Collider[] hitColliders = Physics.OverlapBox(transform.position+HitboxOffset, Hitbox, transform.rotation, TargetMask);
         RotateTowardsTarget(Target);

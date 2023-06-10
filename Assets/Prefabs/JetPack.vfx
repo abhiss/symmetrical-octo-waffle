@@ -68,7 +68,7 @@ VisualEffectResource:
   m_Infos:
     m_RendererSettings:
       motionVectorGenerationMode: 0
-      shadowCastingMode: 0
+      shadowCastingMode: 1
       receiveShadows: 0
       reflectionProbeUsage: 0
       lightProbeUsage: 0
@@ -1359,7 +1359,7 @@ MonoBehaviour:
   indirectDraw: 0
   computeCulling: 0
   frustumCulling: 0
-  castShadows: 0
+  castShadows: 1
   useExposureWeight: 0
   needsOwnSort: 0
   shaderGraph: {fileID: -5475051401550479605, guid: 8431b86ebc8de854581b76e1486d752e,
@@ -2173,7 +2173,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Gradient, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"colorKeys":[{"color":{"r":1.0,"g":0.15189872682094575,"b":0.0,"a":1.0},"time":0.0},{"color":{"r":1.0,"g":0.702508807182312,"b":0.0,"a":1.0},"time":0.25882354378700259},{"color":{"r":0.6698113083839417,"g":0.6533820033073425,"b":0.6533820033073425,"a":1.0},"time":0.502937376499176},{"color":{"r":0.18867921829223634,"g":0.18867921829223634,"b":0.18867921829223634,"a":1.0},"time":0.8794079422950745}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":1.0}],"gradientMode":0}'
+      m_SerializableObject: '{"colorKeys":[{"color":{"r":8.0,"g":1.215189814567566,"b":0.0,"a":1.0},"time":0.0},{"color":{"r":1.835079312324524,"g":1.0654771327972413,"b":0.26660579442977908,"a":1.0},"time":0.14999619126319886},{"color":{"r":0.04716980457305908,"g":0.04716980457305908,"b":0.04716980457305908,"a":1.0},"time":0.5000076293945313}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":1.0}],"gradientMode":2}'
     m_Space: 2147483647
   m_Property:
     name: gradient

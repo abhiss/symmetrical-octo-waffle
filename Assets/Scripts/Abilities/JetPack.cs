@@ -27,8 +27,11 @@ public class JetPack : NetworkBehaviour
 
     [Header("Visuals")]
     public float VFXPlaySpeed = 4.0f;
-    public VisualEffect jetpackVFX_L;
-    public VisualEffect jetpackVFX_R;
+    public VisualEffect JetpackVFX_L;
+    public VisualEffect JetpackVFX_R;
+    public Light JetpackLight;
+    public float JetPackLightIntensity = 2.0f;
+    private float _targetIntensity = 0.0f;
 
     [Header("Debugging")]
     public bool EnableDebugging = false;
@@ -39,8 +42,8 @@ public class JetPack : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        jetpackVFX_L.playRate = VFXPlaySpeed;
-        jetpackVFX_R.playRate = VFXPlaySpeed;
+        JetpackVFX_L.playRate = VFXPlaySpeed;
+        JetpackVFX_R.playRate = VFXPlaySpeed;
 
         _characterMotor = GetComponent<CharacterMotor>();
         _inputListener = GetComponent<InputListener>();
@@ -70,6 +73,8 @@ public class JetPack : NetworkBehaviour
         {
             LaunchPlayer();
         }
+
+        JetpackLight.intensity = Mathf.MoveTowards(JetpackLight.intensity, _targetIntensity, Time.deltaTime *  2 * JetPackLightIntensity);
     }
 
     private void LaunchPlayer()
@@ -95,8 +100,9 @@ public class JetPack : NetworkBehaviour
         _targetPosition = cursorPosition;
 
         // Visuals & Sounds
-        jetpackVFX_L.SendEvent(VisualEffectAsset.PlayEventID);
-        jetpackVFX_R.SendEvent(VisualEffectAsset.PlayEventID);
+        _targetIntensity = JetPackLightIntensity;
+        JetpackVFX_L.SendEvent(VisualEffectAsset.PlayEventID);
+        JetpackVFX_R.SendEvent(VisualEffectAsset.PlayEventID);
         _audioSrc.PlayOneShot(LaunchClip);
         LoopSound();
         // Place projection at target position
@@ -123,8 +129,9 @@ public class JetPack : NetworkBehaviour
 
     private void Land()
     {
-        jetpackVFX_L.SendEvent(VisualEffectAsset.StopEventID);
-        jetpackVFX_R.SendEvent(VisualEffectAsset.StopEventID);
+        JetpackVFX_L.SendEvent(VisualEffectAsset.StopEventID);
+        JetpackVFX_R.SendEvent(VisualEffectAsset.StopEventID);
+        _targetIntensity = 0.0f;
 
         HasLaunched = false;
         Destroy(_loopSrc);

@@ -116,7 +116,16 @@ public class CharacterShooting : NetworkBehaviour
         IsAiming = inputFire || _inputListener.AltFire;
         IsShooting = _vfxCoolDown > 0;
     }
-
+    //UI
+    // -------------------------------------------------------------------------
+    public (int currentAmmo, int maxAmmo) GetCurrentWeaponAmmoInfo()
+    {
+       return (CurrentWeapon.CurrentAmmo, CurrentWeapon.MaxAmmo);
+    }
+    public string GetCurrentWeaponName()
+    {
+       return CurrentWeapon.WeaponName;
+    }
     // Gameplay
     // -------------------------------------------------------------------------
     private void Fire()

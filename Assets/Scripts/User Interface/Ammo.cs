@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // Namespace for TextMeshPro
-
+using TMPro; 
 public class Ammo : MonoBehaviour
 {
-    public TopDownCharacterShooting characterShooting;
+    public CharacterShooting characterShooting;
     private TextMeshProUGUI ammoText;
 
     private void Start()
@@ -17,8 +16,8 @@ public class Ammo : MonoBehaviour
     {
         if (characterShooting != null)
         {
-            var currentWeapon = characterShooting.GetCurrentWeapon();
-            ammoText.text = currentWeapon.currentAmmo.ToString() + "/" + currentWeapon.maxAmmo.ToString();
+            var (currentAmmo, maxAmmo) = characterShooting.GetCurrentWeaponAmmoInfo();
+            ammoText.text = $"{currentAmmo}/{maxAmmo}";
         }
     }
 }

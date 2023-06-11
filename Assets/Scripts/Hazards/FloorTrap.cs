@@ -7,6 +7,7 @@ using Shared;
 public class FloorTrap : NetworkBehaviour
 {
     [SerializeField] private float _damage = 1f;
+    [SerializeField] private LayerMask _targetMask;
     private AudioSource _audio;
 
     private void Start()
@@ -16,23 +17,21 @@ public class FloorTrap : NetworkBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        bool colliderInLayerMask =  ((1 << other.gameObject.layer) & _targetMask) != 0;
         // If the collider belongs to the player, deal damage to them.
-        if (other.CompareTag("Player"))
+        if (colliderInLayerMask)
         {
             GameObject player = other.gameObject;
             HealthSystem health = player.GetComponent<HealthSystem>();
             health.TakeDamage(gameObject, _damage);
+            if (!_audio.isPlaying)
+            {
+                _audio.Play();
+            }
         }
     }
 
-    // Play a zapping sound once the player enters the trap.
-    private void OnTriggerEnter(Collider other)
-    {
-        _audio.Play();
-    }
-
-    // Stop playing a zapping sound once the player exits the trap.
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit()
     {
         _audio.Stop();
     }

@@ -258,7 +258,7 @@ public class CharacterShooting : NetworkBehaviour
 
     // Weapon Specific
     // -------------------------------------------------------------------------
-    private void SetActiveWeapon(WeaponCreator newWeapon)
+    public void SetActiveWeapon(WeaponCreator newWeapon)
     {
         if (weaponTransform != null)
         {

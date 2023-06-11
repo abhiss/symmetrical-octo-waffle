@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731713, g: 0.13414738, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 66591103}
   m_Layer: 3
   m_Name: Cube
+  m_TagString: Wall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -453,7 +454,9 @@ GameObject:
   - component: {fileID: 308671690}
   - component: {fileID: 308671691}
   m_Layer: 3
+  m_Layer: 3
   m_Name: stair
+  m_TagString: Wall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -519,6 +522,7 @@ GameObject:
   - component: {fileID: 628849653}
   m_Layer: 0
   m_Name: wall
+  m_TagString: Wall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -905,6 +909,84 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 938565acb7d9da34293663c0a832311b, type: 3}
+--- !u!1001 &833786645
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1480166146252037193, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2913562375
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853595808668006219, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_Name
+      value: ExploDroid (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.698517
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.110712
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.615624
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 59cd07f205dd30847adcc7d33ffb467d, type: 3}
 --- !u!1 &968690586 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3062992597155749085, guid: a32b5100229cd0c46b9e5bfa4fd17978,
@@ -950,6 +1032,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7777975972924407472, guid: a32b5100229cd0c46b9e5bfa4fd17978,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: -7777975972924407472, guid: a32b5100229cd0c46b9e5bfa4fd17978,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -7777975972924407472, guid: a32b5100229cd0c46b9e5bfa4fd17978,
         type: 3}
       propertyPath: m_Material
@@ -1234,6 +1326,7 @@ GameObject:
   m_Layer: 3
   m_Name: stair (1)
   m_TagString: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1324,6 +1417,84 @@ Transform:
   m_Father: {fileID: 308671690}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 35, y: 189, z: 0}
+--- !u!1001 &1578718772
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1480166146252037193, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2286455997
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853595808668006219, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_Name
+      value: ExploDroid
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.2297873
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.110709
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.825777
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721215672881261959, guid: 59cd07f205dd30847adcc7d33ffb467d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 59cd07f205dd30847adcc7d33ffb467d, type: 3}
 --- !u!1 &1691646597
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,6 +1510,7 @@ GameObject:
   - component: {fileID: 1691646602}
   m_Layer: 3
   m_Name: stair
+  m_TagString: Wall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1670,6 +1842,7 @@ PrefabInstance:
     - target: {fileID: 8710969253755071061, guid: 22922bdcbb488ae4391e0c4b961c9ef4,
         type: 3}
       propertyPath: m_RootOrder
+      value: 4
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8710969253755071061, guid: 22922bdcbb488ae4391e0c4b961c9ef4,

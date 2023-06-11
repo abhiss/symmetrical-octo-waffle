@@ -6,7 +6,7 @@ using Shared;
 
 public class FloorTrap : NetworkBehaviour
 {
-    [SerializeField] private float _damage = 1f;
+    [SerializeField] private float _damage;
     [SerializeField] private LayerMask _targetMask;
     private AudioSource _audio;
 
@@ -18,7 +18,7 @@ public class FloorTrap : NetworkBehaviour
     private void OnTriggerStay(Collider other)
     {
         bool colliderInLayerMask =  ((1 << other.gameObject.layer) & _targetMask) != 0;
-        // If the collider belongs to the player, deal damage to them.
+        // Deal damage to whatever matches our target mask.
         if (colliderInLayerMask)
         {
             GameObject player = other.gameObject;

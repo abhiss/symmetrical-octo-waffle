@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 50
-  CurrentHealth: 50
+  CurrentHealth: 0
   UseShield: 0
   MaxShield: 0
   CurrentShield: 0

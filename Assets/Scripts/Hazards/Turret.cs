@@ -11,12 +11,18 @@ public class Turret : NetworkBehaviour
     [SerializeField] private float _detectionRadius;
     [SerializeField] private float _attackCooldown;
     private float _cooldownProgress;
+
+    [SerializeField] private LayerMask _targetMask;
+    private GameObject _target;
+
     [SerializeField] private GameObject _deathExplosion;
     [SerializeField] private GameObject _projectile;
     [SerializeField] private GameObject _projectileSpawn;
-    [SerializeField] private LayerMask _targetMask;
-    private GameObject _target;
+
     private AudioSource _audio;
+
+    [Header("Gizmos")]
+    [SerializeField] private bool _showDetectionRadius;
 
     private void Start()
     {
@@ -26,25 +32,23 @@ public class Turret : NetworkBehaviour
 
     private void Update()
     {
-        // If the turret's health is 0, make it explode and destroy itself.
         if (_health.CurrentHealth <= 0)
         {
             Die();
             return;
         }
         _target = FindTarget();
-        // If a player is found and turret is not on cooldown, shoot at the player and reset cooldown progress.
+        // If we found a target and turret is not on cooldown, shoot at the player and reset cooldown progress.
         if (_target != null && _cooldownProgress >= _attackCooldown)
         {
             Shoot(_target);
             _cooldownProgress = 0;
         }
-        // Update the cooldown of the turret.
+        // Increment the cooldown of the turret.
         if (_cooldownProgress < _attackCooldown)
         {
             _cooldownProgress += Time.deltaTime;
         }
-        // Progress time towards the next target check.
     }
 
     private void Shoot(GameObject target)
@@ -57,7 +61,6 @@ public class Turret : NetworkBehaviour
 
     private void Die()
     {
-        // Create an explosion at the turret's location and destroy the turret.
         Instantiate(_deathExplosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -71,14 +74,17 @@ public class Turret : NetworkBehaviour
         {
             foreach (Collider collider in collidersInRange)
             {
+                // If we have no current target, make the first target we see the new target.
                 if (_target == null)
                 {
                     newTarget = collider.gameObject;
                 }
+                // If we found our current target again, make that our new target.
                 else if (collider.gameObject == _target)
                 {
                     newTarget = _target;
                 }
+                // If there is a new target, look towards it.
                 if (newTarget != null)
                 {
                     transform.LookAt(newTarget.transform);
@@ -90,5 +96,14 @@ public class Turret : NetworkBehaviour
             }
         }
         return newTarget;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_showDetectionRadius)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.position, _detectionRadius);
+        }
     }
 }

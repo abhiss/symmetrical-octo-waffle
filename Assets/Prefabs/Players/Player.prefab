@@ -586,7 +586,7 @@ MonoBehaviour:
   MaxJumpDistance: 20
   MaxHeight: 5
   HasLaunched: 0
-  LaunchClip: {fileID: 8300000, guid: 698a83bccafc22344b58cfec39f2e512, type: 3}
+  LaunchClip: {fileID: 8300000, guid: 2c88ba6634437b542a4e18f7f286af8a, type: 3}
   LoopClip: {fileID: 8300000, guid: 68eff49091cea804eb82446116cbf8ee, type: 3}
   LandClip: {fileID: 8300000, guid: c72a27876eb5d2848afacff7a3b35cdd, type: 3}
   VFXPlaySpeed: 1

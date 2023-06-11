@@ -143,7 +143,8 @@ public class JetPack : NetworkBehaviour
         _loopSrc = gameObject.AddComponent<AudioSource>();
         _loopSrc.loop = true;
         _loopSrc.clip = LoopClip;
-        _loopSrc.pitch = 0.25f;
+        _loopSrc.volume = 0.5f;
+        _loopSrc.pitch = 0.5f;
         _loopSrc.Play();
     }
 

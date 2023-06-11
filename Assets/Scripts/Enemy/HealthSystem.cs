@@ -87,12 +87,13 @@ namespace Shared
         public void TakeDamage(GameObject attacker, float damage)
         {
             _rechargeTimerReset = true;
-            if (CurrentShield > 0)
+            if ( UseShield && CurrentShield > 0)
             {
                 CurrentShield -= damage;
             }
             else
             {
+                
                 CurrentHealth -= damage;
             }
 
@@ -103,10 +104,10 @@ namespace Shared
                 CurrentHealth = 0;
             }
 
-            if (CurrentHealth <= 0)
-            {
-                Die();
-            }
+            // if (CurrentHealth <= 0)
+            // {
+            //     Die();
+            // }
 
             // This null check needs to happen, otherwise it will break anything that uses this function.
             if (OnDamageEvent != null)
@@ -115,9 +116,10 @@ namespace Shared
             }
         }
 
-        private void Die()
-        {
+        //don't need die function, we use call back to handle what happen after taken damage
+        // private void Die()
+        // {
 
-        }
+        // }
     }
 }

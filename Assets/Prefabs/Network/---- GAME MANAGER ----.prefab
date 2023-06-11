@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3280740591994731685}
-  - component: {fileID: 4470146937488313586}
   - component: {fileID: 8619254200459253466}
+  - component: {fileID: 5895435387553431229}
   m_Layer: 0
   m_Name: ---- GAME MANAGER ----
   m_TagString: Untagged
@@ -31,23 +31,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4470146937488313586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984161722112323400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 607c523d5ff64a74a82527ed5aeb34f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  server_button: {fileID: 0}
-  host_button: {fileID: 0}
-  client_button: {fileID: 0}
 --- !u!114 &8619254200459253466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,3 +49,16 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &5895435387553431229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984161722112323400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 607c523d5ff64a74a82527ed5aeb34f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnLocation: {x: 0, y: 0, z: 0}

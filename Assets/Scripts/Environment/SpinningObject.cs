@@ -1,15 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Interactables;
 
-public class SpinningObject : MonoBehaviour
+public class SpinningObject : MonoBehaviour, IInteractable
 {
-    public Vector3 rotationAxis;
-    public float rotationSpeed;
+    public Vector3 RotationAxis;
+    public float RotationSpeed;
+    public bool Actived = false;
 
-    // Update is called once per frame
-    void Update()
+    public void Interact()
     {
-        transform.Rotate(rotationAxis * rotationSpeed * Time.deltaTime);
+        Actived = !Actived;
+    }
+
+    private void Update()
+    {
+        if (!Actived)
+        {
+            return;
+        }
+
+        transform.Rotate(RotationAxis * RotationSpeed * Time.deltaTime);
     }
 }

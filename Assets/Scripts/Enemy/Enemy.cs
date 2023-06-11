@@ -71,7 +71,7 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
         {
             // Emit sparks when getting hit.
-            Destroy(Instantiate(_sparksPrefab, transform.position, Quaternion.identity), 0.25f);
+            Instantiate(_sparksPrefab, transform.position+transform.up+transform.forward, Quaternion.identity);
             // If we are dead, spawn an explosion and destroy ourselves.
             if (args.newHealth <= 0)
             {
@@ -82,7 +82,7 @@ public abstract class Enemy : NetworkBehaviour
             // Play a hurt sound when getting hit.
             _audio.clip = _hurtSound;
             _audio.Play();
-            // If we get hit, start chasing the enemy.
+            // If we get hit and we're idling or patrolling, start chasing the enemy.
             if (_target == null && (_currentState == State.Idle || _currentState == State.Patrol))
             {
                 _target = args.attacker;
@@ -155,9 +155,12 @@ public abstract class Enemy : NetworkBehaviour
 
     protected State ChaseState()
     {
+        if (_target == null)
+        {
+            return State.Idle;
+        }
         // Play a chase animation.
         _animator.SetTrigger("Chase");
-
         // Navigate towards the player.
         _destination = _target.transform.position;
         _agent.SetDestination(_destination);

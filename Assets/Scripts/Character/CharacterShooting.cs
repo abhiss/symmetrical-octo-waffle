@@ -24,6 +24,7 @@ public class CharacterShooting : NetworkBehaviour
     public float CursorDeadZone = 3.5f;
     public LayerMask PlayerMask;
     public LayerMask EnemyMask;
+    public LayerMask FadedMask;
     private int _newClip = 0;
     private bool _fireEnabled = true;
 
@@ -211,7 +212,7 @@ public class CharacterShooting : NetworkBehaviour
     private Vector3 AdjustCursorPostion(Vector3 mousePosition)
     {
         Vector3 newPosition = transform.position + transform.forward;
-        LayerMask ignoreMask = EnemyMask | PlayerMask;
+        LayerMask ignoreMask = EnemyMask | PlayerMask | FadedMask;
         Ray cameraRay = Camera.main.ScreenPointToRay(mousePosition);
 
         // Adjust to the floor

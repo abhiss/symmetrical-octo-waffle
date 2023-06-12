@@ -162,7 +162,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -527,6 +527,9 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 128
+  FadedMask:
+    serializedVersion: 2
+    m_Bits: 512
   EnableAimAssist: 1
   AssistRaidus: 1
   VfxInterval: 0.09
@@ -966,7 +969,7 @@ MonoBehaviour:
   HeightLock: 0
   WallLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 520
   CursorWorldPosition: {x: 0, y: 0, z: 0}
   DrawCameraLogic: 0
 --- !u!1001 &711389597837419479

@@ -38,7 +38,7 @@ public abstract class Enemy : NetworkBehaviour
     [Header("Effects")]
     [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private GameObject _deathExplosion;
-    [SerializeField] private GameObject _sparksPrefab;
+    [SerializeField] private GameObject _hitSparks;
     private AudioSource _audio;
     private Animator _animator;
 
@@ -83,7 +83,7 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
         {
             // Emit sparks when getting hit.
-            Instantiate(_sparksPrefab, transform.position+transform.up+transform.forward, Quaternion.identity);
+            Instantiate(_hitSparks, transform.position+transform.up+transform.forward, Quaternion.identity);
             // If we are dead, spawn an explosion and destroy ourselves.
             if (args.newHealth <= 0)
             {

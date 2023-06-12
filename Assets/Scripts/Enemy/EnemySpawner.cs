@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Shared;
 
 class EnemySpawner : NetworkBehaviour
 {
@@ -23,6 +25,8 @@ class EnemySpawner : NetworkBehaviour
     private float _timeTowardsNextSpawn; 
     private float _sumOfSpawnChances;
     private AudioSource _audio;
+    private HealthSystem _healthSystem;
+    [SerializeField] private GameObject _deathExplosion;
 
     /* 
     Spawn rate is the reciprocal of timeBetweenSpawns for naming clarity.
@@ -33,6 +37,8 @@ class EnemySpawner : NetworkBehaviour
     private void Start()
     {
         _audio = GetComponent<AudioSource>();
+        _healthSystem = GetComponent<HealthSystem>();
+        InitializeOnDamageEvent();
         foreach(SpawnData spawn in _enemySpawns)
         {
             _sumOfSpawnChances += spawn.SpawnChance;
@@ -50,11 +56,25 @@ class EnemySpawner : NetworkBehaviour
         _timeTowardsNextSpawn += Time.deltaTime;
     }
 
+    private void InitializeOnDamageEvent()
+    {
+        _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
+        {
+            // If we are dead, spawn an explosion and destroy ourselves.
+            if (args.newHealth <= 0)
+            {
+                Instantiate(_deathExplosion, transform.position, Quaternion.identity);
+                Destroy(gameObject);
+                return;
+            }
+        });
+    }
+
     // Randomly spawns an enemy based on spawn chance.
     public void RandomSpawnEnemy()
     {
         _timeTowardsNextSpawn = 0;
-        float randomNumber = Random.Range(0.0f, 1.0f);
+        float randomNumber = UnityEngine.Random.Range(0.0f, 1.0f);
         float lowerRange = 0;
         float upperRange = 0;
         foreach (SpawnData spawn in _enemySpawns)

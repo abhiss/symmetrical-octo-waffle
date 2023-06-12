@@ -7,7 +7,10 @@ public class GrenadeThrower : NetworkBehaviour
     public GameObject GrenadePrefab;
     public Animator PlayerAnimator;
     public float MaxGrenadeHeight = 5.0f;
-    public bool ThrewGrenade = false;
+    public int GrenadeCount = 5;
+    public int MaxGrenades = 10;
+    public float GrenadeThrowCooldown = 3f; // Cooldown time in seconds
+    private float lastGrenadeThrowTime;
     private InputListener _inputListener;
 
     private void Start()
@@ -21,18 +24,11 @@ public class GrenadeThrower : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        if (_inputListener.GrenadeKey)
+        if (_inputListener.GrenadeKey && Time.time >= lastGrenadeThrowTime + GrenadeThrowCooldown && GrenadeCount > 0)
         {
             ThrowGrenade();
-            ThrewGrenade = true;
-
-        }
-
-        PlayerAnimator.SetBool("IsThrowingGrenade", ThrewGrenade);
-
-        if (ThrewGrenade)
-        {
-            ThrewGrenade = false;
+            lastGrenadeThrowTime = Time.time;
+            GrenadeCount--;
         }
     }
 

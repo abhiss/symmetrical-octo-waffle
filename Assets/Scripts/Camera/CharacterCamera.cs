@@ -109,6 +109,11 @@ public class CharacterCamera : MonoBehaviour
         return camPos;
     }
 
+    public Vector3 GetLookAtPosition()
+    {
+        return _cameraPoint;
+    }
+
     public bool CursorWithinDeadzone()
     {
         float len = Vector3.Distance(CursorWorldPosition, _playerPosition);

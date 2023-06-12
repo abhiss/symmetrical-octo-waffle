@@ -216,6 +216,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rifle
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6020c3a22ef58c64d8dd4ecda425166d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6020c3a22ef58c64d8dd4ecda425166d,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 1074077702232710739, guid: 6020c3a22ef58c64d8dd4ecda425166d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

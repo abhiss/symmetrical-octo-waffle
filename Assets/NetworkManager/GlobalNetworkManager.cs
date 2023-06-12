@@ -14,7 +14,6 @@ public class GlobalNetworkManager : NetworkBehaviour
     private NetworkVariable<Vector3> spawnLocation = new NetworkVariable<Vector3>();
 
     private bool isMainScene;
-    private GenLayout map;
     private NetworkObject player;
 
     void Start()
@@ -34,8 +33,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (IsServer)
         {
             Debug.Log("in isserver");
-            map = new GenLayout(Instantiate, gameObject, 0);
-            Debug.Log("map spawnlocation: " + map.PlayerSpawnLocation);
             //spawnLocation.Value = map.PlayerSpawnLocation;
         }
         if (IsClient)

@@ -24,6 +24,7 @@ public abstract class Enemy : NetworkBehaviour
     [SerializeField] private Vector3 _hitboxOffset;
 
     [Header("AI")]
+    public bool ChaseOnSpawn;
     [SerializeField] private LayerMask _targetMask;
     [SerializeField] private GameObject _target;
     [SerializeField] private float _detectionRadius = 5.0f;
@@ -46,7 +47,6 @@ public abstract class Enemy : NetworkBehaviour
     [SerializeField] private bool _showPatrolRadius;
     [SerializeField] private bool _showDetectionRadius;
 
-    // Protected Properties
     protected float AttackDamage { get => _attackDamage; }
     protected Vector3 Hitbox { get => _hitbox; }
     protected Vector3 HitboxOffset { get => _hitboxOffset; }
@@ -63,8 +63,19 @@ public abstract class Enemy : NetworkBehaviour
         _audio = GetComponent<AudioSource>();
         _healthSystem = GetComponent<HealthSystem>();
         InitializeOnDamageEvent();
-        _currentState = State.Idle;
-        RefreshPatrolPoint();
+
+        // If enemy is set to chase on spawn, it will not idle and instead chases the first player it finds.
+        GameObject player = GameObject.Find("Character");
+        if (ChaseOnSpawn && player != null)
+        {
+            _target = player;
+            _currentState = State.Chase;
+        }
+        else
+        {
+            _currentState = State.Idle;
+            RefreshPatrolPoint();
+        }
     }
 
     private void InitializeOnDamageEvent()

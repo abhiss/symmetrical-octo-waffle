@@ -14,7 +14,6 @@ public class GlobalNetworkManager : NetworkBehaviour
     private NetworkVariable<Vector3> spawnLocation = new NetworkVariable<Vector3>();
 
     private bool isMainScene;
-    private GenLayout map;
     private NetworkObject player;
 
     void Start()

@@ -1,6 +1,7 @@
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class CharacterCamera : MonoBehaviour
 {
@@ -17,10 +18,12 @@ public class CharacterCamera : MonoBehaviour
     public float HeightLock = 0.0f;
     private Vector3 _camVelocity = Vector3.zero;
 
-    [Header("Rendering")]
-    public LayerMask WallLayer;
-    private RaycastHit _currHit;
-    private Collider _prevHit;
+    [Header("Obstructions")]
+    private List<GameObject> _fadedObstructions = new List<GameObject>();
+
+    [Header("CameraShake")]
+    private float _shakeIntensity = 0;
+    private float _shakeDecay = 0;
 
     [Header("Info")]
     public Vector3 CursorWorldPosition;
@@ -59,7 +62,7 @@ public class CharacterCamera : MonoBehaviour
 
         _cameraPoint = GetCameraPosition();
         Vector3 finalPosition = _cameraPoint + _cameraOffset;
-        CameraShake(ref finalPosition);
+        ProcessShake(ref finalPosition);
 
         transform.position = Vector3.SmoothDamp(
             transform.position,
@@ -69,9 +72,26 @@ public class CharacterCamera : MonoBehaviour
         );
     }
 
-    private void CameraShake(ref Vector3 cameraPosition)
+    public void ShakeCamera(float intensity, float duration)
     {
+        _shakeIntensity = intensity;
+        _shakeDecay = intensity / duration;
+        StartCoroutine(StopShake(duration));
+    }
 
+    private IEnumerator StopShake(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _shakeIntensity = 0;
+    }
+
+    private void ProcessShake(ref Vector3 cameraPosition)
+    {
+        if (_shakeIntensity > 0)
+        {
+            cameraPosition += Random.insideUnitSphere * _shakeIntensity;
+            _shakeIntensity -= _shakeDecay * Time.deltaTime;
+        }
     }
 
     private Vector3 GetCameraPosition()
@@ -89,6 +109,11 @@ public class CharacterCamera : MonoBehaviour
         return camPos;
     }
 
+    public Vector3 GetLookAtPosition()
+    {
+        return _cameraPoint;
+    }
+
     public bool CursorWithinDeadzone()
     {
         float len = Vector3.Distance(CursorWorldPosition, _playerPosition);
@@ -97,23 +122,36 @@ public class CharacterCamera : MonoBehaviour
 
     private void FadeObstructions()
     {
-        // TODO: Fix logic
-        // Detect obstructions
-        Vector3 dir = PlayerObject.transform.position - transform.position;
-        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, WallLayer))
-        {
-            GameObject current = _currHit.transform.gameObject;
-            if (current.GetComponent<Obstructable>() == null)
-            {
-                current.AddComponent<Obstructable>().isObstructing = true;
-            }
+        float cameraDistance = Vector3.Distance(transform.position, PlayerObject.transform.position);
+        Vector3 cameraDir = (PlayerObject.transform.position - transform.position).normalized;
+        LayerMask targetMask = _inputListener.WallMask | _inputListener.ObstructionMask;
+        RaycastHit[] hits = Physics.RaycastAll(transform.position, cameraDir, cameraDistance, targetMask);
 
-            _prevHit = _currHit.collider;
-        }
-        else if (_prevHit != null)
+        // Fade each obstruction found
+        foreach (var hitCollider in hits)
         {
-            _prevHit.transform.gameObject.GetComponent<Obstructable>().isObstructing = false;
-            _prevHit = null;
+            GameObject currentObject = hitCollider.transform.gameObject;
+            if (!_fadedObstructions.Contains(currentObject))
+            {
+                currentObject.AddComponent<Obstructable>().isObstructing = true;
+                _fadedObstructions.Add(currentObject);
+            }
+        }
+
+        // Convert the raycast hits to game object list
+        List<GameObject> mylist = new List<GameObject>();
+        foreach (var hitCollider in hits)
+        {
+            mylist.Add(hitCollider.transform.gameObject);
+        }
+
+        // Unfade objects found in the exception list
+        IEnumerable<GameObject> exceptionList = _fadedObstructions.Except(mylist);
+        foreach (var hitCollider in exceptionList)
+        {
+            GameObject currentObject = hitCollider.transform.gameObject;
+            currentObject.GetComponent<Obstructable>().isObstructing = false;
+            _fadedObstructions.Remove(currentObject);
         }
     }
 

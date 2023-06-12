@@ -211,7 +211,7 @@ public class CharacterShooting : NetworkBehaviour
     private Vector3 AdjustCursorPostion(Vector3 mousePosition)
     {
         Vector3 newPosition = transform.position + transform.forward;
-        LayerMask ignoreMask = EnemyMask | PlayerMask;
+        LayerMask ignoreMask = EnemyMask | PlayerMask | _inputListener.ObstructionMask;
         Ray cameraRay = Camera.main.ScreenPointToRay(mousePosition);
 
         // Adjust to the floor

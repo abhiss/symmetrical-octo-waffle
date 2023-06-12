@@ -20,7 +20,7 @@ public class Obstructable : MonoBehaviour
         float targetNum = visibleValue;
         if (isObstructing)
         {
-            //gameObject.layer = LayerMask.NameToLayer("Ignore Raycast"); // WILL CHANGE LATER
+            gameObject.layer = LayerMask.NameToLayer("Faded Obstruction");
             targetNum = fadeValue;
         }
 
@@ -30,6 +30,7 @@ public class Obstructable : MonoBehaviour
 
         if (!isObstructing && dissolve == visibleValue)
         {
+            gameObject.layer = LayerMask.NameToLayer("Wall");
             Destroy(this);
         }
     }

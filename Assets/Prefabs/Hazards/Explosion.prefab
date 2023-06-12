@@ -14763,7 +14763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosionDamage: 50
-  _explosionRadius: 2
+  _explosionRadius: 30
 --- !u!114 &8896318980586382652
 MonoBehaviour:
   m_ObjectHideFlags: 0

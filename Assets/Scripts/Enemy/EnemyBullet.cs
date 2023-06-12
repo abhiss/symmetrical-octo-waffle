@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using Unity.Netcode;
+using Unity.Netcode;
 using Shared;
 
-public class EnemyBullet : MonoBehaviour
+public class EnemyBullet : NetworkBehaviour
 {
     private float _speed = 1f;
     private float _damage = 1f;

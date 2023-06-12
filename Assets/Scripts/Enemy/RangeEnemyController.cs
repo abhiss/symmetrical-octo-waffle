@@ -4,10 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Unity.Netcode;
 using UnityEngine.SubsystemsImplementation;
 
 [RequireComponent(typeof(Shared.HealthSystem))]
-public class RangeEnemyController : MonoBehaviour
+public class RangeEnemyController : NetworkBehaviour
 {
     private enum State
     {
@@ -168,13 +169,7 @@ public class RangeEnemyController : MonoBehaviour
         _agent.SetDestination(_destination);
 
         // If we are within range to attack, enter attack state.
-        
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _detectionRadius, TargetMask);
-        if (hitColliders.Length > 0)
-        {
-            _target = hitColliders[0].gameObject;
-        }
-        if (hitColliders.Length > 0 && InSight())
+        if (targetDetection() && InSight())
         {
             return State.Attack;
         }
@@ -186,15 +181,8 @@ public class RangeEnemyController : MonoBehaviour
     private State AttackState()
     {
         // If we are in attack range, attack and stay in attack state.
-
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attackRange, TargetMask);
-        // pick a random target (changing target for multiplayer) (will refactor later)
-        if (hitColliders.Length > 0)
-        {
-            _target = hitColliders[0].gameObject;
-        }
         RotateTowardsTarget(_target);
-        if (hitColliders.Length > 0 && InSight())
+        if (targetDetection() && InSight())
         {
             // Play an attack animation.
             _agent.enabled = false;
@@ -238,7 +226,7 @@ public class RangeEnemyController : MonoBehaviour
 
     public void Death()
     {
-        Explosion explosionScript =_explosionPrefab.GetComponent<Explosion>();
+        //Explosion explosionScript =_explosionPrefab.GetComponent<Explosion>();
         Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -267,6 +255,26 @@ public class RangeEnemyController : MonoBehaviour
             }  
         }
         return false;
+    }
+
+    private bool targetDetection()
+    {
+        float minimumDistance = _attackRange;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attackRange, TargetMask);
+        if (hitColliders.Length <= 0)
+        {
+            return false;
+        }
+        foreach(Collider target in hitColliders)
+        {
+            float distance = Vector3.Distance(target.gameObject.transform.position, transform.position);
+            if( distance < minimumDistance )
+            {
+                minimumDistance = distance;
+                _target = target.gameObject;
+            }
+        }
+        return true;
     }
 
     void OnDrawGizmos()

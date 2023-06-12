@@ -29,6 +29,19 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
+<<<<<<< HEAD
+=======
+        spawnLocation.Value = new Vector3(20, 5, 20);
+        if (IsServer)
+        {
+            Debug.Log("in isserver");
+        }
+        if (IsClient)
+        {
+            player = NetworkManager.LocalClient.PlayerObject;
+            player.transform.position = spawnLocation.Value;
+        }
+>>>>>>> c419289 (proc gen)
 
         isMainScene = SceneManager.GetActiveScene().name == "MainScene";
         if (!isMainScene)

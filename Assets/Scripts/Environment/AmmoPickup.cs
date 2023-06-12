@@ -38,7 +38,7 @@ public class AmmoPickup : NetworkBehaviour
             return;
         }
 
-        characterShooting.CurrentWeapon.CurrentAmmo += AmmoStock;
+        characterShooting.CurrentWeapon.CurrentAmmo += characterShooting.CurrentWeapon.ReplenishAmount;
         currentWeapon.CurrentAmmo = Mathf.Min(currentWeapon.CurrentAmmo, currentWeapon.MaxAmmo);
         _audioSrc.Play();
         _oneShot = true;

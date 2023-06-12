@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1352437687813274457}
   - component: {fileID: 2290998933929608414}
   - component: {fileID: 284281556436461141}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AmmoBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 8538418425236163896}
   - component: {fileID: 7999498364403653355}
   - component: {fileID: 4574617257203683709}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -309,6 +309,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 400031590970617547}
     m_Modifications:
+    - target: {fileID: 1707097831726246619, guid: d4323921639f2bf4685f5b7b231b909e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2227708272851487173, guid: d4323921639f2bf4685f5b7b231b909e,
         type: 3}
       propertyPath: m_Range
@@ -368,6 +373,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bullet
+      objectReference: {fileID: 0}
+    - target: {fileID: 7326037783573231004, guid: d4323921639f2bf4685f5b7b231b909e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7403258194185108834, guid: d4323921639f2bf4685f5b7b231b909e,
         type: 3}

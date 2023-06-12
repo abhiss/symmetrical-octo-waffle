@@ -29,8 +29,6 @@ public class EnemyBullet : NetworkBehaviour
         }
         if (!other.gameObject.CompareTag("Enemy") && !other.gameObject.CompareTag("EnemyProjectile"))
         {
-            // Destroy(gameObject);
-            // Initialized(transform.position,_explosionEffect)
             Explode();
         }
         

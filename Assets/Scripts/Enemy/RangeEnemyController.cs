@@ -25,6 +25,7 @@ public class RangeEnemyController : NetworkBehaviour
     private LayerMask ObstacleMask = 8;
     [SerializeField] private GameObject _projectile;
     [SerializeField] private GameObject _bulletSpawner;
+    [SerializeField] private GameObject _loot;
     [SerializeField] private float _projectileSpeed;
 
     [Header("AI")]
@@ -49,7 +50,7 @@ public class RangeEnemyController : NetworkBehaviour
     [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private AudioClip _missSound;
     [SerializeField] private AudioClip _hitSound;
-    [SerializeField] private GameObject _explosionPrefab;
+    [SerializeField] private GameObject _deathExplosion;
     [SerializeField] private GameObject _sparksPrefab;
 
     [Header("Gizmos")]
@@ -70,11 +71,13 @@ public class RangeEnemyController : NetworkBehaviour
             // If we are dead, spawn an explosion and destroy ourselves.
             if (args.newHealth <= 0)
             {
-                _agent.isStopped = true;
-                _isDead = true;
-                _animator.SetTrigger("Die");
-                // Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-                // Destroy(gameObject);
+                Instantiate(_deathExplosion, transform.position, Quaternion.identity);
+                // 1/5 chance to drop amo
+                if (UnityEngine.Random.Range(0,8) == 1)
+                {
+                    Instantiate(_loot, transform.position, Quaternion.identity);
+                }
+                Destroy(gameObject);
                 return;
             }
             // Play a hurt sound when getting hit.
@@ -197,6 +200,8 @@ public class RangeEnemyController : NetworkBehaviour
         }
     }
 
+// -------------other helper function ------------------
+
     void RotateTowardsTarget(GameObject target)
     {
         Vector3 direction = target.transform.position - transform.position;
@@ -224,14 +229,7 @@ public class RangeEnemyController : NetworkBehaviour
         Destroy(projectileObj, 10f);
     }
 
-    public void Death()
-    {
-        //Explosion explosionScript =_explosionPrefab.GetComponent<Explosion>();
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    public void GetTargetDirection()
+    private void GetTargetDirection()
     {
         Vector3 gunpoint = _bulletSpawner.transform.position;
         // model has bugs manually adding offsets
@@ -240,7 +238,7 @@ public class RangeEnemyController : NetworkBehaviour
     }
 
     // Check if target is insight
-    public bool InSight(){
+    private bool InSight(){
         GetTargetDirection();
         RaycastHit hit;
         bool clearShot = false;

@@ -20,6 +20,7 @@ public abstract class Enemy : NetworkBehaviour
     [Header("Stats")]
     private HealthSystem _healthSystem;
     [SerializeField] private float _attackDamage;
+    [SerializeField] private float _speed;
     [SerializeField] private Vector3 _hitbox;
     [SerializeField] private Vector3 _hitboxOffset;
 
@@ -54,6 +55,7 @@ public abstract class Enemy : NetworkBehaviour
     protected GameObject Target { get => _target; }
     protected Animator EnemyAnimator { get => _animator; }
     protected AudioSource Audio { get => _audio; }
+    protected NavMeshAgent NavAgent { get => _agent; }
 
     protected virtual void Start()
     {
@@ -98,19 +100,41 @@ public abstract class Enemy : NetworkBehaviour
 
     protected void TransitionState()
     {
+        Func<State> idle = () => 
+        {
+            _agent.speed = 0;
+            return IdleState();
+
+        };
+        Func<State> patrol = () =>
+        {
+            _agent.speed = _speed;
+            return PatrolState();
+        };
+        Func<State> chase = () =>
+        {
+            var chaseModifier = 1.5f;
+            _agent.speed = _speed * chaseModifier;
+            return ChaseState();
+
+        };
+        Func<State> attack = () =>
+        {
+            _agent.speed = 0;
+            return AttackState();
+        };
         _currentState = _currentState switch
         {
-            State.Idle => IdleState(),
-            State.Patrol => PatrolState(),
-            State.Chase => ChaseState(),
-            State.Attack => AttackState(),
-            _ => IdleState()
+            State.Idle => idle(),
+            State.Patrol => patrol(),
+            State.Chase => chase(),
+            State.Attack => attack(),
+            _ => idle()
         };
     }
 
     protected State PatrolState()
     {
-        // Play a patrol animation.
         _animator.SetTrigger("Patrol");
         // If we're close enough to our destination or we've roamed for long enough, patrol somewhere else.
         if (Vector3.Distance(transform.position, _destination) <= 1 || _timeRoamed > _timeToRoam)
@@ -143,6 +167,7 @@ public abstract class Enemy : NetworkBehaviour
 
     protected State IdleState()
     {
+        _animator.SetTrigger("Idle");
         // If there are enemies in detection radius, enter a chase state. Otherwise, enter a patrol state.
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, _detectionRadius, _targetMask);
         if (hitColliders.Length > 0)

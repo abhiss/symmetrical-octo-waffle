@@ -9,6 +9,7 @@ public class GrenadeThrower : NetworkBehaviour
     public float MaxGrenadeHeight = 5.0f;
     public int GrenadeCount = 5;
     public int MaxGrenades = 10;
+    private bool _threwGrenade = true;
     public float GrenadeThrowCooldown = 3f; // Cooldown time in seconds
     private float lastGrenadeThrowTime;
     private InputListener _inputListener;
@@ -26,9 +27,21 @@ public class GrenadeThrower : NetworkBehaviour
 
         if (_inputListener.GrenadeKey && Time.time >= lastGrenadeThrowTime + GrenadeThrowCooldown && GrenadeCount > 0)
         {
+            // Functional
             ThrowGrenade();
             lastGrenadeThrowTime = Time.time;
             GrenadeCount--;
+
+            // Animation
+            _threwGrenade = true;
+        }
+
+        // Throw animation
+        PlayerAnimator.SetBool("IsThrowingGrenade", _threwGrenade);
+
+        if (_threwGrenade)
+        {
+            _threwGrenade = false;
         }
     }
 

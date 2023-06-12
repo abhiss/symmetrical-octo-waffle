@@ -57,10 +57,13 @@ public class CharacterAnimator : NetworkBehaviour
         _jetpackHash = Animator.StringToHash("UseJetpack");
         _dashHash = Animator.StringToHash("IsDashing");
 
-        _jetPack = GetComponent<JetPack>();
-        _dash = GetComponent<Dash>();
+        // Core components
         _characterMotor = GetComponent<CharacterMotor>();
         _characterShooting = GetComponent<CharacterShooting>();
+
+        // Misc components
+        _jetPack = GetComponent<JetPack>();
+        _dash = GetComponent<Dash>();
     }
 
     private void Update()

@@ -79,7 +79,7 @@ public class JetPack : NetworkBehaviour
 
     private void LaunchPlayer()
     {
-        Vector3 cursorPosition = CursorWorldPosition();
+        Vector3 cursorPosition = _inputListener.CursorWorldPosition();
         float jumpDistance = GetJumpDistanceXZ(cursorPosition, transform.position);
         bool invalidJump = cursorPosition == Vector3.zero || jumpDistance > MaxJumpDistance || HeadClearance();
         if (invalidJump)
@@ -158,20 +158,6 @@ public class JetPack : NetworkBehaviour
         p1.y = 0;
         p2.y = 0;
         return Vector3.Distance(p1, p2);
-    }
-
-    private Vector3 CursorWorldPosition()
-    {
-        Vector3 target = Vector3.zero;
-        Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        // Hit floor
-        if (Physics.Raycast(cameraRay, out RaycastHit hit))
-        {
-            target = hit.point;
-        }
-
-        return target;
     }
 
     public void OnDrawGizmos()

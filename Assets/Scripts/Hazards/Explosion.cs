@@ -11,6 +11,7 @@ public class Explosion : NetworkBehaviour
     private const float _explosionDuration = 2f;
     [SerializeField] private LayerMask _targetMask;
     private AudioSource _explosionAudio;
+    private CharacterCamera _characterCamera;
 
     [Header("Gizmos")]
     [SerializeField] private bool _showExplosionRadius;

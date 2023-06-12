@@ -1,6 +1,6 @@
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering;
+using System.Collections.Generic;
+using System.Linq;
 
 public class CharacterCamera : MonoBehaviour
 {
@@ -17,10 +17,9 @@ public class CharacterCamera : MonoBehaviour
     public float HeightLock = 0.0f;
     private Vector3 _camVelocity = Vector3.zero;
 
-    [Header("Rendering")]
+    [Header("Obstructions")]
     public LayerMask WallLayer;
-    private RaycastHit _currHit;
-    private Collider _prevHit;
+    private List<GameObject> _fadedObstructions = new List<GameObject>();
 
     [Header("Info")]
     public Vector3 CursorWorldPosition;
@@ -97,23 +96,35 @@ public class CharacterCamera : MonoBehaviour
 
     private void FadeObstructions()
     {
-        // TODO: Fix logic
-        // Detect obstructions
-        Vector3 dir = PlayerObject.transform.position - transform.position;
-        if (Physics.Raycast(transform.position, dir.normalized, out _currHit,dir.magnitude, WallLayer))
-        {
-            GameObject current = _currHit.transform.gameObject;
-            if (current.GetComponent<Obstructable>() == null)
-            {
-                current.AddComponent<Obstructable>().isObstructing = true;
-            }
+        float cameraDistance = Vector3.Distance(transform.position, PlayerObject.transform.position);
+        Vector3 cameraDir = (PlayerObject.transform.position - transform.position).normalized;
+        RaycastHit[] hits = Physics.RaycastAll(transform.position, cameraDir, cameraDistance, WallLayer);
 
-            _prevHit = _currHit.collider;
-        }
-        else if (_prevHit != null)
+        // Fade each obstruction found
+        foreach (var hitCollider in hits)
         {
-            _prevHit.transform.gameObject.GetComponent<Obstructable>().isObstructing = false;
-            _prevHit = null;
+            GameObject currentObject = hitCollider.transform.gameObject;
+            if (!_fadedObstructions.Contains(currentObject))
+            {
+                currentObject.AddComponent<Obstructable>().isObstructing = true;
+                _fadedObstructions.Add(currentObject);
+            }
+        }
+
+        // Convert the raycast hits to game object list
+        List<GameObject> mylist = new List<GameObject>();
+        foreach (var hitCollider in hits)
+        {
+            mylist.Add(hitCollider.transform.gameObject);
+        }
+
+        // Unfade objects found in the exception list
+        IEnumerable<GameObject> exceptionList = _fadedObstructions.Except(mylist);
+        foreach (var hitCollider in exceptionList)
+        {
+            GameObject currentObject = hitCollider.transform.gameObject;
+            currentObject.GetComponent<Obstructable>().isObstructing = false;
+            _fadedObstructions.Remove(currentObject);
         }
     }
 

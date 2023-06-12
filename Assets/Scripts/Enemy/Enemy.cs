@@ -1,11 +1,10 @@
+using UnityEngine;
+using UnityEngine.AI;
+using Unity.Netcode;
 using Shared;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SubsystemsImplementation;
 
 [RequireComponent(typeof(Shared.HealthSystem))]
 public abstract class Enemy : NetworkBehaviour

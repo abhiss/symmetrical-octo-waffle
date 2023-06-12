@@ -407,6 +407,7 @@ GameObject:
   - component: {fileID: 5688000099644499388}
   - component: {fileID: 3222529734208309475}
   - component: {fileID: 5826547424268810394}
+  - component: {fileID: 444497741970841349}
   - component: {fileID: 999072899312915246}
   m_Layer: 6
   m_Name: Character
@@ -469,9 +470,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b6775f004341104da103493c1fe40f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WallMask:
+    serializedVersion: 2
+    m_Bits: 8
+  ObstructionMask:
+    serializedVersion: 2
+    m_Bits: 512
   DisableInput: 0
   UseKey: 0
   ReloadKey: 0
+  GrenadeKey: 0
   FireKeyDown: 0
   FireKey: 0
   AltFire: 0
@@ -527,9 +535,6 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 128
-  FadedMask:
-    serializedVersion: 2
-    m_Bits: 512
   EnableAimAssist: 1
   AssistRaidus: 0.2
   VfxInterval: 0.09
@@ -613,6 +618,23 @@ MonoBehaviour:
   DashForce: 3
   DashVFX: {fileID: 6503987585422785675}
   IsDashing: 0
+--- !u!114 &444497741970841349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656713175936252363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 074dc4236068cf04dac93b6bf4f4638a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GrenadePrefab: {fileID: 38953816251675571, guid: 71ccf2d93b64b7a459c1b62be84aff73,
+    type: 3}
+  PlayerAnimator: {fileID: 474122193657312462}
+  MaxGrenadeHeight: 2
+  ThrewGrenade: 0
 --- !u!114 &999072899312915246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -967,9 +989,6 @@ MonoBehaviour:
   rotateDeadZoneRadius: 0.25
   LockHeight: 0
   HeightLock: 0
-  WallLayer:
-    serializedVersion: 2
-    m_Bits: 520
   CursorWorldPosition: {x: 0, y: 0, z: 0}
   DrawCameraLogic: 0
 --- !u!1001 &711389597837419479

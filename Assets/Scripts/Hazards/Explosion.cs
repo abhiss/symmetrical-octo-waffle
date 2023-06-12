@@ -10,10 +10,13 @@ public class Explosion : NetworkBehaviour
     [SerializeField] private float _explosionRadius = 2f;
     private const float _explosionDuration = 2f;
     private AudioSource _explosionAudio;
+    private CharacterCamera _characterCamera;
 
     private void Start()
     {
         _explosionAudio = GetComponent<AudioSource>();
+        _characterCamera = Camera.main.transform.GetComponent<CharacterCamera>();
+
         // Explode as soon as the explosion is instantiated.
         Explode();
     }
@@ -33,6 +36,7 @@ public class Explosion : NetworkBehaviour
             {
                 HealthSystem targetHealth = collider.gameObject.GetComponent<HealthSystem>();
                 targetHealth.TakeDamage(gameObject, _explosionDamage);
+                _characterCamera.ShakeCamera(30f, .75f);
             }
         }
         // Destroy the explosion after a duration.

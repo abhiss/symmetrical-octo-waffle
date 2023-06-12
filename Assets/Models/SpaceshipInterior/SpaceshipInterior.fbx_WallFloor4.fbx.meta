@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: MI_Scifi_Floor_04
     second: {fileID: 2100000, guid: 483db1a742696d84fb44ed5cf3f72a47, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_BlackBack
+    second: {fileID: 2100000, guid: cbd1a4671976e5141b6bdccefef510e1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

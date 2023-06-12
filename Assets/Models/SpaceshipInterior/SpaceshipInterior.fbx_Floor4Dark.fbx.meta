@@ -3,12 +3,7 @@ guid: ddaa4ca84fbe3ab44bcfa32b161a926b
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: MI_Scifi_Floor_04.002
-    second: {fileID: 2100000, guid: 483db1a742696d84fb44ed5cf3f72a47, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

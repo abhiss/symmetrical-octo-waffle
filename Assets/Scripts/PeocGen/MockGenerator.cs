@@ -79,7 +79,9 @@ namespace ProcGen
     }
     public Vector3 PosGroundWorld(int index, float scale) {
       int i = 0;
-      while(i != index) {
+      var limit = 100;
+      Debug.Log(index);
+      while(i != index && -- limit != 0) {
         if(Blocks[i / Size.x, i % Size.z] == Block.Ground) {
           ++i;
         }
@@ -113,8 +115,7 @@ namespace ProcGen
     {
       var res = new Vector3Int(1, 0, 1);
       bool expanded = true;
-      var limit = 100;
-      while (expanded && --limit != 0)
+      while (expanded )
       {
         expanded = false;
         if (TestGroundExpansion(x, z, res.x, res.z, true))
@@ -486,7 +487,7 @@ namespace ProcGen
         room.GO.transform.parent = config.GO.transform;
         int groundAmt = room.CountGround();
         for (int i = 0; i < groundAmt; ++i) {
-          EnemySpawns.Add( room.PosGroundWorld(_random.Next(0, --groundAmt), BlockSize));
+          EnemySpawns.Add(room.PosGroundWorld(_random.Next(0, groundAmt--), BlockSize));
         }
       }
       var surface = config.GO.GetComponent<NavMeshSurface>();

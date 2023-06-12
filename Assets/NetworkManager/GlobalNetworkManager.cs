@@ -29,11 +29,10 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
-        spawnLocation.Value = Vector3.zero;
+        spawnLocation.Value = new Vector3(20, 5, 20);
         if (IsServer)
         {
             Debug.Log("in isserver");
-            //spawnLocation.Value = map.PlayerSpawnLocation;
         }
         if (IsClient)
         {

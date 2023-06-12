@@ -59,7 +59,80 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5032411186387137272}
+  m_GameObject: {fileID: 709434196976875618}
+  m_LocalRotation: {x: 0.00000008263659, y: 0.0000016579298, z: -0.3962169, w: 0.9181569}
+  m_LocalPosition: {x: -0.22752342, y: 0.036838192, z: 0.000000048099064}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 593478001511604518}
+  m_Father: {fileID: 8806564699738507642}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &764569964017928183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1986612825588670122}
+  m_Layer: 7
+  m_Name: Bip001 Pelvis
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1986612825588670122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764569964017928183}
+  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.4999993, w: 0.5000007}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6459762535126499992}
+  - {fileID: 8794481800881526719}
+  - {fileID: 1151797877225038873}
+  m_Father: {fileID: 4163333358057857871}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &772981208468871829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 512526898015777653}
+  - component: {fileID: 7852344179390500561}
+  - component: {fileID: 6856646992549196427}
+  - component: {fileID: 8664643299196818799}
+  - component: {fileID: 1701971509497791927}
+  - component: {fileID: 3882876767521021296}
+  - component: {fileID: 340604060749617439}
+  - component: {fileID: 363154235877539408}
+  m_Layer: 7
+  m_Name: AssaultDroid
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &512526898015777653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772981208468871829}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -67,7 +140,7 @@ Transform:
   m_Children:
   - {fileID: 7969461883178965107}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &8187202939363787637
 CapsuleCollider:
@@ -162,7 +235,7 @@ MonoBehaviour:
   _hurtSound: {fileID: 8300000, guid: 2f6497c73a57efa4693bfa749f971111, type: 3}
   _missSound: {fileID: 8300000, guid: 7e492ad07b6d548eea10ccbd1962e88f, type: 3}
   _hitSound: {fileID: 8300000, guid: 185cc115882a740379e875ae1efd99cc, type: 3}
-  _explosionPrefab: {fileID: 1827493406786650123, guid: 9f801d9bb8d1903479985b6030d180c9,
+  _explosionPrefab: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
     type: 3}
   _sparksPrefab: {fileID: 1000011396044746, guid: 96b2ec0239d11fa4b9792311efceb8ed,
     type: 3}
@@ -265,28 +338,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &7758642999536213912
-Animator:
-  serializedVersion: 5
+--- !u!114 &363154235877539408
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5032411186387137272}
+  m_GameObject: {fileID: 772981208468871829}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 2f9c5af03f24b6d488828d11e1dc8233, type: 3}
-  m_Controller: {fileID: 9100000, guid: ed01af26c88415e4ea04c28e7b0f64db, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!1 &7969461883178613263
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!1 &1182890138173890563
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

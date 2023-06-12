@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,8 +19,11 @@ public class CharacterCamera : MonoBehaviour
     private Vector3 _camVelocity = Vector3.zero;
 
     [Header("Obstructions")]
-    public LayerMask WallLayer;
     private List<GameObject> _fadedObstructions = new List<GameObject>();
+
+    [Header("CameraShake")]
+    private float _shakeIntensity = 0;
+    private float _shakeDecay = 0;
 
     [Header("Info")]
     public Vector3 CursorWorldPosition;
@@ -58,7 +62,7 @@ public class CharacterCamera : MonoBehaviour
 
         _cameraPoint = GetCameraPosition();
         Vector3 finalPosition = _cameraPoint + _cameraOffset;
-        CameraShake(ref finalPosition);
+        ProcessShake(ref finalPosition);
 
         transform.position = Vector3.SmoothDamp(
             transform.position,
@@ -68,9 +72,26 @@ public class CharacterCamera : MonoBehaviour
         );
     }
 
-    private void CameraShake(ref Vector3 cameraPosition)
+    public void ShakeCamera(float intensity, float duration)
     {
+        _shakeIntensity = intensity;
+        _shakeDecay = intensity / duration;
+        StartCoroutine(StopShake(duration));
+    }
 
+    private IEnumerator StopShake(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _shakeIntensity = 0;
+    }
+
+    private void ProcessShake(ref Vector3 cameraPosition)
+    {
+        if (_shakeIntensity > 0)
+        {
+            cameraPosition += Random.insideUnitSphere * _shakeIntensity;
+            _shakeIntensity -= _shakeDecay * Time.deltaTime;
+        }
     }
 
     private Vector3 GetCameraPosition()
@@ -98,7 +119,8 @@ public class CharacterCamera : MonoBehaviour
     {
         float cameraDistance = Vector3.Distance(transform.position, PlayerObject.transform.position);
         Vector3 cameraDir = (PlayerObject.transform.position - transform.position).normalized;
-        RaycastHit[] hits = Physics.RaycastAll(transform.position, cameraDir, cameraDistance, WallLayer);
+        LayerMask targetMask = _inputListener.WallMask | _inputListener.ObstructionMask;
+        RaycastHit[] hits = Physics.RaycastAll(transform.position, cameraDir, cameraDistance, targetMask);
 
         // Fade each obstruction found
         foreach (var hitCollider in hits)

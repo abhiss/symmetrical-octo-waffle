@@ -4,11 +4,14 @@ using UnityEngine;
 public class InputListener : NetworkBehaviour
 {
     [Header("Settings")]
+    public LayerMask WallMask;
+    public LayerMask ObstructionMask;
     public bool DisableInput = false;
 
     [Header("Live Variables")]
     public bool UseKey = false;
     public bool ReloadKey = false;
+    public bool GrenadeKey = false;
     public bool FireKeyDown = false;
     public bool FireKey = false;
     public bool AltFire = false;
@@ -16,6 +19,26 @@ public class InputListener : NetworkBehaviour
     public bool SpaceDown = false;
     public bool ShiftKey = false;
     public Vector3 MousePosition;
+
+    public Vector3 CursorWorldPosition()
+    {
+        if (DisableInput)
+        {
+            return Vector3.zero;
+        }
+
+
+        Vector3 target = Vector3.zero;
+        Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // Hit floor
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ObstructionMask, QueryTriggerInteraction.Ignore))
+        {
+            target = hit.point;
+        }
+
+        return target;
+    }
 
     public Vector3 MousePlanePosition()
     {
@@ -55,6 +78,7 @@ public class InputListener : NetworkBehaviour
         {
             UseKey = false;
             ReloadKey = false;
+            GrenadeKey = false;
             FireKey = false;
             FireKeyDown = false;
             AltFire = false;
@@ -66,15 +90,17 @@ public class InputListener : NetworkBehaviour
 
         MousePosition = Input.mousePosition;
 
-        UseKey = Input.GetKeyDown(KeyCode.E);
-        ReloadKey = Input.GetKeyDown(KeyCode.R);
-
+        // Shooting
         FireKeyDown = Input.GetKeyDown(KeyCode.Mouse0);
         FireKey = Input.GetKey(KeyCode.Mouse0);
 
         AltFire = Input.GetKey(KeyCode.Mouse1);
         AltFireDown = Input.GetKeyDown(KeyCode.Mouse1);
 
+        // Interactions
+        UseKey = Input.GetKeyDown(KeyCode.E);
+        ReloadKey = Input.GetKeyDown(KeyCode.R);
+        GrenadeKey = Input.GetKeyDown(KeyCode.G);
         SpaceDown = Input.GetKeyDown(KeyCode.Space);
         ShiftKey = Input.GetKeyDown(KeyCode.LeftShift);
     }

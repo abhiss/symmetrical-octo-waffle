@@ -31,7 +31,7 @@ namespace ProcGen
     Inner2 = 512,
     Pit = 1024,
     Key = 2048,
-    Light = 4096,
+    Prop = 4096,
   }
 
   enum Prefab
@@ -43,6 +43,10 @@ namespace ProcGen
     Outer,
     Exit,
     FloorLight,
+    Drum,
+    Crate0,
+    Crate1,
+    Crate2,
     Amt,
   }
 
@@ -79,7 +83,7 @@ namespace ProcGen
       }
       return sum;
     }
-    Vector3Int PosGround(int index)
+    public Vector3Int TakeGround(int index)
     {
       int grounds = 0;
       for (int i = 0; i < Size.x; i++)
@@ -88,6 +92,7 @@ namespace ProcGen
         {
           if (Blocks[i, j] == Block.Ground && grounds++ == index)
           {
+            Blocks[i, j] |= Block.Prop;
             return new Vector3Int(i, 0, j);
           }
 
@@ -97,7 +102,7 @@ namespace ProcGen
     }
     public Vector3 PosGroundWorld(int index, float scale)
     {
-      return (Vector3)PosGround(index) * scale + Pos;
+      return (Vector3)TakeGround(index) * scale + Pos;
     }
 
     public void ComputeEmpty()
@@ -274,38 +279,6 @@ namespace ProcGen
           && (adj[3] == Block.None || adj[3] == Block.Back);
     }
 
-    Block CollapseWall(Block[] adj)
-    {
-      return Block.None;
-    }
-    public void Lights(System.Random random)
-    {
-      for (int i = 0; i < Size.x; i++)
-      {
-        for (int j = 0; j < Size.z; j++)
-        {
-          if ((Blocks[i, j] & Block.IsWall - 1) != Block.None && random.Next(0, 10) == 0)
-          {
-            Blocks[i, j] |= Block.Light;
-          }
-        }
-      }
-    }
-
-    public void FillCorners()
-    {
-      for (int i = 0; i < Size.x; i++)
-      {
-        for (int j = 0; j < Size.z; j++)
-        {
-          if (Blocks[i, j] != Block.IsWall)
-          {
-            continue;
-          }
-          Blocks[i, j] = CollapseWall(GetAdjacent(i, j));
-        }
-      }
-    }
     public void MoveAfter(Room prev)
     {
       Pos -= Exits[0];
@@ -325,8 +298,6 @@ namespace ProcGen
     public void AddFloorLight(GameObject[] blocks, float scale, int index, System.Func<GameObject, Vector3, Quaternion, GameObject> instantiate)
     {
       Debug.Log(index);
-      var block = instantiate(blocks[(int)Prefab.FloorLight], (Vector3)PosGround(index) * scale, Quaternion.identity);
-      block.transform.parent = GO.transform;
     }
     public void BuildGO(GameObject[] blocks, float scale, System.Random random, System.Func<GameObject, Vector3, Quaternion, GameObject> instantiate)
     {
@@ -410,10 +381,12 @@ namespace ProcGen
     private List<Room> _rooms = new List<Room>();
     private Vector3[] _bounds;
     public List<Vector3> EnemySpawns = new List<Vector3>();
+    private Config _config;
 
     public void Generate(Config config)
     {
-      _random = new System.Random(config.Seed);
+      _config = config;
+      _random = new System.Random(_config.Seed);
       _totalDir = _currentDir = (Dir)(_random.Next(0, 4));
 
       _cursorX = MapSize / 2;
@@ -498,20 +471,31 @@ namespace ProcGen
       foreach (Room room in _rooms)
       {
         int groundAmt = room.CountGround();
-        for (int i = 0; i < 6; ++i)
+        for (int i = 0; i < 3; ++i)
         {
           // EnemySpawns.Add(room.PosGroundWorld(_random.Next(0, groundAmt--), BlockSize));
-          room.AddFloorLight(prefabs, BlockSize, _random.Next(0, groundAmt--), config.instantiate);
+          SpawnProp(room, prefabs[(int)Prefab.FloorLight], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
+          SpawnProp(room, prefabs[(int)Prefab.Crate0], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
+          SpawnProp(room, prefabs[(int)Prefab.Crate1], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
+          SpawnProp(room, prefabs[(int)Prefab.Crate2], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
+          SpawnProp(room, prefabs[(int)Prefab.Drum], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
         }
       }
       foreach (Room room in _rooms)
       {
-        room.BuildGO(prefabs, BlockSize, _random, config.instantiate);
-        room.GO.transform.parent = config.GO.transform;
+        room.BuildGO(prefabs, BlockSize, _random, _config.instantiate);
+        room.GO.transform.parent = _config.GO.transform;
       }
-      var surface = config.GO.GetComponent<NavMeshSurface>();
+      var surface = _config.GO.GetComponent<NavMeshSurface>();
       // surface.BuildNavMesh();
 
+    }
+
+    void SpawnProp(Room room, GameObject prefab, Vector3 pos)
+    {
+      var prop = _config.instantiate(prefab, pos,
+        Quaternion.AngleAxis((float)_random.NextDouble() * 360, Vector3.up));
+      prop.transform.parent = room.GO.transform;
     }
 
     int PrevRange()

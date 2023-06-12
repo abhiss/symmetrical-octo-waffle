@@ -39,7 +39,6 @@ namespace ProcGen
     Wall,
     LitWall,
     Ground,
-    LitGround,
     Inner,
     Outer,
     Exit,
@@ -320,7 +319,7 @@ namespace ProcGen
           var block = Blocks[i, j] switch
           {
             Block b when ((b & Block.Ground) == Block.Ground) =>
-                instantiate(blocks[isLit ? (int)Prefab.LitGround : (int)Prefab.Ground], new Vector3(i, 0, j) * scale, Quaternion.identity),
+                instantiate(blocks[(int)Prefab.Ground], new Vector3(i, 0, j) * scale, Quaternion.identity),
 
             Block.Front or Block.Left or Block.Back or Block.Right =>
                 instantiate(blocks[isLit ? (int)Prefab.LitWall : (int)Prefab.Wall], new Vector3(i, 0, j) * scale, Quaternion.Euler(0, (float)System.Math.Log((int)Blocks[i, j], 2) * 90, 0)),

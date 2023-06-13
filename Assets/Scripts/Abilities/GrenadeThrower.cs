@@ -27,8 +27,12 @@ public class GrenadeThrower : NetworkBehaviour
 
         if (_inputListener.GrenadeKey && Time.time >= lastGrenadeThrowTime + GrenadeThrowCooldown && GrenadeCount > 0)
         {
+            // Calculate trajectory
+            Vector3 cursorPosition = _inputListener.CursorWorldPosition();
+            LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxGrenadeHeight);
+            throwGrenadeServerRpc(launchData.InitalVelocity);
+
             // Functional
-            ThrowGrenade();
             lastGrenadeThrowTime = Time.time;
             GrenadeCount--;
 
@@ -44,16 +48,13 @@ public class GrenadeThrower : NetworkBehaviour
             _threwGrenade = false;
         }
     }
-
-    private void ThrowGrenade()
+    
+    [ServerRpc]
+    void throwGrenadeServerRpc(Vector3 initalVelocity)
     {
-        Vector3 cursorPosition = _inputListener.CursorWorldPosition();
-
-        // Calculate trajectory
-        LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxGrenadeHeight);
         GameObject grenade = Instantiate(GrenadePrefab, transform.position, Quaternion.identity);
-
+        grenade.GetComponent<NetworkObject>().Spawn();
         Rigidbody rb = grenade.GetComponent<Rigidbody>();
-        rb.velocity = launchData.InitalVelocity;
+        rb.velocity = initalVelocity;
     }
 }

@@ -132,6 +132,12 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
     }
 
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
+    public void DespawnGameObjectServerRpc(ulong networkObjectId)
+    {
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].Despawn();
+    }
+
     private int GetConnectedPlayersCount()
     {
         return 2;

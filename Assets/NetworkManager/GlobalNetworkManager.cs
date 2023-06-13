@@ -50,9 +50,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (IsServer)
         {
             Debug.Log("in isserver");
-            map = new GenLayout(Instantiate, gameObject, 0);
-            Debug.Log("map spawnlocation: " + map.PlayerSpawnLocation);
-            spawnLocation.Value = map.PlayerSpawnLocation;
         }
         if (IsClient)
         {

@@ -121,7 +121,7 @@ public class RangeEnemyController : NetworkBehaviour
 
     private State PatrolState()
     {
-        // Play a patrol animation.
+        // check if player is dead
         if(_target == null)
         {
             _destination = transform.position;
@@ -172,7 +172,14 @@ public class RangeEnemyController : NetworkBehaviour
 
     private State ChaseState()
     {
-        // Play a chase animation
+        // check if player dead
+        if(_target == null)
+        {
+            if(!targetDetection())
+            {
+                return State.Patrol;
+            }
+        }
         _animator.SetTrigger("Chase");
         _agent.enabled = true;
 

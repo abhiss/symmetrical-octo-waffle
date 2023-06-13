@@ -476,7 +476,7 @@ MonoBehaviour:
     m_Bits: 8
   ObstructionMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 2048
   DisableInput: 0
   UseKey: 0
   ReloadKey: 0
@@ -527,7 +527,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentWeapon: {fileID: 11400000, guid: 7949fafd4b8994d4c9c0c9731e9542ca, type: 2}
   WeaponDrawer: {fileID: 7525808486741760739}
-  VerticalAimThreshold: 2
+  VerticalAimThreshold: 1.2
   LaserMaterial: {fileID: 2100000, guid: 6b118bdde176a7e4bb0a9f7b1c485467, type: 2}
   LaserWidth: 0.1
   CursorDeadZone: 3.5

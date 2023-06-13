@@ -34,9 +34,12 @@ public class MainMenuButtons : MonoBehaviour
 
     public void OnQuitButtonClick()
     {
-        // For now, just log a message. When built, it will close the game.
-        Debug.Log("Quit button clicked. This will close the game when built.");
-        // Uncomment the following line to actually quit the game when built.
-        // Application.Quit();
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #elif UNITY_WEBPLAYER
+        Application.OpenURL(webplayerQuitURL);
+        #else
+        Application.Quit();
+        #endif
     }
 }

@@ -3,29 +3,20 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Enemy
-  - Destructible
-  - EnemyProjectile
-  - Wall
+  tags: []
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Wall
+  - 
   - Water
   - UI
-  - Player
-  - Enemy
-  - PostProcessing
-  - EnemyProjectile
-  - Item
-  - Faded Obstruction
-<<<<<<< HEAD
   - 
   - 
-=======
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

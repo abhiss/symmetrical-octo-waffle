@@ -189,7 +189,7 @@ public abstract class Enemy : NetworkBehaviour
     
     private Vector3 GenerateValidPatrolPoint()
     {
-        Vector3 patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+        Vector3 patrolTargetPoint = transform.position + (UnityEngine.Random.insideUnitSphere * _patrolRadius);
         patrolTargetPoint.y = transform.position.y;
         return patrolTargetPoint;
     }

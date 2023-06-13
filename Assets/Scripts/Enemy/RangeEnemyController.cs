@@ -62,6 +62,7 @@ public class RangeEnemyController : NetworkBehaviour
 
     void Start()
     {
+        _destination = transform.position;
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _audio = GetComponent<AudioSource>();
@@ -132,7 +133,7 @@ public class RangeEnemyController : NetworkBehaviour
         if (hitColliders.Length > 0)
         {
             _target = hitColliders[0].gameObject;
-            return State.Attack;
+            return State.Chase;
         }
         // If there are no enemies in detection radius, continue patrolling.
         else
@@ -165,8 +166,7 @@ public class RangeEnemyController : NetworkBehaviour
 
     private State ChaseState()
     {
-        // Play a chase animation.
-        checkOnCube();
+        // Play a chase animation
         _animator.SetTrigger("Chase");
         _agent.enabled = true;
 

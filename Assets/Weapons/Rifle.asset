@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rifle
   m_EditorClassIdentifier: 
   WeaponName: Rifle
-  Damage: 5
+  Damage: 20
   FireRate: 0.1
   MaxClipSize: 50
   MaxAmmo: 250

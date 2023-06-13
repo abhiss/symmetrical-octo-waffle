@@ -343,7 +343,7 @@ public class CharacterShooting : NetworkBehaviour
     // -------------------------------------------------------------------------
     public (int currentAmmo, int maxAmmo) GetCurrentWeaponAmmoInfo()
     {
-        return (CurrentWeapon.CurrentAmmo, CurrentWeapon.MaxAmmo);
+        return (CurrentWeapon.CurrentClipSize, CurrentWeapon.CurrentAmmo);
     }
     public string GetCurrentWeaponName()
     {

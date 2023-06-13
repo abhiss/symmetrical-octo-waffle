@@ -20,6 +20,7 @@ public abstract class Enemy : NetworkBehaviour
     private HealthSystem _healthSystem;
     [SerializeField] private float _attackDamage;
     [SerializeField] private float _speed;
+    [SerializeField] private int _lootDropRate;
     [SerializeField] private Vector3 _hitbox;
     [SerializeField] private Vector3 _hitboxOffset;
 
@@ -39,6 +40,7 @@ public abstract class Enemy : NetworkBehaviour
     [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private GameObject _deathExplosion;
     [SerializeField] private GameObject _hitSparks;
+    [SerializeField] private GameObject _loot;
     private AudioSource _audio;
     private Animator _animator;
 
@@ -84,10 +86,11 @@ public abstract class Enemy : NetworkBehaviour
         {
             // Emit sparks when getting hit.
             Instantiate(_hitSparks, transform.position+transform.up+transform.forward, Quaternion.identity);
-            // If we are dead, spawn an explosion and destroy ourselves.
+            // If we are dead, spawn an explosion, maybe drop loot, and destroy ourselves.
             if (args.newHealth <= 0)
             {
                 Instantiate(_deathExplosion, transform.position, Quaternion.identity);
+                DropLoot();
                 Destroy(gameObject);
                 return;
             }
@@ -101,6 +104,17 @@ public abstract class Enemy : NetworkBehaviour
                 _currentState = State.Chase;
             }
         });
+    }
+
+    private void DropLoot()
+    {
+        // Random range is max exclusive, so increment end range by 1.
+        float randomNumber = UnityEngine.Random.Range(1, 101);
+        // Drop loot based on loot drop rate.
+        if (_lootDropRate <= randomNumber)
+        {
+            Instantiate(_loot, transform.position, Quaternion.identity);
+        }
     }
 
     protected virtual void Update()

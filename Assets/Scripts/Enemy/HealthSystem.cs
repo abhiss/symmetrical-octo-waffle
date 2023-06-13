@@ -20,7 +20,7 @@ namespace Shared
 
         // Health bars
         public MMProgressBar MainPlayerHealthBar;
-        public HealthBarController AllInformationHealthBar;
+        public MMProgressBar AllInformationHealthBar;
 
         // Event Handler
         public class OnDamageArgs : EventArgs
@@ -72,7 +72,7 @@ namespace Shared
             // All information health bar
             if (AllInformationHealthBar != null)
             {
-                AllInformationHealthBar.ChangeValue(CurrentHealth / MaxHealth);
+                AllInformationHealthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
             }
         }
         private void Shield()

@@ -64,8 +64,13 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem = GetComponent<HealthSystem>();
         InitializeOnDamageEvent();
 
-        // If enemy is set to chase on spawn, it will not idle and instead chases the first player it finds.
         GameObject player = GameObject.Find("Character");
+        // Set initial destination of the enemy to a player's position.
+        if (player != null)
+        {
+            _destination = player.transform.position;
+        }
+        // If enemy is set to chase on spawn, it will not idle and instead chases the first player it finds.
         if (ChaseOnSpawn && player != null)
         {
             _target = player;

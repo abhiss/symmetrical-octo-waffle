@@ -4,10 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Unity.Netcode;
 using UnityEngine.SubsystemsImplementation;
 
 [RequireComponent(typeof(Shared.HealthSystem))]
-public class RangeEnemyController : MonoBehaviour
+public class RangeEnemyController : NetworkBehaviour
 {
     private enum State
     {
@@ -21,12 +22,13 @@ public class RangeEnemyController : MonoBehaviour
     public float AttackDamage = 5.0f;
     private HealthSystem _healthSystem;
     private Vector3 _targetDirection;
-    [SerializeField] private Vector3 _hitboxOffset;
-    [SerializeField] private Vector3 _hitbox;
     private LayerMask ObstacleMask = 8;
     [SerializeField] private GameObject _projectile;
     [SerializeField] private GameObject _bulletSpawner;
+    [SerializeField] private GameObject _sightChekingPoint;
+    [SerializeField] private GameObject _loot;
     [SerializeField] private float _projectileSpeed;
+    private float YOFFSET = 2f;
 
     [Header("AI")]
     public LayerMask TargetMask;
@@ -41,6 +43,8 @@ public class RangeEnemyController : MonoBehaviour
     [SerializeField] public float _patrolRadius = 2.5f; 
     [SerializeField] private float _timeToRoam;
     private float _timeRoamed;
+    // detect obstruction
+    private bool obstruct = false;
 
     [Header("Animation/Sound/VFX")]
     private Animator _animator;
@@ -48,7 +52,7 @@ public class RangeEnemyController : MonoBehaviour
     [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private AudioClip _missSound;
     [SerializeField] private AudioClip _hitSound;
-    [SerializeField] private GameObject _explosionPrefab;
+    [SerializeField] private GameObject _deathExplosion;
     [SerializeField] private GameObject _sparksPrefab;
 
     [Header("Gizmos")]
@@ -58,6 +62,7 @@ public class RangeEnemyController : MonoBehaviour
 
     void Start()
     {
+        _destination = transform.position;
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _audio = GetComponent<AudioSource>();
@@ -69,11 +74,13 @@ public class RangeEnemyController : MonoBehaviour
             // If we are dead, spawn an explosion and destroy ourselves.
             if (args.newHealth <= 0)
             {
-                _agent.isStopped = true;
-                _isDead = true;
-                _animator.SetTrigger("Die");
-                // Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-                // Destroy(gameObject);
+                Instantiate(_deathExplosion, transform.position, Quaternion.identity);
+                // 1/5 chance to drop amo
+                if (UnityEngine.Random.Range(0,8) == 1)
+                {
+                    Instantiate(_loot, transform.position, Quaternion.identity);
+                }
+                Destroy(gameObject);
                 return;
             }
             // Play a hurt sound when getting hit.
@@ -100,7 +107,7 @@ public class RangeEnemyController : MonoBehaviour
         if(_target != null)
         {
             GetTargetDirection();
-            Debug.DrawRay(transform.position, transform.TransformDirection(_targetDirection * _attackRange),Color.green);
+            Debug.DrawRay(_sightChekingPoint.transform.position, Vector3.Normalize(_targetDirection) * _attackRange, Color.black);
         }
         currentState = currentState switch
         {
@@ -159,23 +166,19 @@ public class RangeEnemyController : MonoBehaviour
 
     private State ChaseState()
     {
-        // Play a chase animation.
+        // Play a chase animation
         _animator.SetTrigger("Chase");
-        //_agent.Resume();
+        _agent.enabled = true;
 
         // Navigate towards the player.
         _destination = _target.transform.position;
         _agent.SetDestination(_destination);
 
         // If we are within range to attack, enter attack state.
-        
-        Collider[] hitColliders = Physics.OverlapBox(transform.position+_hitboxOffset, _hitbox, transform.rotation, TargetMask);
-        if (hitColliders.Length > 0)
+        if (targetDetection() && InSight())
         {
             return State.Attack;
         }
-        
-
         // Stay in chase state if we're not going to attack.
         return State.Chase;
     }
@@ -184,13 +187,11 @@ public class RangeEnemyController : MonoBehaviour
     private State AttackState()
     {
         // If we are in attack range, attack and stay in attack state.
-        //_agent.Stop();
-
-        Collider[] hitColliders = Physics.OverlapBox(transform.position+_hitboxOffset, _hitbox, transform.rotation, TargetMask);
         RotateTowardsTarget(_target);
-        if (hitColliders.Length > 0)
+        if (targetDetection() && InSight())
         {
             // Play an attack animation.
+            _agent.enabled = false;
             _animator.SetTrigger("Attack");
             return State.Attack;
         }
@@ -202,9 +203,12 @@ public class RangeEnemyController : MonoBehaviour
         }
     }
 
+// -------------other helper function ------------------
+
     void RotateTowardsTarget(GameObject target)
     {
         Vector3 direction = target.transform.position - transform.position;
+        direction.y = 0;
         float rotateSpeed = 5f;
         float step = rotateSpeed * Time.deltaTime;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, step, 0.0f);
@@ -216,46 +220,76 @@ public class RangeEnemyController : MonoBehaviour
         // Attack and deal damage to any valid players within our hitbox.
         RotateTowardsTarget(_target);
         GetTargetDirection();
+        CharacterMotor playerMotor = _target.GetComponent<CharacterMotor>();
         GameObject projectileObj = Instantiate(_projectile, _bulletSpawner.transform.position, Quaternion.identity);
         EnemyBullet bulletController = projectileObj.GetComponent<EnemyBullet>();
-        bulletController.SetParameter(Vector3.Normalize(_targetDirection),  _projectileSpeed, AttackDamage);
+        float bulletSpeed = _projectileSpeed;
+        if(!playerMotor.isGrounded)
+        {
+            bulletSpeed = 3 * _projectileSpeed;
+        }
+        bulletController.SetParameter(Vector3.Normalize(_targetDirection), bulletSpeed, AttackDamage);
+        Destroy(projectileObj, 10f);
     }
 
-    public void Death()
-    {
-        Explosion explosionScript =_explosionPrefab.GetComponent<Explosion>();
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    public void GetTargetDirection()
+    private void GetTargetDirection()
     {
         Vector3 gunpoint = _bulletSpawner.transform.position;
+        // model has bugs manually adding offsets
+        gunpoint.y -= 0.4f;
         _targetDirection = _target.transform.position - gunpoint;
     }
 
-    public bool InSight(){
-        //GetTargetDirection();
-        // RaycastHit hit;
-        // bool obstruct = false;
-        // obstruct = Physics.Raycast(transform.position+_hitboxOffset,Vector3.Normalize(_targetDirection), out hit, _attackRange, TargetMask);
-        if ( Vector3.Distance(_target.transform.position, this.transform.position) < _attackRange)
+    // Check if target is insight
+    private bool InSight(){
+        GetTargetDirection();
+        RaycastHit hit;
+        bool clearShot = false;
+        clearShot = Physics.SphereCast(_sightChekingPoint.transform.position, 0.3f, Vector3.Normalize(_targetDirection), out hit, _attackRange, ObstacleMask |TargetMask);
+        // cast for both wall and sphere, because if only scan for one layer the other layer is ignored you want information of both layer
+        if(clearShot)
         {
+            GameObject objectHit = hit.transform.gameObject;
+            if(objectHit.tag == "Player" && Vector3.Distance(_target.transform.position, this.transform.position) < _attackRange)
+            {
+                return true;
+            }  
+        }
+        return false;
+    }
+    // check if player is standing on top of a cube where the enemy can't walk to
+    private bool checkOnCube(){
+        CharacterMotor playerMotor = _target.GetComponent<CharacterMotor>();
+        if(playerMotor.isGrounded && _target.transform.position.y > transform.position.y+YOFFSET)
+        {
+            Debug.Log("oncube");
             return true;
         }
         return false;
     }
 
+    private bool targetDetection()
+    {
+        float minimumDistance = _attackRange;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attackRange, TargetMask);
+        if (hitColliders.Length <= 0)
+        {
+            return false;
+        }
+        foreach(Collider target in hitColliders)
+        {
+            float distance = Vector3.Distance(target.gameObject.transform.position, transform.position);
+            if( distance < minimumDistance )
+            {
+                minimumDistance = distance;
+                _target = target.gameObject;
+            }
+        }
+        return true;
+    }
+
     void OnDrawGizmos()
     {
-        if (_showHitbox)
-        {
-            var oldMatrix = Gizmos.matrix;
-            Gizmos.matrix = Matrix4x4.TRS(transform.position+_hitboxOffset, transform.rotation, _hitbox);
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
-            Gizmos.matrix = oldMatrix;
-        }
         if (_showPatrolRadius)
         {
             Gizmos.color = Color.green;

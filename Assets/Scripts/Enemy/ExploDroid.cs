@@ -1,10 +1,5 @@
-using Shared;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SubsystemsImplementation;
+using Shared;
 
 public class ExploDroid : Enemy
 {

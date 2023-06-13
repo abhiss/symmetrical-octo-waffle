@@ -201,10 +201,10 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.7428565
+      - time: 0.8031402
         functionName: Death
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 5a1f4bf1a70c68348a0f0d23dffc8ebe,
+        objectReferenceParameter: {fileID: 11500000, guid: ed1508d3ca5918c449f23293243c181f,
           type: 3}
         floatParameter: 0
         intParameter: 0

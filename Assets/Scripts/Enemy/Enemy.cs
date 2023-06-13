@@ -1,11 +1,10 @@
+using UnityEngine;
+using UnityEngine.AI;
+using Unity.Netcode;
 using Shared;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SubsystemsImplementation;
 
 [RequireComponent(typeof(Shared.HealthSystem))]
 public abstract class Enemy : NetworkBehaviour
@@ -20,10 +19,13 @@ public abstract class Enemy : NetworkBehaviour
     [Header("Stats")]
     private HealthSystem _healthSystem;
     [SerializeField] private float _attackDamage;
+    [SerializeField] private float _speed;
+    [SerializeField] private int _lootDropRate;
     [SerializeField] private Vector3 _hitbox;
     [SerializeField] private Vector3 _hitboxOffset;
 
     [Header("AI")]
+    public bool ChaseOnSpawn;
     [SerializeField] private LayerMask _targetMask;
     [SerializeField] private GameObject _target;
     [SerializeField] private float _detectionRadius = 5.0f;
@@ -37,7 +39,8 @@ public abstract class Enemy : NetworkBehaviour
     [Header("Effects")]
     [SerializeField] private AudioClip _hurtSound;
     [SerializeField] private GameObject _deathExplosion;
-    [SerializeField] private GameObject _sparksPrefab;
+    [SerializeField] private GameObject _hitSparks;
+    [SerializeField] private GameObject _loot;
     private AudioSource _audio;
     private Animator _animator;
 
@@ -46,7 +49,6 @@ public abstract class Enemy : NetworkBehaviour
     [SerializeField] private bool _showPatrolRadius;
     [SerializeField] private bool _showDetectionRadius;
 
-    // Protected Properties
     protected float AttackDamage { get => _attackDamage; }
     protected Vector3 Hitbox { get => _hitbox; }
     protected Vector3 HitboxOffset { get => _hitboxOffset; }
@@ -54,6 +56,7 @@ public abstract class Enemy : NetworkBehaviour
     protected GameObject Target { get => _target; }
     protected Animator EnemyAnimator { get => _animator; }
     protected AudioSource Audio { get => _audio; }
+    protected NavMeshAgent NavAgent { get => _agent; }
 
     protected virtual void Start()
     {
@@ -62,8 +65,19 @@ public abstract class Enemy : NetworkBehaviour
         _audio = GetComponent<AudioSource>();
         _healthSystem = GetComponent<HealthSystem>();
         InitializeOnDamageEvent();
-        _currentState = State.Idle;
-        RefreshPatrolPoint();
+        _destination = transform.position;
+
+        // If enemy is set to chase on spawn, it will not idle and instead chases the first player it finds.
+        GameObject player = GameObject.Find("Character");
+        if (ChaseOnSpawn && player != null)
+        {
+            _target = player;
+            _currentState = State.Chase;
+        }
+        else
+        {
+            _currentState = State.Idle;
+        }
     }
 
     private void InitializeOnDamageEvent()
@@ -71,11 +85,12 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
         {
             // Emit sparks when getting hit.
-            Instantiate(_sparksPrefab, transform.position+transform.up+transform.forward, Quaternion.identity);
-            // If we are dead, spawn an explosion and destroy ourselves.
+            Instantiate(_hitSparks, transform.position+transform.up+transform.forward, Quaternion.identity);
+            // If we are dead, spawn an explosion, maybe drop loot, and destroy ourselves.
             if (args.newHealth <= 0)
             {
                 Instantiate(_deathExplosion, transform.position, Quaternion.identity);
+                DropLoot();
                 Destroy(gameObject);
                 return;
             }
@@ -91,6 +106,17 @@ public abstract class Enemy : NetworkBehaviour
         });
     }
 
+    private void DropLoot()
+    {
+        // Random range is max exclusive, so increment end range by 1.
+        float randomNumber = UnityEngine.Random.Range(1, 101);
+        // Drop loot based on loot drop rate.
+        if (_lootDropRate <= randomNumber)
+        {
+            Instantiate(_loot, transform.position, Quaternion.identity);
+        }
+    }
+
     protected virtual void Update()
     {
         TransitionState();
@@ -98,22 +124,44 @@ public abstract class Enemy : NetworkBehaviour
 
     protected void TransitionState()
     {
+        Func<State> idle = () => 
+        {
+            _agent.speed = 0;
+            return IdleState();
+
+        };
+        Func<State> patrol = () =>
+        {
+            _agent.speed = _speed;
+            return PatrolState();
+        };
+        Func<State> chase = () =>
+        {
+            var chaseModifier = 1.5f;
+            _agent.speed = _speed * chaseModifier;
+            return ChaseState();
+
+        };
+        Func<State> attack = () =>
+        {
+            _agent.speed = 0;
+            return AttackState();
+        };
         _currentState = _currentState switch
         {
-            State.Idle => IdleState(),
-            State.Patrol => PatrolState(),
-            State.Chase => ChaseState(),
-            State.Attack => AttackState(),
-            _ => IdleState()
+            State.Idle => idle(),
+            State.Patrol => patrol(),
+            State.Chase => chase(),
+            State.Attack => attack(),
+            _ => idle()
         };
     }
 
     protected State PatrolState()
     {
-        // Play a patrol animation.
         _animator.SetTrigger("Patrol");
         // If we're close enough to our destination or we've roamed for long enough, patrol somewhere else.
-        if (Vector3.Distance(transform.position, _destination) <= 1 || _timeRoamed > _timeToRoam)
+        if (Vector3.Distance(transform.position, _destination) <= 1.5f || _timeRoamed > _timeToRoam)
         {
             RefreshPatrolPoint();
         }
@@ -134,15 +182,21 @@ public abstract class Enemy : NetworkBehaviour
 
     private void RefreshPatrolPoint()
     {
-        Vector3 _patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
-        _patrolTargetPoint.y = transform.position.y;
-        _destination = _patrolTargetPoint;
+        _destination = GenerateValidPatrolPoint();
         _agent.SetDestination(_destination);
         _timeRoamed = 0;
+    }
+    
+    private Vector3 GenerateValidPatrolPoint()
+    {
+        Vector3 patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+        patrolTargetPoint.y = transform.position.y;
+        return patrolTargetPoint;
     }
 
     protected State IdleState()
     {
+        _animator.SetTrigger("Idle");
         // If there are enemies in detection radius, enter a chase state. Otherwise, enter a patrol state.
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, _detectionRadius, _targetMask);
         if (hitColliders.Length > 0)

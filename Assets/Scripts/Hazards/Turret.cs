@@ -37,8 +37,8 @@ public class Turret : NetworkBehaviour
             Die();
             return;
         }
-        if(!IsServer) return;
         _target = FindTarget();
+        if(!IsServer) return;
         // If we found a target and turret is not on cooldown, shoot at the player and reset cooldown progress.
         if (_target != null && _cooldownProgress >= _attackCooldown)
         {
@@ -60,7 +60,7 @@ public class Turret : NetworkBehaviour
         ShootClientRpc(targetPos);
     }
     private void ShootInner(Vector3 targetPos){
-                // Create an energy projectile and initialize it with a target position.
+        // Create an energy projectile and initialize it with a target position.
         GameObject projectileObj = Instantiate(_projectile, _projectileSpawn.transform.position, Quaternion.identity);
         EnergyProjectile projectile = projectileObj.GetComponent<EnergyProjectile>();
         projectile.SetTargetPosition(targetPos);
@@ -71,10 +71,20 @@ public class Turret : NetworkBehaviour
         ShootInner(target.transform.position);
     }
 
-    private void Die()
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
+    void DieServerRpc(ulong selfNetworkObjectId)
+    {
+        DieClientRpc();
+        NetworkManager.SpawnManager.SpawnedObjects[selfNetworkObjectId].Despawn();
+    }
+    [ClientRpc]
+    private void DieClientRpc()
     {
         Instantiate(_deathExplosion, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+    }
+    private void Die()
+    {
+        DieServerRpc(gameObject.GetComponent<NetworkObject>().NetworkObjectId);
     }
 
     private GameObject FindTarget()
@@ -97,7 +107,7 @@ public class Turret : NetworkBehaviour
                     newTarget = _target;
                 }
                 // If there is a new target, look towards it.
-                if (newTarget != null)
+                if (newTarget != null && IsServer)
                 {
                     transform.LookAt(newTarget.transform);
                 }

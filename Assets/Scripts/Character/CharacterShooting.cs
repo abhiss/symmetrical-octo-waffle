@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.VFX;
 using Unity.Netcode;
 using System;
+using System.Collections.Generic;
 
 public class CharacterShooting : NetworkBehaviour
 {
@@ -9,6 +10,8 @@ public class CharacterShooting : NetworkBehaviour
     public Transform WeaponDrawer;
     public float VerticalAimThreshold = 1.2f;
     private InputListener _inputListener;
+    public List<WeaponCreator> weaponInventory = new List<WeaponCreator>();
+    private int currentWeaponIndex = 0;
     [NonSerialized] public Vector3 AimDirection;
 
     [Header("Laser")]
@@ -72,6 +75,11 @@ public class CharacterShooting : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            SwitchWeapon();
+        }
+
         if (!IsOwner) return;
 
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
@@ -306,13 +314,19 @@ public class CharacterShooting : NetworkBehaviour
         //Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
     }
 
-    public void ChangeWeapon(WeaponCreator newWeapon)
+    public void AddWeapon(WeaponCreator newWeapon)
     {
-        if (newWeapon != null)
-        {
-            newWeapon.CurrentClipSize = newWeapon.MaxClipSize;
-            newWeapon.CurrentAmmo = newWeapon.MaxAmmo - newWeapon.MaxClipSize;
-            SetActiveWeapon(newWeapon);
-        }
+        newWeapon.CurrentClipSize = newWeapon.MaxClipSize;
+        newWeapon.CurrentAmmo = newWeapon.MaxAmmo - newWeapon.MaxClipSize;
+        weaponInventory.Add(newWeapon);
+        SetActiveWeapon(newWeapon);
+    }
+
+    public void SwitchWeapon()
+    {
+        currentWeaponIndex = (currentWeaponIndex + 1) % weaponInventory.Count; // Cycle through weapons in inventory
+        weaponInventory[currentWeaponIndex].CurrentClipSize = weaponInventory[currentWeaponIndex].MaxClipSize;
+        weaponInventory[currentWeaponIndex].CurrentAmmo = weaponInventory[currentWeaponIndex].MaxAmmo - weaponInventory[currentWeaponIndex].MaxClipSize;
+        SetActiveWeapon(weaponInventory[currentWeaponIndex]);
     }
 }

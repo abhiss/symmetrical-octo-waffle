@@ -42,7 +42,14 @@ public class CharacterWeaponPickup : NetworkBehaviour
         {
             if (characterShooting != null)
             {
-                characterShooting.ChangeWeapon(SniperWeapon);
+                if (characterShooting.weaponInventory.Count == 0)
+                {
+                    characterShooting.AddWeapon(SniperWeapon);
+                }
+                else
+                {
+                    characterShooting.weaponInventory.Add(SniperWeapon);
+                }
                 Destroy(gameObject); // Optionally destroy the pickup object after it has been used.
             }
         }

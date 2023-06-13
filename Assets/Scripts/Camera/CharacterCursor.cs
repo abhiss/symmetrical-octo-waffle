@@ -3,12 +3,25 @@ using UnityEngine;
 public class CharacterCursor : MonoBehaviour
 {
     public Transform Player;
-    private RectTransform _rectTransform;
+    private Plane _cursorPlane = new Plane(Vector3.down, Vector3.zero);
 
     private void Start()
     {
         Cursor.visible = false;
-        _rectTransform = GetComponent<RectTransform>();
+    }
+
+    private Vector3 MouseWorldSpacePosition(Vector3 inputPosition)
+    {
+        _cursorPlane.SetNormalAndPosition(Vector3.up, Player.position);
+
+        // Get point on plane
+        Vector3 newPosition = inputPosition;
+        Ray ray = Camera.main.ScreenPointToRay(inputPosition);
+        if (_cursorPlane.Raycast(ray, out float dist))
+        {
+            newPosition = ray.GetPoint(dist);
+        }
+        return newPosition;
     }
 
     private void LookAt2D(Vector3 lookAtPosition)
@@ -20,9 +33,12 @@ public class CharacterCursor : MonoBehaviour
 
     private void Update()
     {
-        transform.position = Input.mousePosition;
         if (Player == null)
             return;
+
+
+        Vector3 cursorPositionXZ = MouseWorldSpacePosition(Input.mousePosition);
+        Vector3 playerPositionXZ = Player.position;
 
         Vector3 playerPos2D = Camera.main.WorldToScreenPoint(Player.position);
         LookAt2D(playerPos2D);

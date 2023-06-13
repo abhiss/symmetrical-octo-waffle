@@ -85,7 +85,7 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
         {
             // Emit sparks when getting hit.
-            Instantiate(_hitSparks, transform.position+transform.up+transform.forward, Quaternion.identity);
+            Instantiate(_hitSparks, transform.position+transform.forward, Quaternion.identity);
             // If we are dead, spawn an explosion, maybe drop loot, and destroy ourselves.
             if (args.newHealth <= 0)
             {

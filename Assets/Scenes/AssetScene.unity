@@ -308,7 +308,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+<<<<<<< HEAD
   m_RootOrder: 10
+=======
+  m_RootOrder: 8
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &139252745
 GameObject:
@@ -376,7 +380,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+<<<<<<< HEAD
   m_RootOrder: 22
+=======
+  m_RootOrder: 21
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &142090685 stripped
 Transform:
@@ -1463,7 +1471,11 @@ Transform:
   - {fileID: 1637210933}
   - {fileID: 650525859}
   m_Father: {fileID: 0}
+<<<<<<< HEAD
   m_RootOrder: 20
+=======
+  m_RootOrder: 17
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &497621263
 MonoBehaviour:
@@ -1781,7 +1793,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+<<<<<<< HEAD
   m_RootOrder: 13
+=======
+  m_RootOrder: 10
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &686162127
 PrefabInstance:
@@ -3691,6 +3707,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+<<<<<<< HEAD
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1695034528 stripped
@@ -3751,6 +3768,10 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+=======
+  m_RootOrder: 20
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
 --- !u!1001 &1715596724
 PrefabInstance:
   m_ObjectHideFlags: 0

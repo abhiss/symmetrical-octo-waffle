@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/NetworkManager/ClientNetworkedAnimator.cs.meta
 guid: 35381bb4c412a5b4289329d756c68b2a
+========
+guid: 5c037e78adc9e0840a0c9765b24ad92a
+>>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7:Assets/Scripts/Abilities/GrenadePickup.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

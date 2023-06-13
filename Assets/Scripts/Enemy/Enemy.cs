@@ -85,7 +85,11 @@ public abstract class Enemy : NetworkBehaviour
         _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
         {
             // Emit sparks when getting hit.
+<<<<<<< HEAD
             Instantiate(_hitSparks, transform.position+transform.forward, Quaternion.identity);
+=======
+            Instantiate(_hitSparks, transform.position+transform.up+transform.forward, Quaternion.identity);
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
             // If we are dead, spawn an explosion, maybe drop loot, and destroy ourselves.
             if (args.newHealth <= 0)
             {
@@ -189,7 +193,11 @@ public abstract class Enemy : NetworkBehaviour
     
     private Vector3 GenerateValidPatrolPoint()
     {
+<<<<<<< HEAD
         Vector3 patrolTargetPoint = transform.position + (UnityEngine.Random.insideUnitSphere * _patrolRadius);
+=======
+        Vector3 patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+>>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
         patrolTargetPoint.y = transform.position.y;
         return patrolTargetPoint;
     }

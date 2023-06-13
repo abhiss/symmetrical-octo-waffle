@@ -7,7 +7,7 @@ public class CharacterShooting : NetworkBehaviour
 {
     public WeaponCreator CurrentWeapon;
     public Transform WeaponDrawer;
-    public float VerticalAimThreshold = 2.0f;
+    public float VerticalAimThreshold = 1.2f;
     private InputListener _inputListener;
     [NonSerialized] public Vector3 AimDirection;
 
@@ -215,10 +215,11 @@ public class CharacterShooting : NetworkBehaviour
         LayerMask ignoreMask = EnemyMask | PlayerMask | _inputListener.ObstructionMask;
         Ray cameraRay = Camera.main.ScreenPointToRay(mousePosition);
 
-        // Adjust to the floor
+        // Vertical aim
         if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
         {
             Vector3 point = hit.point - transform.position;
+            Debug.Log(point.y);
             if (point.y >= VerticalAimThreshold || point.y <= -VerticalAimThreshold)
             {
                 newPosition = hit.point;

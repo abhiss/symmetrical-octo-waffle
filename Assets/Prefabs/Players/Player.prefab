@@ -1722,7 +1722,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 137c9bb99764e734cb681d146643001f,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8100386072696079446}
+      addedObject: {fileID: 8204116991299549445}
   m_SourcePrefab: {fileID: 100100000, guid: 137c9bb99764e734cb681d146643001f, type: 3}
 --- !u!95 &474122193657312462 stripped
 Animator:
@@ -1761,7 +1761,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TransitionStateInfoList:
-  - Layer: 1
+  - Layer: 2
+    OriginatingState: -1459219776
+    DestinationState: -1691164935
+    TransitionDuration: 0
+    TriggerNameHash: -1316629574
+    TransitionIndex: 0
+  m_Animator: {fileID: 474122193657312462}
+--- !u!114 &8204116991299549445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6575141001975772174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35381bb4c412a5b4289329d756c68b2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList:
+  - Layer: 2
     OriginatingState: -1459219776
     DestinationState: -1691164935
     TransitionDuration: 0

@@ -15,8 +15,15 @@ public class Dash : NetworkBehaviour
     private CharacterMotor _characterMotor;
     private InputListener _inputListener;
 
+    NetworkVariable<bool> n_isDashing = new (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private void Start()
     {
+        n_isDashing.OnValueChanged = (prev, next) => {
+            if(next == false)
+            {
+                DashVFX.SendEvent(VisualEffectAsset.StopEventID);
+            }
+        };
         if (!IsOwner) return;
 
         _characterMotor = GetComponent<CharacterMotor>();
@@ -39,6 +46,7 @@ public class Dash : NetworkBehaviour
         if (_characterMotor.DashInputOverride.magnitude <= _minPlaySpeed)
         {
             DashVFX.SendEvent(VisualEffectAsset.StopEventID);
+            if(n_isDashing.Value) n_isDashing.Value = false;
         }
 
         IsDashing = _characterMotor.DashInputOverride.magnitude > 1.0f;
@@ -52,10 +60,30 @@ public class Dash : NetworkBehaviour
         );
     }
 
+    //tells every other client to play dash particle
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
+    private void PlayerDashServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        PlayerDashClientRpc();
+    }
+
+    [ClientRpc]
+    private void PlayerDashClientRpc()
+    {
+        PlayerDashInner();
+    }
+
+    private void PlayerDashInner()
+    {
+        DashVFX.SendEvent(VisualEffectAsset.PlayEventID);
+    }
+
     private void PlayerDash()
     {
+        n_isDashing.Value = true;
+        PlayerDashServerRpc();
         Vector3 dashVector = transform.forward.normalized;
         _characterMotor.DashInputOverride = dashVector * DashForce;
-        DashVFX.SendEvent(VisualEffectAsset.PlayEventID);
+        PlayerDashInner();
     }
 }

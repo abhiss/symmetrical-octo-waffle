@@ -52,7 +52,7 @@ public class GlobalNetworkManager : NetworkBehaviour
         isMainScene = SceneManager.GetActiveScene().name == "MainScene";
         var isMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
 
-        if(isMainMenu || isMainScene) return;
+        if(isMainMenu) return;
 #if UNITY_EDITOR
         Debug.Log("In unity editor.");
         // automatically start as client if detected that instance is a parallelsync clone

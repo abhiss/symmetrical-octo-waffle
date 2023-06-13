@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using SharedMath;
 using UnityEngine.VFX;
+using System.Linq;
 
 public class JetPack : NetworkBehaviour
 {
@@ -52,6 +53,8 @@ public class JetPack : NetworkBehaviour
 
     private void Update()
     {
+        JetpackLight.intensity = Mathf.MoveTowards(JetpackLight.intensity, _targetIntensity, Time.deltaTime * 2 * JetPackLightIntensity);
+
         if (!IsOwner) return;
 
         // Skip a frame so isGrounded updates
@@ -74,7 +77,6 @@ public class JetPack : NetworkBehaviour
             LaunchPlayer();
         }
 
-        JetpackLight.intensity = Mathf.MoveTowards(JetpackLight.intensity, _targetIntensity, Time.deltaTime *  2 * JetPackLightIntensity);
     }
 
     private void LaunchPlayer()
@@ -99,13 +101,63 @@ public class JetPack : NetworkBehaviour
         _originPosition = transform.position;
         _targetPosition = cursorPosition;
 
+        OnLaunch();
+        // Place projection at target position
+    }
+
+    [ClientRpc]
+    private void OnJpStateClientRpc(JetpackState jpstate)
+    {
+        switch (jpstate)
+        {
+            case JetpackState.launch:
+                OnLaunchInner();
+                break;
+            case JetpackState.land:
+                OnLandInner();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnLaunchInner()
+    {
         // Visuals & Sounds
         _targetIntensity = JetPackLightIntensity;
         JetpackVFX_L.SendEvent(VisualEffectAsset.PlayEventID);
         JetpackVFX_R.SendEvent(VisualEffectAsset.PlayEventID);
         _audioSrc.PlayOneShot(LaunchClip);
         LoopSound();
-        // Place projection at target position
+    }
+
+    //wraps OnLaunchInner + syncing
+    private void OnLaunch()
+    {
+        OnJetpackStateServerRpc(JetpackState.launch);
+        OnLaunchInner();
+    }
+
+    enum JetpackState
+    {
+        launch,
+        land
+    }
+
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
+    private void OnJetpackStateServerRpc(JetpackState jpstate, ServerRpcParams serverRpcParams = default)
+    {
+        var clientId = serverRpcParams.Receive.SenderClientId;
+        var list = NetworkManager.ConnectedClients.ToList();
+        foreach (var client in list)
+        {
+            //send rpc to everyone except player who triggered it
+            if (client.Value.ClientId != clientId)
+            {
+                Debug.Log("Sending jp particle rpc: " + jpstate.ToString());
+                OnJpStateClientRpc(jpstate);
+            }
+        }
     }
 
     // This is a edge case. If the player jumps in a corner to a point higher
@@ -115,19 +167,19 @@ public class JetPack : NetworkBehaviour
         // Land normally
         if (_characterMotor.isGrounded)
         {
-            Land();
+            OnLand();
         }
 
         // Edge case, abort jetpack
         Vector3 playerVelocity = (transform.position - _previousPosition) / Time.deltaTime;
         if (playerVelocity == Vector3.zero)
         {
-            Land();
+            OnLand();
             _characterMotor.SetForce(Vector3.zero);
         }
     }
 
-    private void Land()
+    private void OnLandInner()
     {
         JetpackVFX_L.SendEvent(VisualEffectAsset.StopEventID);
         JetpackVFX_R.SendEvent(VisualEffectAsset.StopEventID);
@@ -136,6 +188,12 @@ public class JetPack : NetworkBehaviour
         HasLaunched = false;
         Destroy(_loopSrc);
         _audioSrc.PlayOneShot(LandClip);
+    }
+    //wraps onlandinner + syncing code
+    private void OnLand()
+    {
+        OnJetpackStateServerRpc(JetpackState.land);
+        OnLandInner();
     }
 
     private void LoopSound()

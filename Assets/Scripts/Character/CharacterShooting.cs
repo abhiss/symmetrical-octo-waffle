@@ -48,9 +48,10 @@ public class CharacterShooting : NetworkBehaviour
     [Header("Debugging")]
     public bool EnableDebugging = true;
 
+    private NetworkVariable<bool> n_muzzleFlashEnabled = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     private void Start()
     {
-        if (!IsOwner) return;
 
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
@@ -68,12 +69,20 @@ public class CharacterShooting : NetworkBehaviour
         _laserLine.enabled = false;
 
         _playerAudioSrc = gameObject.AddComponent<AudioSource>();
+
+        if (!IsOwner) return;
     }
 
     private void Update()
     {
-        if (!IsOwner) return;
-
+        if (!IsOwner) {
+            n_muzzleFlashEnabled.Value = _muzzleFlash.enabled;
+            n_muzzleFlashEnabled.OnValueChanged = (prev, next) =>
+            {
+                _muzzleFlash.enabled = next;
+            };
+            return;
+        }
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
         AimDirection = GetAimDirection(cursorPosition);
         InputEvents();
@@ -83,7 +92,13 @@ public class CharacterShooting : NetworkBehaviour
             DebugMode();
         }
 
+        var wasEnabled = _muzzleFlash.enabled;
         _muzzleFlash.enabled = _vfxCoolDown > 0;
+        if(wasEnabled != _muzzleFlash.enabled)
+        {
+            n_muzzleFlashEnabled.Value = _muzzleFlash.enabled;
+        }
+
         if (_inputListener.DisableInput == false)
         {
             DrawLaser();
@@ -124,14 +139,34 @@ public class CharacterShooting : NetworkBehaviour
         IsShooting = _vfxCoolDown > 0;
     }
 
-    // Gameplay
-    // -------------------------------------------------------------------------
-    private void Fire()
+    [ClientRpc]
+    private void FireVfxClientRpc() {
+        FireVfxInner();
+    }
+
+    [ServerRpc]
+    private void FireVfxServerRpc() {
+        FireVfxClientRpc();
+    }
+
+    private void FireVfxInner()
     {
         // VFX
         _playerAudioSrc.PlayOneShot(CurrentWeapon.FireSound);
         _vfxCoolDown = VfxInterval;
         _vfx.Play();
+    }
+    private void FireVfx()
+    {
+        FireVfxServerRpc();
+        FireVfxInner();
+    }
+
+    // Gameplay
+    // -------------------------------------------------------------------------
+    private void Fire()
+    {
+        FireVfx();
 
         // Gameplay
         _fireRateCoolDown = CurrentWeapon.FireRate;

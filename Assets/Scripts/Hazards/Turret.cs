@@ -55,7 +55,7 @@ public class Turret : NetworkBehaviour
     private void ShootClientRpc(Vector3 targetPos){
         ShootInner(targetPos);
     }
-    [ServerRpc]
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
     private void ShootServerRpc(Vector3 targetPos){
         ShootClientRpc(targetPos);
     }

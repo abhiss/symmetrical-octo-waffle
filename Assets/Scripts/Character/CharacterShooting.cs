@@ -7,6 +7,7 @@ public class CharacterShooting : NetworkBehaviour
 {
     public WeaponCreator CurrentWeapon;
     public Transform WeaponDrawer;
+    public float VerticalAimThreshold = 3.0f;
     private InputListener _inputListener;
     [NonSerialized] public Vector3 AimDirection;
 
@@ -74,8 +75,7 @@ public class CharacterShooting : NetworkBehaviour
         if (!IsOwner) return;
 
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
-        Vector3 targetDirection = GetAimDirection(cursorPosition);
-        AimDirection = Vector3.MoveTowards(AimDirection, targetDirection, Time.deltaTime * 50.0f);
+        AimDirection = GetAimDirection(cursorPosition);
         InputEvents();
 
         if (EnableDebugging)
@@ -218,8 +218,11 @@ public class CharacterShooting : NetworkBehaviour
         // Adjust to the floor
         if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
         {
-            newPosition = hit.point;
-            newPosition.y += 1.0f; // Player Half Height
+            Vector3 point = hit.point - transform.position;
+            if (point.y >= VerticalAimThreshold || point.y <= -VerticalAimThreshold)
+            {
+                newPosition = hit.point;
+            }
         }
 
         return newPosition;
@@ -286,7 +289,7 @@ public class CharacterShooting : NetworkBehaviour
         laserEndPoint += AimDirection * CurrentWeapon.MaxDistance;
 
         // Shrink laser to wall hit
-        _laserLine.SetPosition(0, _muzzleTransform.position);
+        _laserLine.SetPosition(0, transform.position + transform.forward.normalized);
         if (Physics.Raycast(transform.position, AimDirection, out RaycastHit hit, CurrentWeapon.MaxDistance))
         {
             laserEndPoint = hit.point;

@@ -22,10 +22,7 @@ public class InputListener : NetworkBehaviour
 
     public Vector3 CursorWorldPosition()
     {
-        if (DisableInput)
-        {
-            return Vector3.zero;
-        }
+        if (DisableInput) return Vector3.zero;
 
         Vector3 target = Vector3.zero;
         Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -41,10 +38,7 @@ public class InputListener : NetworkBehaviour
 
     public Vector3 MousePlanePosition()
     {
-        if (DisableInput)
-        {
-            return Vector3.zero;
-        }
+        if (DisableInput) return Vector3.zero;
 
         Vector3 planePosition = transform.position;
         Plane cursorPlane = new Plane(transform.position, Vector3.up);
@@ -59,10 +53,7 @@ public class InputListener : NetworkBehaviour
 
     public Vector3 GetAxisInput()
     {
-        if (DisableInput)
-        {
-            return Vector3.zero;
-        }
+        if (DisableInput) return Vector3.zero;
 
         Vector3 rawInput = new Vector3(-Input.GetAxis("Horizontal"), 0, -Input.GetAxis("Vertical"));
         return rawInput;

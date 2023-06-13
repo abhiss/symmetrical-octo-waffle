@@ -37,6 +37,7 @@ public class Turret : NetworkBehaviour
             Die();
             return;
         }
+        if(!IsServer) return;
         _target = FindTarget();
         // If we found a target and turret is not on cooldown, shoot at the player and reset cooldown progress.
         if (_target != null && _cooldownProgress >= _attackCooldown)
@@ -50,13 +51,24 @@ public class Turret : NetworkBehaviour
             _cooldownProgress += Time.deltaTime;
         }
     }
-
-    private void Shoot(GameObject target)
-    {
-        // Create an energy projectile and initialize it with a target position.
+    [ClientRpc]
+    private void ShootClientRpc(Vector3 targetPos){
+        ShootInner(targetPos);
+    }
+    [ServerRpc]
+    private void ShootServerRpc(Vector3 targetPos){
+        ShootClientRpc(targetPos);
+    }
+    private void ShootInner(Vector3 targetPos){
+                // Create an energy projectile and initialize it with a target position.
         GameObject projectileObj = Instantiate(_projectile, _projectileSpawn.transform.position, Quaternion.identity);
         EnergyProjectile projectile = projectileObj.GetComponent<EnergyProjectile>();
-        projectile.SetTargetPosition(target.transform.position);
+        projectile.SetTargetPosition(targetPos);
+    }
+    private void Shoot(GameObject target)
+    {
+        ShootServerRpc(target.transform.position);
+        ShootInner(target.transform.position);
     }
 
     private void Die()

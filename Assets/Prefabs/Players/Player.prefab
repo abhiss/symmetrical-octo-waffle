@@ -538,7 +538,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   EnableAimAssist: 1
-  AssistRaidus: 0.2
+  AssistRaidus: 0.5
   VfxInterval: 0.09
   EnableDebugging: 0
 --- !u!114 &7815612474361838623

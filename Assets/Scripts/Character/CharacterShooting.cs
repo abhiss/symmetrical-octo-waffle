@@ -7,7 +7,7 @@ public class CharacterShooting : NetworkBehaviour
 {
     public WeaponCreator CurrentWeapon;
     public Transform WeaponDrawer;
-    public float VerticalAimThreshold = 3.0f;
+    public float VerticalAimThreshold = 2.0f;
     private InputListener _inputListener;
     [NonSerialized] public Vector3 AimDirection;
 

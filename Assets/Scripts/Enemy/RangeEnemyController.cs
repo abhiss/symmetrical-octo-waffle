@@ -25,8 +25,10 @@ public class RangeEnemyController : NetworkBehaviour
     private LayerMask ObstacleMask = 8;
     [SerializeField] private GameObject _projectile;
     [SerializeField] private GameObject _bulletSpawner;
+    [SerializeField] private GameObject _sightChekingPoint;
     [SerializeField] private GameObject _loot;
     [SerializeField] private float _projectileSpeed;
+    private float YOFFSET = 2f;
 
     [Header("AI")]
     public LayerMask TargetMask;
@@ -104,7 +106,7 @@ public class RangeEnemyController : NetworkBehaviour
         if(_target != null)
         {
             GetTargetDirection();
-            Debug.DrawRay(transform.position, Vector3.Normalize(_targetDirection) * _attackRange, Color.black);
+            Debug.DrawRay(_sightChekingPoint.transform.position, Vector3.Normalize(_targetDirection) * _attackRange, Color.black);
         }
         currentState = currentState switch
         {
@@ -164,6 +166,7 @@ public class RangeEnemyController : NetworkBehaviour
     private State ChaseState()
     {
         // Play a chase animation.
+        checkOnCube();
         _animator.SetTrigger("Chase");
         _agent.enabled = true;
 
@@ -242,7 +245,7 @@ public class RangeEnemyController : NetworkBehaviour
         GetTargetDirection();
         RaycastHit hit;
         bool clearShot = false;
-        clearShot = Physics.SphereCast(transform.position, 0.5f, Vector3.Normalize(_targetDirection), out hit, _attackRange, ObstacleMask |TargetMask);
+        clearShot = Physics.SphereCast(_sightChekingPoint.transform.position, 0.3f, Vector3.Normalize(_targetDirection), out hit, _attackRange, ObstacleMask |TargetMask);
         // cast for both wall and sphere, because if only scan for one layer the other layer is ignored you want information of both layer
         if(clearShot)
         {
@@ -251,6 +254,16 @@ public class RangeEnemyController : NetworkBehaviour
             {
                 return true;
             }  
+        }
+        return false;
+    }
+    // check if player is standing on top of a cube where the enemy can't walk to
+    private bool checkOnCube(){
+        CharacterMotor playerMotor = _target.GetComponent<CharacterMotor>();
+        if(playerMotor.isGrounded && _target.transform.position.y > transform.position.y+YOFFSET)
+        {
+            Debug.Log("oncube");
+            return true;
         }
         return false;
     }

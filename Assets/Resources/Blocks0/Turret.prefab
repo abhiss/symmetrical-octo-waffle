@@ -158,11 +158,15 @@ MonoBehaviour:
   _damage: 50
   _detectionRadius: 10
   _attackCooldown: 5
-  _explosionPrefab: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _deathExplosion: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
     type: 3}
-  _projectilePrefab: {fileID: 5861042749653411772, guid: 513e98568229140009d0f6721fcdc960,
+  _projectile: {fileID: 5861042749653411772, guid: 513e98568229140009d0f6721fcdc960,
     type: 3}
   _projectileSpawn: {fileID: 6542966283338804172}
+  _showDetectionRadius: 0
 --- !u!114 &619302646490637424
 MonoBehaviour:
   m_ObjectHideFlags: 0

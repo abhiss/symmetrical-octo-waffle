@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 322ddd866859ac54d80d4deb0359c522
+guid: 6b7e91278f9d4d046bc0bc0229326358
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MI_Wires
-    second: {fileID: 2100000, guid: ce79f420ff56e1947b217a458fb13053, type: 2}
+      name: MI_AmmunitionBox
+    second: {fileID: 2100000, guid: a1c5656132be66245be3b1bb49beceba, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

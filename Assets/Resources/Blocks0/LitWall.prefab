@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2391560865875243381}
   - component: {fileID: 7161078716672720390}
   - component: {fileID: 6374033533147558017}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,10 +161,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
       objectReference: {fileID: 0}
+    - target: {fileID: 3046635448318444981, guid: 5449752b2304966498340b85b042783a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5166285861449242660, guid: 5449752b2304966498340b85b042783a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6972952569858457426, guid: 5449752b2304966498340b85b042783a,
         type: 3}
       propertyPath: m_Name
       value: LitWall
+      objectReference: {fileID: 0}
+    - target: {fileID: 6972952569858457426, guid: 5449752b2304966498340b85b042783a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8533968901273309344, guid: 5449752b2304966498340b85b042783a,
         type: 3}
@@ -307,6 +322,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SM_Light_A
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d75b6005e9177f1489893acb33fe16de,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

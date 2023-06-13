@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-
+using MoreMountains.Tools;
 namespace Shared
 {
     public class HealthSystem : MonoBehaviour
@@ -18,8 +18,11 @@ namespace Shared
         private float _rechargeTimer = 0.0f;
         private bool _rechargeTimerReset = false;
 
+        // Health bars
+        public MMProgressBar MainPlayerHealthBar;
+        public MMProgressBar AllInformationHealthBar;
+
         // Event Handler
-        // ---------------------------------------------------------------------
         public class OnDamageArgs : EventArgs
         {
             public float damage;
@@ -28,8 +31,6 @@ namespace Shared
         }
 
         public event EventHandler<OnDamageArgs> OnDamageEvent;
-
-        // ---------------------------------------------------------------------
 
         public void BuffHealth(float multipler)
         {
@@ -57,8 +58,23 @@ namespace Shared
             {
                 Shield();
             }
-        }
 
+            UpdateHealthBars();
+        }
+        private void UpdateHealthBars()
+        {
+            // Main player health bar
+            if (MainPlayerHealthBar != null)
+            {
+                MainPlayerHealthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
+
+            // All information health bar
+            if (AllInformationHealthBar != null)
+            {
+                AllInformationHealthBar.UpdateBar(CurrentHealth, 0, MaxHealth);
+            }
+        }
         private void Shield()
         {
             if (_rechargeTimerReset)
@@ -79,47 +95,28 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Used to apply damage to an HealthSystem instance.
-        /// </summary>
-        /// <param name="attacker"> Source of Damage. </param>
-        /// <param name="damage"> Amount of damage to apply to target. </param>
         public void TakeDamage(GameObject attacker, float damage)
         {
             _rechargeTimerReset = true;
-            if ( UseShield && CurrentShield > 0)
+            if (UseShield && CurrentShield > 0)
             {
                 CurrentShield -= damage;
             }
             else
             {
-                
                 CurrentHealth -= damage;
             }
 
-            // Left over damage carries to health
             if (CurrentShield < 0)
             {
                 CurrentHealth -= CurrentShield;
-                CurrentHealth = 0;
+                CurrentShield = 0;
             }
 
-            // if (CurrentHealth <= 0)
-            // {
-            //     Die();
-            // }
-
-            // This null check needs to happen, otherwise it will break anything that uses this function.
             if (OnDamageEvent != null)
             {
                 OnDamageEvent.Invoke(this, new OnDamageArgs { damage = damage, newHealth = CurrentHealth, attacker = attacker });
             }
         }
-
-        //don't need die function, we use call back to handle what happen after taken damage
-        // private void Die()
-        // {
-
-        // }
     }
 }

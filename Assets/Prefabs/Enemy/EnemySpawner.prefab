@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3283940984444765569}
   - component: {fileID: 7314893132119914071}
   - component: {fileID: 9166273440166291315}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemySpawner
   m_TagString: Destructible
   m_Icon: {fileID: 0}
@@ -263,6 +263,8 @@ MonoBehaviour:
   CurrentShield: 0
   RechargeDelay: 5
   RechargeRate: 1
+  MainPlayerHealthBar: {fileID: 0}
+  AllInformationHealthBar: {fileID: 0}
 --- !u!1 &2909775879607823040
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +276,7 @@ GameObject:
   - component: {fileID: 4059817063944707186}
   - component: {fileID: 3757651185585005689}
   - component: {fileID: 6783951879601730722}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

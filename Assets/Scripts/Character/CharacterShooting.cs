@@ -339,6 +339,16 @@ public class CharacterShooting : NetworkBehaviour
 
         _laserLine.SetPosition(1, laserEndPoint);
     }
+    // UI
+    // -------------------------------------------------------------------------
+    public (int currentAmmo, int maxAmmo) GetCurrentWeaponAmmoInfo()
+    {
+        return (CurrentWeapon.CurrentClipSize, CurrentWeapon.CurrentAmmo);
+    }
+    public string GetCurrentWeaponName()
+    {
+        return CurrentWeapon.WeaponName;
+    }
 
     // Debugging
     // -------------------------------------------------------------------------

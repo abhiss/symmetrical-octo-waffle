@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4290656082811676112}
   - component: {fileID: 1437985225708762299}
   - component: {fileID: 1606922028037292155}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: barrel_cap (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 2906780124530722827}
   - component: {fileID: 7349666140080525074}
   - component: {fileID: 7919659310207172053}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ExplosiveBarrel
   m_TagString: Destructible
   m_Icon: {fileID: 0}
@@ -213,6 +213,8 @@ MonoBehaviour:
   CurrentShield: 0
   RechargeDelay: 5
   RechargeRate: 1
+  MainPlayerHealthBar: {fileID: 0}
+  AllInformationHealthBar: {fileID: 0}
 --- !u!114 &2906780124530722827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,7 +282,7 @@ GameObject:
   - component: {fileID: 4966690804637697218}
   - component: {fileID: 2881403559084640455}
   - component: {fileID: 6818153950947090059}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: barrel_cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,24 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // Namespace for TextMeshPro
+using TMPro; 
 
 public class Ammo : MonoBehaviour
 {
-    // public TopDownCharacterShooting characterShooting;
-    private TextMeshProUGUI ammoText;
+    public CharacterShooting characterShooting;
+    [SerializeField] TextMeshProUGUI ammoTitleText;
+    [SerializeField] TextMeshProUGUI ammoWeaponText;
 
-    private void Start()
+    private void Update()
     {
-        ammoText = GetComponent<TextMeshProUGUI>();
-    }
+        if (characterShooting != null)
+        {
+            var currentWeaponName = characterShooting.GetCurrentWeaponName();
+            ammoTitleText.text = currentWeaponName;
 
-    // private void Update()
-    // {
-    //     if (characterShooting != null)
-    //     {
-    //         var currentWeapon = characterShooting.GetCurrentWeapon();
-    //         ammoText.text = currentWeapon.currentAmmo.ToString() + "/" + currentWeapon.maxAmmo.ToString();
-    //     }
-    // }
+            var (currentAmmo, maxAmmo) = characterShooting.GetCurrentWeaponAmmoInfo();
+            ammoWeaponText.text = $"{currentAmmo}/{maxAmmo}";
+        }
+    }
 }

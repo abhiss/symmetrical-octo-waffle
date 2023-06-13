@@ -219,7 +219,6 @@ public class CharacterShooting : NetworkBehaviour
         if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
         {
             Vector3 point = hit.point - transform.position;
-            Debug.Log(point.y);
             if (point.y >= VerticalAimThreshold || point.y <= -VerticalAimThreshold)
             {
                 newPosition = hit.point;

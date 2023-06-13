@@ -1,9 +1,9 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class CharacterCursor : MonoBehaviour
+public class CharacterCursor : NetworkBehaviour
 {
     public Transform Player;
-    private Plane _cursorPlane = new Plane(Vector3.down, Vector3.zero);
 
     private void Start()
     {

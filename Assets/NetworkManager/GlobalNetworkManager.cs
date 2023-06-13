@@ -49,9 +49,12 @@ public class GlobalNetworkManager : NetworkBehaviour
         };
 
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        isMainScene = SceneManager.GetActiveScene().name == "MainScene";
+        var isMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
 
-        return;
+        if(isMainMenu || isMainScene) return;
 #if UNITY_EDITOR
+        Debug.Log("In unity editor.");
         // automatically start as client if detected that instance is a parallelsync clone
         if (Application.dataPath.Contains("clone"))
         {
@@ -64,7 +67,6 @@ public class GlobalNetworkManager : NetworkBehaviour
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
 
-        isMainScene = SceneManager.GetActiveScene().name == "MainScene";
         if (!isMainScene)
         {
             Debug.Log("not main scene");

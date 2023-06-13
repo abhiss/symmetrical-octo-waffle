@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using Shared;
+using UnityEngine.Assertions;
 
 class EnemySpawner : NetworkBehaviour
 {
@@ -49,6 +50,7 @@ class EnemySpawner : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsServer) return;
         if (_timeTowardsNextSpawn >= _timeBetweenSpawns)
         {
             RandomSpawnEnemy();
@@ -91,8 +93,10 @@ class EnemySpawner : NetworkBehaviour
 
     public void SpawnEnemy(GameObject enemy)
     {
+        Assert.IsTrue(IsServer);
         _audio.Play();
-        Instantiate(enemy, transform.position + transform.up, Quaternion.identity);
+        GameObject go = Instantiate(enemy, transform.position + transform.up, Quaternion.identity);
+        go.GetComponent<NetworkObject>().Spawn(); //spawns across network (all clients);
     }
 
     // Adds an snemy to the spawn list with a spawn chance, or updates it if one with that enemy's name already exists.

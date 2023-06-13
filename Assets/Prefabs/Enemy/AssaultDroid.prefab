@@ -250,7 +250,7 @@ MonoBehaviour:
   _target: {fileID: 0}
   _attackRange: 12
   _patrolRadius: 5
-  _timeToRoam: 3
+  _timeToRoam: 2
   _hurtSound: {fileID: 8300000, guid: 2f6497c73a57efa4693bfa749f971111, type: 3}
   _missSound: {fileID: 8300000, guid: 7e492ad07b6d548eea10ccbd1962e88f, type: 3}
   _hitSound: {fileID: 8300000, guid: 185cc115882a740379e875ae1efd99cc, type: 3}
@@ -259,7 +259,7 @@ MonoBehaviour:
   _sparksPrefab: {fileID: 1000011396044746, guid: 96b2ec0239d11fa4b9792311efceb8ed,
     type: 3}
   _showHitbox: 0
-  _showPatrolRadius: 0
+  _showPatrolRadius: 1
   _showDetectionRadius: 0
 --- !u!82 &340604060749617439
 AudioSource:

@@ -28,6 +28,7 @@ public class RangeEnemyController : NetworkBehaviour
     [SerializeField] private GameObject _sightChekingPoint;
     [SerializeField] private GameObject _loot;
     [SerializeField] private float _projectileSpeed;
+    // model is wrong, found out the last day
     private float YOFFSET = 2f;
 
     [Header("AI")]
@@ -43,8 +44,6 @@ public class RangeEnemyController : NetworkBehaviour
     [SerializeField] public float _patrolRadius = 2.5f; 
     [SerializeField] private float _timeToRoam;
     private float _timeRoamed;
-    // detect obstruction
-    private bool obstruct = false;
 
     [Header("Animation/Sound/VFX")]
     private Animator _animator;
@@ -62,6 +61,7 @@ public class RangeEnemyController : NetworkBehaviour
 
     void Start()
     {
+        
         _destination = transform.position;
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
@@ -122,6 +122,12 @@ public class RangeEnemyController : NetworkBehaviour
     private State PatrolState()
     {
         // Play a patrol animation.
+        if(_target == null)
+        {
+            _destination = transform.position;
+            _agent.enabled = true;
+            
+        }
         _animator.SetTrigger("Patrol");
         // If we're close enough to our destination or we've roamed for long enough, patrol somewhere else.
         if (Vector3.Distance(transform.position, _destination) <= 1 || _timeRoamed > _timeToRoam)
@@ -145,7 +151,7 @@ public class RangeEnemyController : NetworkBehaviour
 
     private void RefreshPatrolPoint()
     {
-        Vector3 _patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+        Vector3 _patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius + transform.position;
         _patrolTargetPoint.y = transform.position.y;
         _destination = _patrolTargetPoint;
         _agent.SetDestination(_destination);
@@ -187,6 +193,13 @@ public class RangeEnemyController : NetworkBehaviour
     private State AttackState()
     {
         // If we are in attack range, attack and stay in attack state.
+        if(_target == null)
+        {
+            if(!targetDetection())
+            {
+                return State.Patrol;
+            }
+        }
         RotateTowardsTarget(_target);
         if (targetDetection() && InSight())
         {
@@ -218,6 +231,10 @@ public class RangeEnemyController : NetworkBehaviour
     public void Attack()
     {
         // Attack and deal damage to any valid players within our hitbox.
+        if(_target == null)
+        {
+            return;
+        }
         RotateTowardsTarget(_target);
         GetTargetDirection();
         CharacterMotor playerMotor = _target.GetComponent<CharacterMotor>();

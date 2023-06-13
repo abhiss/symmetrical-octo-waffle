@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream:Assets/Prefabs/vfx_MuzzleFlash.prefab.meta
 guid: 9541eb7c2f3c9e34593e4df642603a06
+=======
+guid: 4914461eaff25424da54bdc339c20c94
+>>>>>>> Stashed changes:Assets/Prefabs/Enemy Ai/DominicAI.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

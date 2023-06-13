@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
-using Unity.AI.Navigation;
 
 namespace ProcGen
 {
@@ -44,29 +43,47 @@ namespace ProcGen
     Exit,
     FloorLight,
     Drum,
-    Crate0,
-    Crate1,
-    Crate2,
+    Crate,
+    Turret,
+    ExplosiveBarrel,
+    Bot,
+    Pit,
     Amt,
+  }
+
+  public class RoomProcData
+  {
+    public Block[,] Blocks;
+    public Vector3Int EmptyPos = new Vector3Int();
+    public Vector3Int EmptySize = new Vector3Int();
+    public RoomProcData(Vector3Int size)
+    {
+      Blocks = new Block[size.x, size.z];
+    }
   }
 
   public class Room
   {
+    static Block s_bnf = Block.Front | Block.Back;
+    static Block s_rnl = Block.Right | Block.Left;
+
     public Vector3Int Size;
     public Vector3Int Pos = new Vector3Int();
     public GameObject GO = new GameObject();
-    public Block[,] Blocks;
-    public List<Vector3Int> Exits = new List<Vector3Int>();
-    public Vector3Int EmptyPos = new Vector3Int();
-    public Vector3Int EmptySize = new Vector3Int();
+    public Vector3Int Entrance;
+    public Vector3Int Exit;
+    public RoomProcData Proc;
 
     public Room(Vector3Int size)
     {
       Size = size;
-      Blocks = new Block[size.x, size.z];
     }
-    static Block s_bnf = Block.Front | Block.Back;
-    static Block s_rnl = Block.Right | Block.Left;
+    public Room InitProc()
+    {
+      Proc = new RoomProcData(Size);
+      AddWall(1, 1, Size.x - 2, Size.z - 2);
+      return this;
+    }
 
     public int CountGround()
     {
@@ -75,7 +92,7 @@ namespace ProcGen
       {
         for (int j = 0; j < Size.z; j++)
         {
-          if (Blocks[i, j] == Block.Ground)
+          if (Proc.Blocks[i, j] == Block.Ground)
           {
             ++sum;
           }
@@ -90,9 +107,9 @@ namespace ProcGen
       {
         for (int j = 0; j < Size.z; j++)
         {
-          if (Blocks[i, j] == Block.Ground && grounds++ == index)
+          if (Proc.Blocks[i, j] == Block.Ground && grounds++ == index)
           {
-            Blocks[i, j] |= Block.Prop;
+            Proc.Blocks[i, j] |= Block.Prop;
             return new Vector3Int(i, 0, j);
           }
 
@@ -107,20 +124,20 @@ namespace ProcGen
 
     public void ComputeEmpty()
     {
-      EmptySize = new Vector3Int();
+      Proc.EmptySize = new Vector3Int();
       for (int i = 0; i < Size.x; i++)
       {
         for (int j = 0; j < Size.z; j++)
         {
-          if (Blocks[i, j] != Block.Ground)
+          if (Proc.Blocks[i, j] != Block.Ground)
           {
             continue;
           }
           Vector3Int size = GroundSize(i, j);
-          if (size.x > 1 && size.z > 1 && size.magnitude > EmptySize.magnitude)
+          if (size.x > 1 && size.z > 1 && size.magnitude > Proc.EmptySize.magnitude)
           {
-            EmptyPos = new Vector3Int(i, 0, j);
-            EmptySize = size;
+            Proc.EmptyPos = new Vector3Int(i, 0, j);
+            Proc.EmptySize = size;
           }
         }
       }
@@ -152,7 +169,7 @@ namespace ProcGen
     {
       for (int i = 0; i < (onX ? d : w); ++i)
       {
-        Block b = Blocks[x + (onX ? w : i), z + (onX ? i : d)];
+        Block b = Proc.Blocks[x + (onX ? w : i), z + (onX ? i : d)];
         if (b != Block.Ground || (b & Block.Key) == Block.Key)
         {
           return false;
@@ -163,100 +180,127 @@ namespace ProcGen
 
     public void WallFilter(int i, int j, Block corner)
     {
-      if ((Blocks[i, j] & s_bnf) == s_bnf)
+      if ((Proc.Blocks[i, j] & s_bnf) == s_bnf)
       {
-        Blocks[i, j] &= ~(s_bnf);
+        Proc.Blocks[i, j] &= ~(s_bnf);
       }
-      if ((Blocks[i, j] & s_rnl) == s_rnl)
+      if ((Proc.Blocks[i, j] & s_rnl) == s_rnl)
       {
-        Blocks[i, j] &= ~(s_rnl);
+        Proc.Blocks[i, j] &= ~(s_rnl);
       }
-      Blocks[i, j] = Blocks[i, j] switch
+      Proc.Blocks[i, j] = Proc.Blocks[i, j] switch
       {
         Block b when ((b & (Block.Back | Block.Left)) == (Block.Back | Block.Left)
             || (b & (Block.Back | Block.Right)) == (Block.Back | Block.Right)
             || (b & (Block.Front | Block.Left)) == (Block.Front | Block.Left)
             || (b & (Block.Front | Block.Right)) == (Block.Front | Block.Right)) => b | corner,
-        _ => Blocks[i, j],
+        _ => Proc.Blocks[i, j],
       };
     }
 
-    public void AddRect(int x, int z, int w, int d)
+    void AddWall(int x, int z, int w, int d)
     {
       for (int i = x; i < x + w; i++)
       {
         for (int j = z; j < z + d; j++)
         {
-          Blocks[i, j] = Block.None;
+          Proc.Blocks[i, j] = Block.None;
           if (j == z)
           {
-            Blocks[i, j] |= Block.Back;
+            Proc.Blocks[i, j] |= Block.Back;
           }
           else if (j == z + d - 1)
           {
-            Blocks[i, j] |= Block.Front;
+            Proc.Blocks[i, j] |= Block.Front;
           }
           if (i == x)
           {
-            Blocks[i, j] |= Block.Right;
+            Proc.Blocks[i, j] |= Block.Right;
             WallFilter(i, j, Block.Inner);
           }
           else if (i == x + w - 1)
           {
-            Blocks[i, j] |= Block.Left;
+            Proc.Blocks[i, j] |= Block.Left;
             WallFilter(i, j, Block.Inner);
           }
-          if (Blocks[i, j] == Block.None)
+          if (Proc.Blocks[i, j] == Block.None)
           {
-            Blocks[i, j] = Block.Ground;
+            Proc.Blocks[i, j] = Block.Ground;
           }
         }
       }
     }
 
-    public void SubRect(int x, int z, int w, int d)
+    public bool TrySubRect(int x, int z, int w, int d)
     {
       for (int i = x; i < x + w; i++)
       {
         for (int j = z; j < z + d; j++)
         {
-          if (Blocks[i, j] == Block.None)
+          if ((Proc.Blocks[i, j] & Block.Key) == Block.Key)
+          {
+            return false;
+          }
+        }
+      }
+      SubWall(x, z, w, d);
+      return true;
+    }
+
+    public void SubWall(int x, int z, int w, int d)
+    {
+      for (int i = x; i < x + w; i++)
+      {
+        for (int j = z; j < z + d; j++)
+        {
+          if (Proc.Blocks[i, j] == Block.None)
           {
             continue;
           }
           Block modified = Block.None;
           if (j == z)
           {
-            modified = Blocks[i, j];
-            Blocks[i, j] &= Block.IsWall - 1;
-            Blocks[i, j] |= Block.Front;
+            modified = modified == Block.None ? Proc.Blocks[i, j] : modified;
+            Proc.Blocks[i, j] &= Block.IsWall - 1;
+            Proc.Blocks[i, j] |= Block.Front;
           }
           else if (j == z + d - 1)
           {
-            modified = Blocks[i, j];
-            Blocks[i, j] &= Block.IsWall - 1;
-            Blocks[i, j] |= Block.Back;
+            modified = modified == Block.None ? Proc.Blocks[i, j] : modified;
+            Proc.Blocks[i, j] &= Block.IsWall - 1;
+            Proc.Blocks[i, j] |= Block.Back;
           }
           if (i == x)
           {
-            modified = Blocks[i, j];
-            Blocks[i, j] &= Block.IsWall - 1;
-            Blocks[i, j] |= Block.Left;
+            modified = modified == Block.None ? Proc.Blocks[i, j] : modified;
+            Proc.Blocks[i, j] &= Block.IsWall - 1;
+            Proc.Blocks[i, j] |= Block.Left;
           }
           else if (i == x + w - 1)
           {
-            modified = Blocks[i, j];
-            Blocks[i, j] &= Block.IsWall - 1;
-            Blocks[i, j] |= Block.Right;
+            modified = modified == Block.None ? Proc.Blocks[i, j] : modified;
+            Proc.Blocks[i, j] &= Block.IsWall - 1;
+            Proc.Blocks[i, j] |= Block.Right;
           }
           if (modified == Block.None)
           {
-            Blocks[i, j] = Block.None;
+            Proc.Blocks[i, j] = Block.None;
           }
           else
           {
-            WallFilter(i, j, Block.Outer);
+            WallFilter(i, j, modified == Block.Ground ? Block.Outer : Block.Inner);
           }
+        }
+      }
+    }
+
+    public void SubPit(int x, int z, int w, int d)
+    {
+      for (int i = x; i < x + w; i++)
+      {
+        for (int j = z; j < z + d; j++)
+        {
+          Proc.Blocks[i, j] = Block.Pit;
         }
       }
     }
@@ -264,10 +308,10 @@ namespace ProcGen
     Block[] GetAdjacent(int x, int z)
     {
       var adj = new Block[4];
-      adj[0] = (x != 0) ? Blocks[x - 1, z] : Block.None;
-      adj[1] = (x != Size.x - 1) ? Blocks[x + 1, z] : Block.None;
-      adj[2] = (z != 0) ? Blocks[x, z - 1] : Block.None;
-      adj[3] = (z != Size.z - 1) ? Blocks[x, z + 1] : Block.None;
+      adj[0] = (x != 0) ? Proc.Blocks[x - 1, z] : Block.None;
+      adj[1] = (x != Size.x - 1) ? Proc.Blocks[x + 1, z] : Block.None;
+      adj[2] = (z != 0) ? Proc.Blocks[x, z - 1] : Block.None;
+      adj[3] = (z != Size.z - 1) ? Proc.Blocks[x, z + 1] : Block.None;
       return adj;
     }
 
@@ -281,10 +325,11 @@ namespace ProcGen
 
     public void MoveAfter(Room prev)
     {
-      Pos -= Exits[0];
-      Pos += prev.Pos + prev.Exits[1];
+      Pos -= Entrance;
+      Pos += prev.Pos + prev.Exit;
     }
-    float CornerAngle(Block corner)
+
+    public float CornerAngle(Block corner)
     {
       return corner switch
       {
@@ -294,51 +339,15 @@ namespace ProcGen
         Block b when ((b & (Block.Front | Block.Right)) == (Block.Front | Block.Right)) => 0,
       };
     }
-
-    public void AddFloorLight(GameObject[] blocks, float scale, int index, System.Func<GameObject, Vector3, Quaternion, GameObject> instantiate)
-    {
-      Debug.Log(index);
-    }
-    public void BuildGO(GameObject[] blocks, float scale, System.Random random, System.Func<GameObject, Vector3, Quaternion, GameObject> instantiate)
-    {
-      for (int i = 0; i < Size.x; ++i)
-      {
-        for (int j = 0; j < Size.z; ++j)
-        {
-          bool isLit = random.Next(0, 10) == 0;
-          var block = Blocks[i, j] switch
-          {
-            Block b when ((b & Block.Ground) == Block.Ground) =>
-                instantiate(blocks[(int)Prefab.Ground], new Vector3(i, 0, j) * scale, Quaternion.identity),
-
-            Block.Front or Block.Left or Block.Back or Block.Right =>
-                instantiate(blocks[isLit ? (int)Prefab.LitWall : (int)Prefab.Wall], new Vector3(i, 0, j) * scale, Quaternion.Euler(0, (float)System.Math.Log((int)Blocks[i, j], 2) * 90, 0)),
-            Block b when ((b & Block.Outer) == Block.Outer) =>
-                instantiate(blocks[(int)Prefab.Outer], new Vector3(i, 0, j) * scale, Quaternion.AngleAxis(CornerAngle(b), Vector3.up)),
-            Block b when ((b & Block.Inner) == Block.Inner) =>
-                instantiate(blocks[(int)Prefab.Inner], new Vector3(i, 0, j) * scale, Quaternion.AngleAxis(CornerAngle(b), Vector3.up)),
-            Block b when ((b & Block.Exit) == Block.Exit) =>
-                instantiate(blocks[(int)Prefab.Exit], new Vector3(i, 0, j) * scale, Quaternion.Euler(0, (float)System.Math.Log((int)(b & (Block.Ground - 1)), 2) * 90, 0)),
-            _ => null,
-
-          };
-          if (block)
-          {
-            block.transform.parent = GO.transform;
-          }
-        }
-      }
-      GO.transform.position = Pos;
-      GO.transform.position *= scale;
-    }
   }
 
   public class Config
   {
     public int Seed = 0;
     public GameObject Spawn;
-    public System.Func<GameObject, Vector3, Quaternion, GameObject> instantiate;
+    public System.Func<GameObject, Vector3, Quaternion, GameObject> Instantiate;
     public GameObject GO; // parent needs nav mesh surface
+    public List<PremadeRoom> PremadeRooms = new List<PremadeRoom>();
   }
 
   public class Generator
@@ -349,38 +358,26 @@ namespace ProcGen
       premade.transform.Rotate(new Vector3(0, 90 * (float)dir, 0));
     }
 
-    private float BlockSize = 4.0f;
+    public static float BlockSize = 4.0f;
 
 
-    public int RoomAmt = 3;
+    public int RoomAmt = 100;
     public int RoomSizeMin = 8;
     public int RoomSizeMax = 16;
     public int HallLenMin = 1;
     public int HallLenMax = 5;
     public int HallWidth = 2;
 
-    public float FloorProb = 0.1f;
-    public float WallProb = 0.1f;
-    public float InteriorProb = 0.3f;
-    public float NoiseFac = 0.5f;
-    public int InnerLimit = 3;
+    private List<Room> _rooms = new List<Room>();
+    public int InnerLimit = 5;
     public int InnerSizeMin = 2;
     public int InnerSizeMax = 6;
-    private int ExitStretch = 1; // must be odd
-    private const int MapSize = 512;
+    private int _exitStretch = 1; // must be odd
     private System.Random _random;
     private Dir _totalDir;
     private Dir _currentDir;
-    private int _cursorX;
-    private int _cursorZ;
-    private Block[,] _layout = new Block[MapSize, MapSize];
-    private List<GameObject> Floors;
-    private List<GameObject> Walls;
-    private List<GameObject> WallIns;
     private List<GameObject> WallOuts;
-    private List<Room> _rooms = new List<Room>();
-    private Vector3[] _bounds;
-    public List<Vector3> EnemySpawns = new List<Vector3>();
+    private GameObject[] _prefabs;
     private Config _config;
 
     public void Generate(Config config)
@@ -388,24 +385,36 @@ namespace ProcGen
       _config = config;
       _random = new System.Random(_config.Seed);
       _totalDir = _currentDir = (Dir)(_random.Next(0, 4));
+      _prefabs = Enumerable.Range(0, (int)Prefab.Amt)
+                      .Select(n => (GameObject)Resources.Load("Blocks0/" + ((Prefab)n).ToString())).ToArray<GameObject>();
 
-      _cursorX = MapSize / 2;
-      _cursorZ = MapSize / 2;
+      var premadeSpawn = _config.PremadeRooms.Find(room => room.Index == 0);
+      if (premadeSpawn)
+      {
+        _rooms.Add(premadeSpawn.GetRoom());
+      }
+      else
+      {
+        var spawn = new Room(new Vector3Int(7, 0, 7)).InitProc();
+        GenerateDoor(spawn);
+        _rooms.Add(spawn);
+      }
 
-      var spawn = new Room(new Vector3Int(_random.Next(RoomSizeMin + 2, RoomSizeMax + 2), 0, _random.Next(RoomSizeMin + 2, RoomSizeMax + 2)));
-      spawn.AddRect(1, 1, spawn.Size.x - 2, spawn.Size.z - 2);
-      spawn.Exits.Add(new Vector3Int());
-      GenerateExit(spawn);
-      _rooms.Add(spawn);
-
-      for (int i = 0; i < RoomAmt; ++i)
+      for (int i = 1; i < RoomAmt - 1; ++i)
       {
         var prev = _rooms.Last();
+        var premade = _config.PremadeRooms.Find(room => room.Index == i);
+        if (null != premade)
+        {
+          _rooms.Add(premade.GetRoom());
+          continue;
+        }
         var range = PrevRange();
         var xMin = RoomSizeMin + 2;
         var zMin = RoomSizeMin + 2;
         if (_currentDir != _totalDir)
         {
+          Debug.Log(range);
           if ((_totalDir & Dir.Right) == Dir.Right)
           {
             xMin = prev.Size.x - range + 3;
@@ -415,105 +424,181 @@ namespace ProcGen
             zMin = prev.Size.z - range + 3;
           }
         }
-        var room = new Room(new Vector3Int(_random.Next(xMin + 2, RoomSizeMax + 2), 0, _random.Next(zMin + 2, RoomSizeMax + 2)));
-        room.AddRect(1, 1, room.Size.x - 2, room.Size.z - 2);
-        //asvar variant = _random.Next(0, 8);
-        // if (variant < 4)
-        // {
-        //     // corner variant
-        //     int xOff = room.Size.x / 2 + _random.Next(-1, 2);
-        //     int zOff = room.Size.z / 2 + _random.Next(-1, 2);
-        //     switch (variant)
-        //     {
-        //         case 0:
-        //             room.SubRect(0, 0, xOff, zOff);
-        //             break;
-        //         case 1:
-        //             room.SubRect(xOff, 0, room.Size.x - xOff, zOff);
-        //             break;
-        //         case 2:
-        //             room.SubRect(xOff, zOff, room.Size.x - xOff, room.Size.z - zOff);
-        //             break;
-        //         case 3:
-        //             room.SubRect(0, zOff, xOff, room.Size.z - zOff);
-        //             break;
-        //     }
-        // }
-        // else
-        // interior variant
-        for (int j = 0; j < 5; ++j)
+        var w = _random.Next(xMin, RoomSizeMax + 2);
+        var d = _random.Next(zMin, RoomSizeMax + 2);
+        var room = new Room(new Vector3Int(w, 0, d)).InitProc();
+        GenerateDoor(room, range);
+        if (null != _config.PremadeRooms.Find(room => room.Index == i + 1))
         {
-          room.ComputeEmpty();
-          if (room.EmptySize.x < 2 || room.EmptySize.z < 2)
-          {
-            break;
-          }
-          int w = _random.Next(InnerSizeMin, System.Math.Min(room.EmptySize.x + 1, InnerSizeMax));
-          int d = _random.Next(InnerSizeMin, System.Math.Min(room.EmptySize.z + 1, InnerSizeMax));
-          int x = _random.Next(room.EmptyPos.x, room.EmptyPos.x + room.EmptySize.x + 1 - w);
-          int z = _random.Next(room.EmptyPos.z, room.EmptyPos.z + room.EmptySize.z + 1 - d);
-          room.SubRect(x, z, w, d);
+          _currentDir = _totalDir;
         }
-        GenerateExit(room, range);
-        AdvanceDir();
-        GenerateExit(room);
-        room.MoveAfter(_rooms.Last());
+        else
+        {
+          AdvanceDir();
+        }
+        GenerateDoor(room);
+        if (0 == _random.Next(0, 2))
+        {
+          FillCorners(room);
+        }
+        // interior variant
+        GenerateInterior(room);
+        GenProps(room);
+        room.MoveAfter(prev);
         _rooms.Add(room);
       }
-
-      var finish = new Room(new Vector3Int(_random.Next(RoomSizeMin + 2, RoomSizeMax + 2), 0, _random.Next(RoomSizeMin + 2, RoomSizeMax + 2)));
-      finish.AddRect(1, 1, finish.Size.x - 2, finish.Size.z - 2);
-      GenerateExit(finish, PrevRange());
-      finish.MoveAfter(_rooms.Last());
-      _rooms.Add(finish);
-      var prefabs = Enumerable.Range(0, (int)Prefab.Amt)
-                      .Select(n => (GameObject)Resources.Load("Blocks0/" + ((Prefab)n).ToString())).ToArray<GameObject>();
-      foreach (Room room in _rooms)
+      var premadeFinish = _config.PremadeRooms.Find(room => room.Index == RoomAmt + 1);
+      if (premadeFinish)
       {
-        int groundAmt = room.CountGround();
-        for (int i = 0; i < 3; ++i)
-        {
-          // EnemySpawns.Add(room.PosGroundWorld(_random.Next(0, groundAmt--), BlockSize));
-          SpawnProp(room, prefabs[(int)Prefab.FloorLight], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
-          SpawnProp(room, prefabs[(int)Prefab.Crate0], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
-          SpawnProp(room, prefabs[(int)Prefab.Crate1], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
-          SpawnProp(room, prefabs[(int)Prefab.Crate2], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
-          SpawnProp(room, prefabs[(int)Prefab.Drum], (Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize);
-        }
+        _rooms.Add(premadeFinish.GetRoom());
+      }
+      else
+      {
+        var finish = new Room(new Vector3Int(7, 0, 7)).InitProc();
+        GenerateDoor(finish, PrevRange());
+        finish.MoveAfter(_rooms.Last());
+        _rooms.Add(finish);
       }
       foreach (Room room in _rooms)
       {
-        room.BuildGO(prefabs, BlockSize, _random, _config.instantiate);
+        BuildRoom(room);
         room.GO.transform.parent = _config.GO.transform;
       }
-      var surface = _config.GO.GetComponent<NavMeshSurface>();
-      // surface.BuildNavMesh();
+      var surface = _config.GO.GetComponent<Unity.AI.Navigation.NavMeshSurface>();
+      surface.BuildNavMesh();
+      // foreach (Room room in _rooms)
+      // {
+      //   int groundAmt = room.CountGround();
+      //   if (groundAmt == 0)
+      //   {
+      //     continue;
+      //   }
+      //   var prop = _config.Instantiate(_prefabs[(int)Prefab.Bot], Vector3.zero, Quaternion.AngleAxis((float)_random.NextDouble() * 360, Vector3.up));
+      //   UnityEngine.AI.NavMeshHit hit;
+      //   UnityEngine.AI.NavMesh.SamplePosition((Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize + room.GO.transform.position, out hit, 1.0f, UnityEngine.AI.NavMesh.AllAreas);
+      //   prop.GetComponent<UnityEngine.AI.NavMeshAgent>().Warp(hit.position);
+      // }
 
     }
 
-    void SpawnProp(Room room, GameObject prefab, Vector3 pos)
+    void GenProps(Room room)
     {
-      var prop = _config.instantiate(prefab, pos,
+      int groundAmt = room.CountGround();
+      int propAmt = 5;
+      var iterations = groundAmt / propAmt * 0.1;
+      for (int i = 0; i < iterations; ++i)
+      {
+        // EnemySpawns.Add(room.PosGroundWorld(_random.Next(0, groundAmt--), BlockSize));
+        SpawnProp(room, _prefabs[(int)Prefab.FloorLight], _random.Next(0, groundAmt--));
+        SpawnProp(room, _prefabs[(int)Prefab.Crate], _random.Next(0, groundAmt--));
+        SpawnProp(room, _prefabs[(int)Prefab.ExplosiveBarrel], _random.Next(0, groundAmt--));
+        SpawnProp(room, _prefabs[(int)Prefab.Turret], _random.Next(0, groundAmt--));
+        SpawnProp(room, _prefabs[(int)Prefab.Drum], _random.Next(0, groundAmt--));
+      }
+
+    }
+    void FillCorners(Room room)
+    {
+      var corners = Enumerable.Range(0, 4).OrderBy(_ => _random.Next()).ToArray();
+      int i = -1;
+      bool subtracted = false;
+      int xOff = room.Size.x / 2 + _random.Next(-1, 2);
+      int zOff = room.Size.z / 2 + _random.Next(-1, 2);
+      while (!subtracted && 4 != ++i)
+      {
+        Debug.Log(i);
+        // corner variant
+        subtracted = corners[i] switch
+        {
+          0 => room.TrySubRect(0, 0, xOff, zOff),
+          1 => room.TrySubRect(xOff, 0, room.Size.x - xOff, zOff),
+          2 => room.TrySubRect(xOff, zOff, room.Size.x - xOff, room.Size.z - zOff),
+          3 => room.TrySubRect(0, zOff, xOff, room.Size.z - zOff),
+        };
+      }
+
+    }
+
+    void GenerateInterior(Room room)
+    {
+      for (int i = 0; i < InnerLimit; ++i)
+      {
+        room.ComputeEmpty();
+        if (2 > room.Proc.EmptySize.x || 2 > room.Proc.EmptySize.z)
+        {
+          return;
+        }
+        int w = _random.Next(InnerSizeMin, System.Math.Min(room.Proc.EmptySize.x + 1, InnerSizeMax));
+        int d = _random.Next(InnerSizeMin, System.Math.Min(room.Proc.EmptySize.z + 1, InnerSizeMax));
+        int x = _random.Next(room.Proc.EmptyPos.x, room.Proc.EmptyPos.x + room.Proc.EmptySize.x + 1 - w);
+        int z = _random.Next(room.Proc.EmptyPos.z, room.Proc.EmptyPos.z + room.Proc.EmptySize.z + 1 - d);
+        // if (_random.Next(0, 2) == 0) {
+        room.SubWall(x, z, w, d);
+        // }else {
+        //   room.SubPit(x, z, w, d);
+        // }
+      }
+    }
+
+    void BuildRoom(Room room)
+    {
+      if (null != room.Proc)
+      {
+        for (int i = 0; i < room.Size.x; ++i)
+        {
+          for (int j = 0; j < room.Size.z; ++j)
+          {
+            var block = room.Proc.Blocks[i, j] switch
+            {
+              Block b when ((b & Block.Ground) == Block.Ground) =>
+                  _config.Instantiate(_prefabs[(int)Prefab.Ground], new Vector3(i, 0, j) * BlockSize, Quaternion.identity),
+              Block b when ((b & Block.Pit) == Block.Pit) =>
+                  _config.Instantiate(_prefabs[(int)Prefab.Pit], new Vector3(i, 0, j) * BlockSize, Quaternion.identity),
+              Block.Front or Block.Left or Block.Back or Block.Right =>
+                  _config.Instantiate(_prefabs[_random.Next(0, 10) == 0 ? (int)Prefab.LitWall : (int)Prefab.Wall], new Vector3(i, 0, j) * BlockSize, Quaternion.Euler(0, (float)System.Math.Log((int)room.Proc.Blocks[i, j], 2) * 90, 0)),
+              Block b when ((b & Block.Outer) == Block.Outer) =>
+                  _config.Instantiate(_prefabs[(int)Prefab.Outer], new Vector3(i, 0, j) * BlockSize, Quaternion.AngleAxis(room.CornerAngle(b), Vector3.up)),
+              Block b when ((b & Block.Inner) == Block.Inner) =>
+                  _config.Instantiate(_prefabs[(int)Prefab.Inner], new Vector3(i, 0, j) * BlockSize, Quaternion.AngleAxis(room.CornerAngle(b), Vector3.up)),
+              Block b when ((b & Block.Exit) == Block.Exit) =>
+                  _config.Instantiate(_prefabs[(int)Prefab.Exit], new Vector3(i, 0, j) * BlockSize, Quaternion.Euler(0, (float)System.Math.Log((int)(b & (Block.Ground - 1)), 2) * 90, 0)),
+              _ => null,
+
+            };
+            if (block)
+            {
+              block.transform.parent = room.GO.transform;
+            }
+          }
+        }
+      }
+      room.GO.transform.position = (Vector3)room.Pos * BlockSize;
+    }
+
+
+    void SpawnProp(Room room, GameObject prefab, int groundIndex)
+    {
+      var prop = _config.Instantiate(prefab, (Vector3)room.TakeGround(groundIndex) * BlockSize,
         Quaternion.AngleAxis((float)_random.NextDouble() * 360, Vector3.up));
       prop.transform.parent = room.GO.transform;
     }
 
     int PrevRange()
     {
-      if (_rooms.Count() == 0)
+      if (0 == _rooms.Count())
       {
         return 0;
       }
       Room prev = _rooms.Last();
       return _totalDir switch
       {
-        Dir.Up => prev.Exits[1].z,
-        Dir.Right => prev.Exits[1].x,
-        Dir.Down => prev.Size.z - prev.Exits[1].z,
-        Dir.Left => prev.Size.x - prev.Exits[1].x,
+        Dir.Up => prev.Exit.z,
+        Dir.Right => prev.Exit.x,
+        Dir.Down => prev.Size.z - prev.Exit.z - 1,
+        Dir.Left => prev.Size.x - prev.Exit.x - 1,
       };
     }
-    void GenerateExit(Room room, int invRange = 0)
+    void GenerateDoor(Room room, int invRange = 0)
     {
       var dir = invRange != 0 ? (_currentDir + 2) & Dir.Left : _currentDir;
       Block target = Block.None;
@@ -561,10 +646,10 @@ namespace ProcGen
               xn = System.Math.Min(xn, invRange + 1);
               break;
             case Dir.Down:
-              z0 = System.Math.Max(z0, zn - invRange);
+              z0 = System.Math.Max(z0, zn - invRange - 1);
               break;
             case Dir.Left:
-              x0 = System.Math.Max(x0, xn - invRange);
+              x0 = System.Math.Max(x0, xn - invRange - 1);
               break;
           }
         }
@@ -575,19 +660,19 @@ namespace ProcGen
         for (var j = z0; j < zn; j++)
         {
           var current = new Vector3Int(i, 0, j);
-          for (var k = 0; k < ExitStretch + 1; k++)
+          for (var k = 0; k < _exitStretch + 1; k++)
           {
-            if (target != room.Blocks[current.x, current.z])
+            if (target != room.Proc.Blocks[current.x, current.z])
             {
               goto next;
             }
             current = DirMove(adjDir, current);
           }
           current = new Vector3Int(i, 0, j);
-          for (var k = 0; k < ExitStretch; k++)
+          for (var k = 0; k < _exitStretch; k++)
           {
             current = DirMove(adjDir, current, -1);
-            if (target != room.Blocks[current.x, current.z])
+            if (target != room.Proc.Blocks[current.x, current.z])
             {
               goto next;
             }
@@ -598,28 +683,39 @@ namespace ProcGen
         }
       }
       var randRange = cans.Count();
-      if (room.Exits.Count != 0)
+      if (0 != invRange)
       {
         cans.Sort((Vector3Int a, Vector3Int b) =>
         {
-          return (int)(100 * ((b - room.Exits.Last()).magnitude - (a - room.Exits.Last()).magnitude));
+          return (int)(100 * ((b - room.Entrance).magnitude - (a - room.Entrance).magnitude));
         });
+        // foreach(var can in cans) {
+        //   Debug.Log(can);
+        // }
         randRange = System.Math.Min(4, randRange);
       }
-      Vector3Int pos = cans[_random.Next(0, randRange)];
-      room.Exits.Add(pos);
+      var index = _random.Next(0, randRange);
+      Vector3Int pos = cans[index];
+      if (0 == invRange)
+      {
+        room.Exit = pos;
+      }
+      else
+      {
+        room.Entrance = pos;
+      }
       pos = DirMove(adjDir, pos, -1);
 
       // write blocks
-      for (var i = 0; i < ExitStretch * 2 + 1; i++)
+      for (var i = 0; i < _exitStretch * 2 + 1; i++)
       {
-        if (invRange != 0 && i == ExitStretch)
+        if (invRange != 0 && i == _exitStretch)
         {
-          room.Blocks[pos.x, pos.z] |= Block.Key | Block.Exit;
+          room.Proc.Blocks[pos.x, pos.z] |= Block.Key | Block.Exit;
         }
         else
         {
-          room.Blocks[pos.x, pos.z] = Block.Key;
+          room.Proc.Blocks[pos.x, pos.z] = Block.Key;
         }
         pos = DirMove(adjDir, pos);
       }
@@ -676,12 +772,14 @@ namespace ProcGen
 
   public class MockGenerator : MonoBehaviour
   {
+    public List<PremadeRoom> PremadeRooms = new List<PremadeRoom>();
     public void Start()
     {
       var config = new Config();
       config.Seed = new System.Random().Next();
-      config.instantiate = Instantiate;
+      config.Instantiate = Instantiate;
       config.GO = gameObject;
+      config.PremadeRooms = new List<PremadeRoom>();
       // var go = Instantiate(
       new Generator().Generate(config);
       // , Vector3.zero, Quaternion.identity);

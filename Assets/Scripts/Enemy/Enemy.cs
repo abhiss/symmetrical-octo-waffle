@@ -63,14 +63,10 @@ public abstract class Enemy : NetworkBehaviour
         _audio = GetComponent<AudioSource>();
         _healthSystem = GetComponent<HealthSystem>();
         InitializeOnDamageEvent();
+        _destination = transform.position;
 
-        GameObject player = GameObject.Find("Character");
-        // Set initial destination of the enemy to a player's position.
-        if (player != null)
-        {
-            _destination = player.transform.position;
-        }
         // If enemy is set to chase on spawn, it will not idle and instead chases the first player it finds.
+        GameObject player = GameObject.Find("Character");
         if (ChaseOnSpawn && player != null)
         {
             _target = player;
@@ -79,7 +75,6 @@ public abstract class Enemy : NetworkBehaviour
         else
         {
             _currentState = State.Idle;
-            RefreshPatrolPoint();
         }
     }
 
@@ -152,7 +147,7 @@ public abstract class Enemy : NetworkBehaviour
     {
         _animator.SetTrigger("Patrol");
         // If we're close enough to our destination or we've roamed for long enough, patrol somewhere else.
-        if (Vector3.Distance(transform.position, _destination) <= 1 || _timeRoamed > _timeToRoam)
+        if (Vector3.Distance(transform.position, _destination) <= 1.5f || _timeRoamed > _timeToRoam)
         {
             RefreshPatrolPoint();
         }
@@ -173,11 +168,16 @@ public abstract class Enemy : NetworkBehaviour
 
     private void RefreshPatrolPoint()
     {
-        Vector3 _patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
-        _patrolTargetPoint.y = transform.position.y;
-        _destination = _patrolTargetPoint;
+        _destination = GenerateValidPatrolPoint();
         _agent.SetDestination(_destination);
         _timeRoamed = 0;
+    }
+    
+    private Vector3 GenerateValidPatrolPoint()
+    {
+        Vector3 patrolTargetPoint = UnityEngine.Random.insideUnitSphere * _patrolRadius;
+        patrolTargetPoint.y = transform.position.y;
+        return patrolTargetPoint;
     }
 
     protected State IdleState()

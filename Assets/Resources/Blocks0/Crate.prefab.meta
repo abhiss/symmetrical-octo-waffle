@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream:Assets/Resources/Blocks0/Crate.prefab.meta
 guid: 84a2df85997e3644ea23eb54d2fba6b5
+=======
+guid: 4914461eaff25424da54bdc339c20c94
+>>>>>>> Stashed changes:Assets/Prefabs/Enemy Ai/DominicAI.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

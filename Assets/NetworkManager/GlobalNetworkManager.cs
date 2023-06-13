@@ -29,8 +29,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
-<<<<<<< Updated upstream
-=======
         spawnLocation.Value = new Vector3(12, 20, 12);
         if (IsServer)
         {
@@ -41,7 +39,6 @@ public class GlobalNetworkManager : NetworkBehaviour
             player = NetworkManager.LocalClient.PlayerObject;
             player.transform.position = spawnLocation.Value;
         }
->>>>>>> Stashed changes
 
         isMainScene = SceneManager.GetActiveScene().name == "MainScene";
         if (!isMainScene)

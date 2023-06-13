@@ -10,20 +10,6 @@ public class CharacterCursor : MonoBehaviour
         Cursor.visible = false;
     }
 
-    private Vector3 MouseWorldSpacePosition(Vector3 inputPosition)
-    {
-        _cursorPlane.SetNormalAndPosition(Vector3.up, Player.position);
-
-        // Get point on plane
-        Vector3 newPosition = inputPosition;
-        Ray ray = Camera.main.ScreenPointToRay(inputPosition);
-        if (_cursorPlane.Raycast(ray, out float dist))
-        {
-            newPosition = ray.GetPoint(dist);
-        }
-        return newPosition;
-    }
-
     private void LookAt2D(Vector3 lookAtPosition)
     {
         Vector3 dir = lookAtPosition - transform.position;
@@ -36,10 +22,7 @@ public class CharacterCursor : MonoBehaviour
         if (Player == null)
             return;
 
-
-        Vector3 cursorPositionXZ = MouseWorldSpacePosition(Input.mousePosition);
-        Vector3 playerPositionXZ = Player.position;
-
+        transform.position = Input.mousePosition;
         Vector3 playerPos2D = Camera.main.WorldToScreenPoint(Player.position);
         LookAt2D(playerPos2D);
     }

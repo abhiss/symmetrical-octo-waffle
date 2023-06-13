@@ -27,7 +27,6 @@ public class InputListener : NetworkBehaviour
             return Vector3.zero;
         }
 
-
         Vector3 target = Vector3.zero;
         Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 

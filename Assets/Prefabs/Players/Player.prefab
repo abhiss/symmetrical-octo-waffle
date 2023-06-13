@@ -635,7 +635,9 @@ MonoBehaviour:
     type: 3}
   PlayerAnimator: {fileID: 474122193657312462}
   MaxGrenadeHeight: 2
-  ThrewGrenade: 0
+  GrenadeCount: 5
+  MaxGrenades: 10
+  GrenadeThrowCooldown: 3
 --- !u!114 &999072899312915246
 MonoBehaviour:
   m_ObjectHideFlags: 0

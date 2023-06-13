@@ -12,14 +12,17 @@ public class Turret : NetworkBehaviour
     [SerializeField] private float _attackCooldown;
     private float _cooldownProgress;
 
-    // Throttles polling for targets in detection radius. No reason for turret to reorient itself on every single frame.
-    private float _timeToNextTargetCheck;
-    private float _targetCheckTime = 0.05f;
+    [SerializeField] private LayerMask _targetMask;
+    private GameObject _target;
 
-    [SerializeField] private GameObject _explosionPrefab;
-    [SerializeField] private GameObject _projectilePrefab;
+    [SerializeField] private GameObject _deathExplosion;
+    [SerializeField] private GameObject _projectile;
     [SerializeField] private GameObject _projectileSpawn;
+
     private AudioSource _audio;
+
+    [Header("Gizmos")]
+    [SerializeField] private bool _showDetectionRadius;
 
     private void Start()
     {
@@ -29,67 +32,78 @@ public class Turret : NetworkBehaviour
 
     private void Update()
     {
-        // If the turret's health is 0, make it explode and destroy itself.
         if (_health.CurrentHealth <= 0)
         {
             Die();
             return;
         }
-        // If turret is ready to check for targets, reset its time towards the next check and try to find a target.
-        if (_timeToNextTargetCheck >= _targetCheckTime)
+        _target = FindTarget();
+        // If we found a target and turret is not on cooldown, shoot at the player and reset cooldown progress.
+        if (_target != null && _cooldownProgress >= _attackCooldown)
         {
-            _timeToNextTargetCheck = 0;
-            GameObject player = FindTarget();
-            // If a player is found and turret is not on cooldown, shoot at the player and reset cooldown progress.
-            if (player != null  && _cooldownProgress >= _attackCooldown)
-            {
-                Shoot(player);
-                _cooldownProgress = 0;
-            }
+            Shoot(_target);
+            _cooldownProgress = 0;
         }
-        // Update the cooldown of the turret.
+        // Increment the cooldown of the turret.
         if (_cooldownProgress < _attackCooldown)
         {
             _cooldownProgress += Time.deltaTime;
         }
-        // Progress time towards the next target check.
-        _timeToNextTargetCheck += Time.deltaTime;
     }
 
     private void Shoot(GameObject target)
     {
         // Create an energy projectile and initialize it with a target position.
-        GameObject projectileObj = Instantiate(_projectilePrefab, _projectileSpawn.transform.position, Quaternion.identity);
+        GameObject projectileObj = Instantiate(_projectile, _projectileSpawn.transform.position, Quaternion.identity);
         EnergyProjectile projectile = projectileObj.GetComponent<EnergyProjectile>();
         projectile.SetTargetPosition(target.transform.position);
     }
 
     private void Die()
     {
-        // Create an explosion at the turret's location and destroy the turret.
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        Instantiate(_deathExplosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
     private GameObject FindTarget()
     {
-        Collider[] collidersInRange = Physics.OverlapSphere(transform.position, _detectionRadius);
+        Collider[] collidersInRange = Physics.OverlapSphere(transform.position, _detectionRadius, _targetMask);
+        GameObject newTarget = null;
         // Find targets within detection range of the turret.
-        foreach (Collider collider in collidersInRange)
+        if (collidersInRange.Length > 0)
         {
-            bool isValidTarget = collider.CompareTag("Player");
-            // If a collider is a valid target, look at it and play a beeping detection sound.
-            if (isValidTarget)
+            foreach (Collider collider in collidersInRange)
             {
+                // If we have no current target, make the first target we see the new target.
+                if (_target == null)
+                {
+                    newTarget = collider.gameObject;
+                }
+                // If we found our current target again, make that our new target.
+                else if (collider.gameObject == _target)
+                {
+                    newTarget = _target;
+                }
+                // If there is a new target, look towards it.
+                if (newTarget != null)
+                {
+                    transform.LookAt(newTarget.transform);
+                }
                 if (!_audio.isPlaying)
                 {
                     _audio.Play();
                 }
-                transform.LookAt(collider.transform);
-                return collider.gameObject;
             }
         }
-        _audio.Stop();
-        return null;
+        return newTarget;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_showDetectionRadius)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.position, _detectionRadius);
+        }
     }
 }

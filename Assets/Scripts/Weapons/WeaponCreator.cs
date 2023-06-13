@@ -11,6 +11,7 @@ public class WeaponCreator : ScriptableObject
     public int MaxAmmo = 300;
     public float ReloadTime = 1.0f;
     public float MaxDistance = 100.0f;
+    public int ReplenishAmount = 1;
 
     [Header("Visuals & Sounds")]
     public AudioClip FireSound;

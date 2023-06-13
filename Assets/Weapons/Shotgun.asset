@@ -19,6 +19,7 @@ MonoBehaviour:
   MaxAmmo: 200
   ReloadTime: 3
   MaxDistance: 100
+  ReplenishAmount: 10
   FireSound: {fileID: 8300000, guid: ed3f4f877e8475045aecf7296b968467, type: 3}
   ReloadSound: {fileID: 8300000, guid: 403ad70e8cf000c4b8f149b5a516c5f0, type: 3}
   NoAmmoSound: {fileID: 8300000, guid: ac8fcf8018727e946a075bb11659aad6, type: 3}

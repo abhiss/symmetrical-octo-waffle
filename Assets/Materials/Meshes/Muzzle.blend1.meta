@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Materials/Meshes/Muzzle.blend1.meta
 guid: 090c58207eb3f4e46ba6ae1521a63652
+========
+guid: 2e097b361076a264bbe1c38c4c87f16c
+>>>>>>>> origin/main:Assets/Scenes/MainMenu3.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Enemy
   - Destructible
+  - EnemyProjectile
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -16,8 +18,8 @@ TagManager:
   - Player
   - Enemy
   - PostProcessing
-  - Faded Obstruction
-  - 
+  - EnemyProjectile
+  - Item
   - 
   - 
   - 

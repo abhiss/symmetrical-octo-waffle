@@ -158,11 +158,14 @@ MonoBehaviour:
   _damage: 50
   _detectionRadius: 10
   _attackCooldown: 5
-  _explosionPrefab: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
+  _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
     type: 3}
-  _projectilePrefab: {fileID: 5861042749653411772, guid: 513e98568229140009d0f6721fcdc960,
+  _projectile: {fileID: 5861042749653411772, guid: 513e98568229140009d0f6721fcdc960,
     type: 3}
   _projectileSpawn: {fileID: 6542966283338804172}
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &619302646490637424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +215,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 0.1
   m_Pitch: 0.5
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

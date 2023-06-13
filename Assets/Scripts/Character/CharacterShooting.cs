@@ -84,11 +84,7 @@ public class CharacterShooting : NetworkBehaviour
         }
 
         _muzzleFlash.enabled = _vfxCoolDown > 0;
-<<<<<<< HEAD
-        if (_inputListener.DisableInput == false)
-=======
         if(_inputListener.DisableInput == false)
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
         {
             DrawLaser();
         }
@@ -223,10 +219,7 @@ public class CharacterShooting : NetworkBehaviour
         if (Physics.Raycast(cameraRay, out RaycastHit hit, Mathf.Infinity, ~ignoreMask))
         {
             Vector3 point = hit.point - transform.position;
-<<<<<<< HEAD
-=======
             Debug.Log(point.y);
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
             if (point.y >= VerticalAimThreshold || point.y <= -VerticalAimThreshold)
             {
                 newPosition = hit.point;
@@ -311,18 +304,5 @@ public class CharacterShooting : NetworkBehaviour
     private void DebugMode()
     {
         //Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
-<<<<<<< HEAD
-    }
-
-    public void ChangeWeapon(WeaponCreator newWeapon)
-    {
-        if (newWeapon != null)
-        {
-            newWeapon.CurrentClipSize = newWeapon.MaxClipSize;
-            newWeapon.CurrentAmmo = newWeapon.MaxAmmo - newWeapon.MaxClipSize;
-            SetActiveWeapon(newWeapon);
-        }
-=======
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
     }
 }

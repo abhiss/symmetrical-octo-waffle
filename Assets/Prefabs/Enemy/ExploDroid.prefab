@@ -79,17 +79,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-<<<<<<< HEAD
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
-=======
-  m_Radius: 0.65
-  m_Height: 1.55
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.65, z: 0}
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
 --- !u!195 &7176949311457908344
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -155,11 +148,7 @@ MonoBehaviour:
   _target: {fileID: 0}
   _detectionRadius: 10
   _currentState: 0
-<<<<<<< HEAD
   _patrolRadius: 10
-=======
-  _patrolRadius: 5
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   _timeToRoam: 2
   _hurtSound: {fileID: 8300000, guid: 8820235e2c64dd54dbddc7ab5c568545, type: 3}
   _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
@@ -306,11 +295,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 435130, guid: 066ada4b00de27545badf68972a1b46d, type: 3}
       propertyPath: m_LocalPosition.y
-<<<<<<< HEAD
       value: -1
-=======
-      value: 0
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
       objectReference: {fileID: 0}
     - target: {fileID: 435130, guid: 066ada4b00de27545badf68972a1b46d, type: 3}
       propertyPath: m_LocalPosition.z

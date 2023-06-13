@@ -65,9 +65,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
 
         Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
-<<<<<<< HEAD
-
-=======
         spawnLocation.Value = new Vector3(12, 20, 12);
         if (IsServer)
         {
@@ -79,7 +76,6 @@ public class GlobalNetworkManager : NetworkBehaviour
             player.transform.position = spawnLocation.Value;
         }
         isMainScene = SceneManager.GetActiveScene().name == "MainScene";
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
         if (!isMainScene)
         {
             Debug.Log("not main scene");
@@ -89,25 +85,15 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (IsServer)
         {
             Debug.Log("in isserver");
-<<<<<<< HEAD
-            map = new GenLayout(Instantiate, gameObject, 0);
-            Debug.Log("map spawnlocation: " + map.PlayerSpawnLocation);
-            //spawnLocation.Value = map.PlayerSpawnLocation;
-=======
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
         }
         if (IsClient)
         {
             player = NetworkManager.LocalClient.PlayerObject;
             player.transform.position = spawnLocation.Value;
         }
-<<<<<<< HEAD
-#endif
-=======
 
 
 
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
     }
 
     public async void CreateRelay()
@@ -159,3 +145,4 @@ public class GlobalNetworkManager : NetworkBehaviour
         return 2;
     }
 }
+#endif

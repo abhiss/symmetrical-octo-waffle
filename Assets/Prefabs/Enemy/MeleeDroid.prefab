@@ -79,17 +79,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-<<<<<<< HEAD
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
-=======
-  m_Radius: 0.65
-  m_Height: 1.65
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8, z: 0}
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
 --- !u!114 &1226942998969954572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,22 +126,14 @@ MonoBehaviour:
   _target: {fileID: 0}
   _detectionRadius: 10
   _currentState: 0
-<<<<<<< HEAD
   _patrolRadius: 10
-=======
-  _patrolRadius: 5
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   _timeToRoam: 2
   _hurtSound: {fileID: 8300000, guid: 8820235e2c64dd54dbddc7ab5c568545, type: 3}
   _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
     type: 3}
   _hitSparks: {fileID: 1000011396044746, guid: 96b2ec0239d11fa4b9792311efceb8ed, type: 3}
   _loot: {fileID: 588121306564353514, guid: 999c18e0cff82ad41b895fa6f4058fc0, type: 3}
-<<<<<<< HEAD
   _showHitbox: 0
-=======
-  _showHitbox: 1
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
   _showPatrolRadius: 0
   _showDetectionRadius: 0
   _hitSound: {fileID: 8300000, guid: 24a897d241b07432580e0fa000b867e2, type: 3}
@@ -309,11 +294,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 438534, guid: ffaff7d2471749c4db2a6a2076ad05c6, type: 3}
       propertyPath: m_LocalPosition.y
-<<<<<<< HEAD
       value: -1
-=======
-      value: 0
->>>>>>> 1365cd3988dcca969b69ce6ed043bc5361f381c7
       objectReference: {fileID: 0}
     - target: {fileID: 438534, guid: ffaff7d2471749c4db2a6a2076ad05c6, type: 3}
       propertyPath: m_LocalPosition.z

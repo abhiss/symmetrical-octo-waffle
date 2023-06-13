@@ -15,7 +15,8 @@ public class LobbyButtons : MonoBehaviour
     public void OnHostButtonClick()
     {
         SaveUsername();
-        SceneManager.LoadScene("DevScene");
+        GlobalNetworkManager.Instance.CreateRelay();
+        SceneManager.LoadScene("MainScene");
     }
 
     public void OnJoinButtonClick()

@@ -58,17 +58,28 @@ chase stage.
 
 **Yudi's Contribution:**
 Development Timeline: statemachine(unused) -> stiker(new feature:attack and dealing damage to player)(unused) -> Titan(new feature: agro on player when hit and use animator event for attack)(unused) ->|player now have jackpack and knowckback system broke| ->  AssultEnemy( new feature: target on closest player, reposition when player go out of sight, target enemy in air, attack in range)   
+
 [Original State machine abstract class](https://github.com/abhiss/symmetrical-octo-waffle/blob/b8a8c090a95175cd3142bfb7757cf7ac053b8a63/Assets/Scripts/Enemy/State.cs#L6)
+
 [Original State machine](https://github.com/abhiss/symmetrical-octo-waffle/blob/b8a8c090a95175cd3142bfb7757cf7ac053b8a63/Assets/Scripts/Enemy/EnemyBehaviour.cs#L7)
+
 [Original States example](https://github.com/abhiss/symmetrical-octo-waffle/blob/b8a8c090a95175cd3142bfb7757cf7ac053b8a63/Assets/Scripts/Enemy/ChaseState.cs#L5)
 The implementation was cut short after other the group choose to, it was really rough and unfinished
+
 [Striker Enemy Attack logic](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/BaseEnemy.cs#L12)
+
 [Titan Enemy logic](can't find the permalink, but basically Striker logic with animator event)
+
 The implementation for striker and titan was cut short and unfinished after other people said we don't want like the model, but part of the logic and implementation is reused and help build on the final range enemy. Both had knock back mechanic applied to the player, but physic system was change after jackpack was added to the player so knockback no longer works.
+
 [Assult Enemy logic](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/RangeEnemyController.cs#L11)
+
+
 **Domonic's Conttibution:**
 [State machine in one script with states in enum and handler function](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/BaseEnemy.cs#L12)
 [Interface for the the statemachine](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/IEnemyMachine.cs#L3)
+
+
 **Edward's Contribution:**
 
 ## Enemy Design - Yudi Lai & Edward John

@@ -7,6 +7,7 @@ public class CharacterCamera : MonoBehaviour
 {
     public GameObject PlayerObject;
     private InputListener _inputListener;
+    private List<GameObject> _fadedObstructions = new List<GameObject>();
 
     [Header("Camera Settings")]
     public float MaxCameraRadius = 3.0f;
@@ -18,14 +19,11 @@ public class CharacterCamera : MonoBehaviour
     public float HeightLock = 0.0f;
     private Vector3 _camVelocity = Vector3.zero;
 
-    [Header("Obstructions")]
-    private List<GameObject> _fadedObstructions = new List<GameObject>();
-
     [Header("CameraShake")]
     private float _shakeIntensity = 0;
     private float _shakeDecay = 0;
 
-    [Header("Info")]
+    [Header("Live Variables")]
     public Vector3 CursorWorldPosition;
     public bool DrawCameraLogic = false;
     private Vector3 _cameraOffset;
@@ -138,7 +136,7 @@ public class CharacterCamera : MonoBehaviour
             }
         }
 
-        // Convert the raycast hits to game object list
+        // Convert the raycast hits array to game object list
         List<GameObject> mylist = new List<GameObject>();
         foreach (var hitCollider in hits)
         {

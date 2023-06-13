@@ -13,10 +13,10 @@ TagManager:
   - Wall
   - Water
   - UI
+  - Vehicle
   - Player
   - Enemy
   - PostProcessing
-  - 
   - 
   - 
   - 

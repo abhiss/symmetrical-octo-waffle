@@ -148,7 +148,7 @@ MonoBehaviour:
   _target: {fileID: 0}
   _detectionRadius: 10
   _currentState: 0
-  _patrolRadius: 5
+  _patrolRadius: 10
   _timeToRoam: 2
   _hurtSound: {fileID: 8300000, guid: 8820235e2c64dd54dbddc7ab5c568545, type: 3}
   _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,

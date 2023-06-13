@@ -122,9 +122,9 @@ public class CharacterCamera : MonoBehaviour
 
     private void FadeObstructions()
     {
+        LayerMask targetMask = _inputListener.WallMask | _inputListener.ObstructionMask;
         float cameraDistance = Vector3.Distance(transform.position, PlayerObject.transform.position);
         Vector3 cameraDir = (PlayerObject.transform.position - transform.position).normalized;
-        LayerMask targetMask = _inputListener.WallMask | _inputListener.ObstructionMask;
         RaycastHit[] hits = Physics.RaycastAll(transform.position, cameraDir, cameraDistance, targetMask);
 
         // Fade each obstruction found

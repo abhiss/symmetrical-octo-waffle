@@ -74,7 +74,8 @@ public class CharacterShooting : NetworkBehaviour
         if (!IsOwner) return;
 
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
-        AimDirection = GetAimDirection(cursorPosition);
+        Vector3 targetDirection = GetAimDirection(cursorPosition);
+        AimDirection = Vector3.MoveTowards(AimDirection, targetDirection, Time.deltaTime * 50.0f);
         InputEvents();
 
         if (EnableDebugging)

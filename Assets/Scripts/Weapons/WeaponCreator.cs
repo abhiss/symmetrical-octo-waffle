@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "ScriptableObjects/Create Weapon", order = 1)]
-public class WeaponCreator : MonoBehaviour
+public class WeaponCreator : ScriptableObject
 {
     public string WeaponName;
     public float Damage = 1.0f;

@@ -79,9 +79,9 @@ MonoBehaviour:
   uiBounds:
     serializedVersion: 2
     x: 7068
-    y: -10878
-    width: 2432
-    height: 2238
+    y: -10880
+    width: 2433
+    height: 2221
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -923,8 +923,8 @@ MonoBehaviour:
   m_OutputFlowSlot:
   - link: []
   blendMode: 1
-  cullMode: 0
-  zWriteMode: 0
+  cullMode: 3
+  zWriteMode: 2
   zTestMode: 0
   useAlphaClipping: 0
   generateMotionVector: 0
@@ -1784,7 +1784,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661614668}
     position: {x: 7093.5, y: -9108}
     expandedSlots: []
-    expanded: 0
+    expanded: 1
   - m_Id: 1
     linkedSlots:
     - outputSlot: {fileID: 8926484042661614643}
@@ -3931,8 +3931,8 @@ MonoBehaviour:
   m_OutputFlowSlot:
   - link: []
   blendMode: 1
-  cullMode: 0
-  zWriteMode: 0
+  cullMode: 3
+  zWriteMode: 2
   zTestMode: 0
   useAlphaClipping: 0
   generateMotionVector: 0

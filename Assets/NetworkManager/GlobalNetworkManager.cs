@@ -22,6 +22,8 @@ public class GlobalNetworkManager : NetworkBehaviour
     private bool isMainScene;
     private GenLayout map;
     private NetworkObject player;
+    public string JoinCode { get { return JoinCodeString.Value; } }
+    public NetworkVariable<string> JoinCodeString = new NetworkVariable<string>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private void Awake()
     {
@@ -103,7 +105,7 @@ public class GlobalNetworkManager : NetworkBehaviour
                 allocation.ConnectionData
             );
             NetworkManager.Singleton.StartHost();
-
+            JoinCodeString.Value = joincode;
         } catch (RelayServiceException e)
         {
             Debug.LogError(e);

@@ -84,7 +84,7 @@ public class CharacterShooting : NetworkBehaviour
         }
 
         _muzzleFlash.enabled = _vfxCoolDown > 0;
-        if(_inputListener.DisableInput == false)
+        if (_inputListener.DisableInput == false)
         {
             DrawLaser();
         }
@@ -304,5 +304,15 @@ public class CharacterShooting : NetworkBehaviour
     private void DebugMode()
     {
         //Debug.Log($"{CurrentWeapon.CurrentClipSize} / {CurrentWeapon.CurrentAmmo}");
+    }
+
+    public void ChangeWeapon(WeaponCreator newWeapon)
+    {
+        if (newWeapon != null)
+        {
+            newWeapon.CurrentClipSize = newWeapon.MaxClipSize;
+            newWeapon.CurrentAmmo = newWeapon.MaxAmmo - newWeapon.MaxClipSize;
+            SetActiveWeapon(newWeapon);
+        }
     }
 }

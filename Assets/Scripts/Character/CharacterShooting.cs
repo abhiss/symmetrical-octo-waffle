@@ -125,6 +125,13 @@ public class CharacterShooting : NetworkBehaviour
             inputFire = _inputListener.FireKey;
         }
 
+
+        // Auto realod
+        if (inputFire && CurrentWeapon.CurrentClipSize == 0 && reloadConditions && CurrentWeapon.CurrentAmmo > 0)
+        {
+            Reload();
+        }
+
         // Shooting
         if (inputFire && _fireEnabled)
         {

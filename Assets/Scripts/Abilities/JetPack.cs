@@ -17,7 +17,6 @@ public class JetPack : NetworkBehaviour
     [Header("Core")]
     private CharacterMotor _characterMotor;
     private InputListener _inputListener;
-    private AudioSource _loopSrc;
     private Vector3 _previousPosition;
 
     [Header("Sound")]
@@ -31,6 +30,7 @@ public class JetPack : NetworkBehaviour
     public VisualEffect JetpackVFX_L;
     public VisualEffect JetpackVFX_R;
     public Light JetpackLight;
+    public AudioSource LoopAudioSrc;
     public float JetPackLightIntensity = 2.0f;
     private float _targetIntensity = 0.0f;
 
@@ -186,7 +186,7 @@ public class JetPack : NetworkBehaviour
         _targetIntensity = 0.0f;
 
         HasLaunched = false;
-        Destroy(_loopSrc);
+        LoopAudioSrc.Pause();
         _audioSrc.PlayOneShot(LandClip);
     }
     //wraps onlandinner + syncing code
@@ -198,12 +198,8 @@ public class JetPack : NetworkBehaviour
 
     private void LoopSound()
     {
-        _loopSrc = gameObject.AddComponent<AudioSource>();
-        _loopSrc.loop = true;
-        _loopSrc.clip = LoopClip;
-        _loopSrc.volume = 0.5f;
-        _loopSrc.pitch = 0.5f;
-        _loopSrc.Play();
+        LoopAudioSrc.clip = LoopClip;
+        LoopAudioSrc.Play();
     }
 
     private bool HeadClearance()

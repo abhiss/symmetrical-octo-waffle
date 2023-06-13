@@ -1340,8 +1340,8 @@ MonoBehaviour:
   m_OutputFlowSlot:
   - link: []
   blendMode: 3
-  cullMode: 0
-  zWriteMode: 0
+  cullMode: 3
+  zWriteMode: 2
   zTestMode: 0
   useAlphaClipping: 0
   generateMotionVector: 0

@@ -130,7 +130,7 @@ Aside from muzzle effects, I also created various types of smoke particles that 
 **Describe your user interface and how it relates to gameplay. This can be done via the template.**
 
 ## Movement/Physics - Dominic Quintero
-Our movement code is unique as we use the `CharacterController` component within Unity. We do not use the built-in physics system `(RigidBody)` provided by Unity; we are only provided collisions. This component essentially takes in a velocity and provides the following: collisions, climbing stairs, and a `isGrounded` variable, along with some of the standard unity collision functions such as `OnTriggerEnter()`. Nothing else is provided, which allows us to have a lot more freedom in implementing the player. The code in [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) can be summarized as creating a velocity vector that reflects forces we create: gravity, and user input.
+Our movement code is unique as we use the `CharacterController` component within Unity. We do not use the built-in physics system `(RigidBody)` provided by Unity; we are only provided collisions. This component essentially takes in a velocity and provides the following: collisions, climbing stairs, and a `isGrounded` variable, along with some of the standard unity collision functions such as `OnTriggerEnter()`. Nothing else is provided, which allows us to have a lot more freedom in implementing the player. The code in [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) can be summarized as creating a velocity vector that reflects forces we create: gravity and user input.
 
 ### Input Vector
 A common issue character controllers have is going down slopes. This is because you can't simply take the user's input directly as a velocity, it needs to be projected onto the floor of the player. The [ProcessInput()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#LL89C11-L89C11) function is where we correct this issue. To summarize, it created a plane with the ground surface normal, which allows us to properly project the input vector onto the surface.
@@ -191,7 +191,7 @@ We had plans for input reconfiguration via a settings menu via [InputListener.cs
 We didn't want the camera to be at a fixed location and follow the player. We wanted to immerse our players more by having the camera move where they aim, but this provided a challenge as one-to-one camera position + camera offset to the mouse's world position did not yield the desired results, and we wanted to keep the player within the camera at all times. Our approach, [CharacterCamera.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Camera/CharacterCamera.cs) allows for a radius of "play" within the player's radius. We calculate the normalized direction between the `PlayerPosition` and the `MouseWorldPosition` We get the current distance between these points and multiply the directional vector by this clamped distance, giving us our radius of play and our camera's point position. We can then customize this by setting the cameras local position and rotation within the player prefab with ease, the local position will be used as the cameras offset, giving us `CameraPosition = CameraPoint + CameraOffset` With this implementation, if we set the plane's position to the player's position, we can easily have the camera raise and fall with the player. Effectively keeping the player within the camera at all times, giving the player a region of "play", and adding that extra layer of immersion.
 
 ### Aiming
-Since the game is 3D, we wanted to take advantage of unused verticality 2D games normally don't have the luxury of. Depending on the cursors world position the player can aim up and down vertically. To visualize the vertical aiming we have two visual aids, the players circular half cursor and the lasersight. Within [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L212) We have a height tollerance that enables and disables vertiical aiming. This is so when the player is aiming on a flat surface, the game plays as you would expect any other 2D shooter game to play. Once this we exceed this flat threshold, vertical aiming takes over.
+Since the game is 3D, we wanted to take advantage of the verticality 2D games normally don't have the luxury of. Depending on the cursors world position the player can aim up and down vertically. To visualize the vertical aiming we have two visual aids, the players circular half cursor and the lasersight. Within [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L212) We have a height tollerance that enables and disables vertiical aiming. This is so when the player is aiming on a flat surface, the game plays as you would expect any other 2D shooter game to play. Once this we exceed this flat threshold, vertical aiming takes over.
 
 The circular cursor serves as a subtle hint of when the player is vertically aiming or not. When they're not vertically aiming, the laser guide will go through the center of the cursor, signifying they currently can shoot directly infront of them. When vertical aiming is active, the laser guide will go straight to the center of the circular cursor.
 
@@ -207,9 +207,12 @@ The system in place allows for quick and easy swapping between weapons and their
 ## Audio
 
 **List your assets including their sources and licenses.**
-[Main Menu Theme](https://freesound.org/people/rhodesmas/sounds/321723/)
-[JetPack Loop](https://freesound.org/people/Mozfoo/sounds/458377/)
-[JetPack Launch](https://freesound.org/people/Jarusca/sounds/521377/)
+- [Main Menu Theme](https://freesound.org/people/rhodesmas/sounds/321723/)
+- [Menu Click](https://freesound.org/people/nfrae/sounds/625808/)
+- [JetPack Loop](https://freesound.org/people/Mozfoo/sounds/458377/)
+- [JetPack Launch](https://freesound.org/people/Jarusca/sounds/521377/)
+- [Sci-Fi Reload](https://freesound.org/people/SonoFxAudio/sounds/679546/)
+- [Bullet Shot](https://pixabay.com/sound-effects/086553-bullet-hit-39853/)
 
 **Describe the implementation of your audio system.**
 

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1595644102351296695}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 1571983720885636445}
   - component: {fileID: 7491523707910771657}
   - component: {fileID: 973510844702573936}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Weapon
   m_TagString: Destructible
   m_Icon: {fileID: 0}
@@ -334,7 +334,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6578087974524434800}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ProjectileSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 8579179800732727872}
   - component: {fileID: 8863183153202630650}
   - component: {fileID: 208884166741027060}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

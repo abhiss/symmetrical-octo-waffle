@@ -70,7 +70,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (!isMainScene)
         {
             Debug.Log("not main scene");
-            player.transform.position = spawnLocation.Value;
             return;
         }
         if (IsServer)
@@ -83,7 +82,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (IsClient)
         {
             player = NetworkManager.LocalClient.PlayerObject;
-            player.transform.position = spawnLocation.Value;
         }
 #endif
     }

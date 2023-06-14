@@ -46,6 +46,7 @@ namespace ProcGen
     Crate,
     Turret,
     ExplosiveBarrel,
+    EnemySpawner,
     Bot,
     Pit,
     Amt,
@@ -352,7 +353,6 @@ namespace ProcGen
 
   public class Generator
   {
-    //public static DoorSize =
     static void RotatePremade(GameObject premade, Dir dir)
     {
       premade.transform.Rotate(new Vector3(0, 90 * (float)dir, 0));
@@ -371,7 +371,7 @@ namespace ProcGen
     private List<Room> _rooms = new List<Room>();
     public int InnerLimit = 5;
     public int InnerSizeMin = 2;
-    public int InnerSizeMax = 6;
+    public int InnerSizeMax = 4;
     private int _exitStretch = 1; // must be odd
     private System.Random _random;
     private Dir _totalDir;
@@ -464,21 +464,8 @@ namespace ProcGen
         room.GO.transform.parent = _config.GO.transform;
       }
       _config.GO.transform.position = new Vector3(-12, 0, -12);
-      // var surface = _config.GO.GetComponent<Unity.AI.Navigation.NavMeshSurface>();
-      // surface.BuildNavMesh();
-      // foreach (Room room in _rooms)
-      // {
-      //   int groundAmt = room.CountGround();
-      //   if (groundAmt == 0)
-      //   {
-      //     continue;
-      //   }
-      //   var prop = _config.Instantiate(_prefabs[(int)Prefab.Bot], Vector3.zero, Quaternion.AngleAxis((float)_random.NextDouble() * 360, Vector3.up));
-      //   UnityEngine.AI.NavMeshHit hit;
-      //   UnityEngine.AI.NavMesh.SamplePosition((Vector3)room.TakeGround(_random.Next(0, groundAmt--)) * BlockSize + room.GO.transform.position, out hit, 1.0f, UnityEngine.AI.NavMesh.AllAreas);
-      //   prop.GetComponent<UnityEngine.AI.NavMeshAgent>().Warp(hit.position);
-      // }
-
+      var surface = _config.GO.GetComponent<Unity.AI.Navigation.NavMeshSurface>();
+      surface.BuildNavMesh();
     }
 
     void GenProps(Room room)
@@ -494,6 +481,7 @@ namespace ProcGen
         SpawnProp(room, _prefabs[(int)Prefab.ExplosiveBarrel], _random.Next(0, groundAmt--));
         SpawnProp(room, _prefabs[(int)Prefab.Turret], _random.Next(0, groundAmt--));
         SpawnProp(room, _prefabs[(int)Prefab.Drum], _random.Next(0, groundAmt--));
+        SpawnProp(room, _prefabs[(int)Prefab.EnemySpawner], _random.Next(0, groundAmt--));
       }
 
     }
@@ -577,9 +565,17 @@ namespace ProcGen
 
     void SpawnProp(Room room, GameObject prefab, int groundIndex)
     {
-      var prop = _config.Instantiate(prefab, (Vector3)room.TakeGround(groundIndex) * BlockSize,
+      var prop = _config.Instantiate(prefab, (Vector3)room.TakeGround(groundIndex) * BlockSize + room.Pos,
         Quaternion.AngleAxis((float)_random.NextDouble() * 360, Vector3.up));
-      prop.transform.parent = room.GO.transform;
+      var networkObject = prop.GetComponent<Unity.Netcode.NetworkObject>();
+      if (networkObject)
+      {
+        networkObject.TrySetParent(room.GO.transform);
+      }
+      else
+      {
+        prop.transform.parent = room.GO.transform;
+      }
     }
 
     int PrevRange()
@@ -778,9 +774,7 @@ namespace ProcGen
       config.Instantiate = Instantiate;
       config.GO = gameObject;
       config.PremadeRooms = new List<PremadeRoom>();
-      // var go = Instantiate(
       new Generator().Generate(config);
-      // , Vector3.zero, Quaternion.identity);
     }
   }
 }

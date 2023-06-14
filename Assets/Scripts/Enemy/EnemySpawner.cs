@@ -95,7 +95,13 @@ class EnemySpawner : NetworkBehaviour
     {
         Assert.IsTrue(IsServer);
         _audio.Play();
-        GameObject go = Instantiate(enemy, transform.position + transform.up, Quaternion.identity);
+        GameObject go = Instantiate(enemy, Vector3.zero, Quaternion.identity);
+        UnityEngine.AI.NavMeshHit hit;
+        UnityEngine.AI.NavMesh.SamplePosition(transform.position, out hit, 20.0f, UnityEngine.AI.NavMesh.AllAreas);
+        var nav = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        nav.Warp(hit.position+ Vector3.up);
+        nav.enabled = true;
+        nav.isStopped = false;
         go.GetComponent<NetworkObject>().Spawn(); //spawns across network (all clients);
     }
 

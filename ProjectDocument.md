@@ -104,7 +104,7 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 [Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
 
-[Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)    
+[Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)
 [Muzzle Flash vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/MuzzleFlash.vfx)
 ![muzzleflash](https://github.com/abhiss/symmetrical-octo-waffle/assets/129975299/f6d178dc-c45d-474c-9d9e-7e31d0af6da0)
 
@@ -124,20 +124,23 @@ We want the player to be able to react to the bullets so we made the enemy range
 ## Movement/Physics - Dominic Quintero
 Our movement code is unique as we use the `CharacterController` component within Unity. We do not use the built-in physics system `(RigidBody)` provided by Unity; we are only provided collisions. This component essentially takes in a velocity and provides the following: collisions, climbing stairs, and a `isGrounded` variable, along with some of the standard unity collision functions such as `OnTriggerEnter()`. Nothing else is provided, which allows us to have a lot more freedom in implementing the player. The code in [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) can be summarized as creating a velocity vector that reflects forces we add, gravity, and user input.
 
-# Input Vector
+### Input Vector
 A common issue character controllers have is going down slopes. This is because you can't simply take the user's input directly as a velocity, it needs to be projected onto the floor of the player. The [ProcessInput()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#LL89C11-L89C11) function is where we correct this issue. To summarize, it created a plane with the ground surface normal, which allows us to properly project the input vector onto the surface.
 
-# Force Vector
+### Force Vector
 The force vector is how we simulate gravity when we have no gravity by default. The [Gravity()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#L192) function will process this vector and apply the current gravity settings to the player. When the player is grounded, the gravity must be set to '-0.5f' as a grounded value in order for the character controller component to properly detect if the player is grounded or not. An issue arises when we want to modify this vector; however, you cannot set the gravity to the grounded value on the same frame you want to do events such as jumping or knockback. To fix this, when someone wants to set the force velocity, we will skip the grounding statements so the character controller can process that the player is no longer grounded. The next frame will have an accurate IsGrounded value, and we can continue our calculations from there.
 
-# Velocity (Finalization)
+### Velocity (Finalization)
 Velocity is the finalized vector once the frame has completed its calculations. The finalized vector is `InputVelocity + ForceVelocity`. We then send this vector to the [Move()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#L84) function provided by the component. Once the component receives this vector, it will perform the collision calculations for us, allowing the players to move as if they were a rigidbody. However now we have a great degree of control and can expand upon the movement code when needed.
 
 ## Animation and Visuals
 
 **Assets Used:**
-Player:  [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
-Enemies: [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
+Player:    [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
+Enemies:   [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
+Weapons:   [Sci-Fi Weapons](https://devassets.com/assets/sci-fi-weapons/)
+Map:       [Big Star Station](https://www.unrealengine.com/marketplace/en-US/product/big-star-station)
+Particles: [Particle Pack (Made by Unity)](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325#content)
 
 **Player - Dominic Quintero**
 We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.
@@ -145,19 +148,19 @@ We have an animation abstraction, [CharacterAnimator.cs](https://github.com/abhi
 
 ## Input - Dominic Quintero
 
-# Input Configuration
+### Input Configuration
 The game can only be played with a keyboard and mouse. The current systems in place are incredibly `MousePosition` to `WorldPosition` heavy. We use this to our advantage by allowing the player to aim vertically up and down.
 
 Controls:
-    W - Forward
-    A - Left
-    S - Backward
-    D - Right
-    R - Reload
-    G - Grenade
-    Spacebar - Jetpack
-    Shift - Slide
-    Left Click - Fire
+    ⋅⋅* W - Forward
+    ⋅⋅* A - Left
+    ⋅⋅* S - Backward
+    ⋅⋅* D - Right
+    ⋅⋅* R - Reload
+    ⋅⋅* G - Grenade
+    ⋅⋅* Spacebar - Jetpack
+    ⋅⋅* Shift - Slide
+    ⋅⋅* Left Click - Fire
 
 ## Game Logic
 
@@ -167,18 +170,18 @@ Controls:
 
 ## Camera / Aiming / Shooting & Reloading - Dominic Quintero
 
-# Camera
+### Camera
 We didn't want the camera to be at a fixed location and follow the player. We wanted to immerse our players more by having the camera move where they aim, but this provided a challenge as one-to-one camera position + camera offset to the mouse's world position did not yield the desired results, and we wanted to keep the player within the camera at all times. Our approach, [CharacterCamera.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Camera/CharacterCamera.cs) allows for a radius of "play" within the player's radius. We calculate the normalized direction between the `PlayerPosition` and the `MouseWorldPosition` We get the current distance between these points and multiply the directional vector by this clamped distance, giving us our radius of play and our camera's point position. We can then customize this by setting the cameras local position and rotation within the player prefab with ease, the local position will be used as the cameras offset, giving us `CameraPosition = CameraPoint + CameraOffset` With this implementation, if we set the plane's position to the player's position, we can easily have the camera raise and fall with the player. Effectively keeping the player within the camera at all times, giving the player a region of "play", and adding that extra layer of immersion.
 
-# Aiming
+### Aiming
 Since the game is 3D, we wanted to take advantage of unused verticality 2D games normally don't have the luxury of. Depending on the cursors world position the player can aim up and down vertically. To visualize the vertical aiming we have two visual aids, the players circular half cursor and the lasersight. Within [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L212) We have a height tollerance that enables and disables vertiical aiming. This is so when the player is aiming on a flat surface, the game plays as you would expect any other 2D shooter game to play. Once this we exceed this flat threshold, vertical aiming takes over.
 
 The circular cursor serves as a subtle hint of when the player is vertically aiming or not. When they're not vertically aiming, the laser guide will go through the center of the cursor, signifying they currently can shoot directly infront of them. When vertical aiming is active, the laser guide will go straight to the center of the circular cursor.
 
 Vertical aiming brings about many edge cases that need to be solved inorder for clean and satisfying control of the player. We have a subtle aim assist that recalculates the aim direction to target what the cursor is pointing at. We also have to worry about the player being obstructed by walls because of the 3D verticallity, and so we fade colliders that are set to the Layer `Wall`. It attaches a component [Obstructable.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/Obstructable.cs) which fades the walls and changes the walls layer to a layer the camera ray will ignore, allowing for the player to play like normal and bring a "Diablo" feel to the game. The shader graph for the fade logic can be found within [Assets/Materials/Shaders/Fade.shadergraph](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Materials/Shaders/Fade.shadergraph).
 
-# Shooting & Reloading
-The system in place allows for quick and easy use of swapping between weapons and their individual SFX.
+### Shooting & Reloading
+The system in place allows for quick and easy swapping between weapons and their individual ammo values, intervals, and SFX. Functionally, [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs) functionally, it works as you would expect it to work in any other shooter game. You can't reload or shoot while reloading; shooting consumes ammo, and when reloading, you subtract from your available ammo pool and add it to your gun. To do this, the [Reload()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L158) function will calculate how many bullets the player currently has, and it will add the bullets within the player's clip upon reload + the ammo pool, preventing the loss of ammo during reloading. After reloading is finished, the `ScriptableObject` will have its ammo values updated. It is designed this way so players can drop guns to each other that have their own individual ammo counts and bullets within the clip. An example scenario: Giving a friend a weapon you reloaded and slightly used and then giving it to them. They will have the left-over bullets within the clip.
 
 ## Cross-Platform
 
@@ -187,6 +190,9 @@ The system in place allows for quick and easy use of swapping between weapons an
 ## Audio
 
 **List your assets including their sources and licenses.**
+[Main Menu Theme](https://freesound.org/people/rhodesmas/sounds/321723/)
+[JetPack Loop](https://freesound.org/people/Mozfoo/sounds/458377/)
+[JetPack Launch](https://freesound.org/people/Jarusca/sounds/521377/)
 
 **Describe the implementation of your audio system.**
 

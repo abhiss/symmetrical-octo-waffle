@@ -4,7 +4,7 @@
 
 **Symmetrical Octo Waffle**
 
-Created by
+Created by Dominic Quintero, Jackie Trinh, Edward John, Yudi Lai, Abhi Sohal, Atharav Samant, Jared Givens, Catherine Win
 
 In our sci-fi top-down multiplayer shooter, you and your team assume the role of skilled "Mercenaries" tasked with clearing out spaceships for bounties. Whether you venture solo, embracing the high-risk, high-reward nature, or join forces with friends, you'll explore abandoned or over-ridden spaceships. The core gameplay revolves around earning experience points (XP) and gold to enhance your character's abilities, stats, and acquire cosmetic items or temporary power-ups, enriching your runs. The key attraction lies in the race against time and efficiency. The faster and more effectively you navigate through a spaceship, the greater the rewards. As you progress, the challenge escalates, with each subsequent floor of the ship presenting tougher adversaries and obstacles. Players can opt to leave with their loot or risk going deeper for better rewards. Eventually, the ship will end and you will come in contact with a boss. Once you beat the boss the players will be rewarded with customized loot that matches the boss they killed.
 

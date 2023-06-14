@@ -463,6 +463,7 @@ namespace ProcGen
         BuildRoom(room);
         room.GO.transform.parent = _config.GO.transform;
       }
+      _config.GO.transform.position = new Vector3(-12, 0, -12);
       // var surface = _config.GO.GetComponent<Unity.AI.Navigation.NavMeshSurface>();
       // surface.BuildNavMesh();
       // foreach (Room room in _rooms)

@@ -162,7 +162,7 @@ MonoBehaviour:
   _targetMask:
     serializedVersion: 2
     m_Bits: 64
-  _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
+  _deathExplosion: {fileID: 1827493406786650123, guid: 9ba11062fb3894e72b7eb8fdb1aeb6f6,
     type: 3}
   _projectile: {fileID: 5861042749653411772, guid: 513e98568229140009d0f6721fcdc960,
     type: 3}

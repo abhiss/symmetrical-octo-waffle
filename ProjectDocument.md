@@ -193,7 +193,7 @@ We didn't want the camera to be at a fixed location and follow the player. We wa
 ### Aiming
 Since the game is 3D, we wanted to take advantage of the verticality 2D games normally don't have the luxury of. Depending on the cursors world position the player can aim up and down vertically. To visualize the vertical aiming we have two visual aids, the players circular half cursor and the lasersight. Within [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L212) We have a height tollerance that enables and disables vertiical aiming. This is so when the player is aiming on a flat surface, the game plays as you would expect any other 2D shooter game to play. Once this we exceed this flat threshold, vertical aiming takes over.
 
-The circular cursor serves as a subtle hint of when the player is vertically aiming or not. When they're not vertically aiming, the laser guide will go through the center of the cursor, signifying they currently can shoot directly infront of them. When vertical aiming is active, the laser guide will go straight to the center of the circular cursor.
+The circular cursor serves as a subtle hint of when the player is vertically aiming or not. When they're not vertically aiming, the laser guide will go through the center of the cursor, signifying they currently can shoot directly infront of them. When vertical aiming is active, the laser guide will go straight to the center of the circular cursor. The cursor image was hand drawn.
 
 Vertical aiming brings about many edge cases that need to be solved inorder for clean and satisfying control of the player. We have a subtle aim assist that recalculates the aim direction to target what the cursor is pointing at. We also have to worry about the player being obstructed by walls because of the 3D verticallity, and so we fade colliders that are set to the Layer `Wall`. It attaches a component [Obstructable.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/Obstructable.cs) which fades the walls and changes the walls layer to a layer the camera ray will ignore, allowing for the player to play like normal and bring a "Diablo" feel to the game. The shader graph for the fade logic can be found within [Assets/Materials/Shaders/Fade.shadergraph](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Materials/Shaders/Fade.shadergraph).
 
@@ -212,7 +212,9 @@ The system in place allows for quick and easy swapping between weapons and their
 - [JetPack Loop](https://freesound.org/people/Mozfoo/sounds/458377/)
 - [JetPack Launch](https://freesound.org/people/Jarusca/sounds/521377/)
 - [Sci-Fi Reload](https://freesound.org/people/SonoFxAudio/sounds/679546/)
-- [Bullet Shot](https://pixabay.com/sound-effects/086553-bullet-hit-39853/)
+- [Bullet Shot](https://pixabay.com/sound-effects/semiautorifleshotwav-14725/)
+- [Ammo Pickup](https://freesound.org/people/Dpoggioli/sounds/213607/)
+- jumpjet_landing was created by us (via Food falling onto a book)
 
 **Describe the implementation of your audio system.**
 

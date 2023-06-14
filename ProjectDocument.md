@@ -103,13 +103,20 @@ We want the player to be able to react to the bullets so we made the enemy range
 ## Game Design - Catherine Win
 
 [Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
+
 [Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)
+
 [DustCloud](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/DustCloud.prefab)
+
 [JetPack vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/JetPack.vfx)
+
 [Muzzle Flash vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/MuzzleFlash.vfx)
+
 [Smoke vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/Smoke.vfx)
+
 [Weapon Pickup](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterWeaponPickUp.cs)
-https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterShooting.cs
+
+[Shooting](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterShooting.cs)
 ## User Interface
 
 **Describe your user interface and how it relates to gameplay. This can be done via the template.**

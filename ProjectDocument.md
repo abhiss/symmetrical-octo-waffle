@@ -104,13 +104,13 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 [Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
 
-[Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)
+[Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)    
+[Muzzle Flash vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/MuzzleFlash.vfx)
+![muzzleflash](https://github.com/abhiss/symmetrical-octo-waffle/assets/129975299/f6d178dc-c45d-474c-9d9e-7e31d0af6da0)
 
 [DustCloud](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/DustCloud.prefab)
 
 [JetPack vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/JetPack.vfx)
-
-[Muzzle Flash vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/MuzzleFlash.vfx)
 
 [Smoke vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/Smoke.vfx)
 

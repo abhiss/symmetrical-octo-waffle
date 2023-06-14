@@ -27,15 +27,8 @@ public class GrenadeThrower : NetworkBehaviour
 
         if (_inputListener.GrenadeKey && Time.time >= lastGrenadeThrowTime + GrenadeThrowCooldown && GrenadeCount > 0)
         {
-            Vector3 cursorPosition = _inputListener.CursorWorldPosition();
-
-            if (cursorPosition == Vector3.zero)
-            {
-                // Invalid throw
-                return;
-            }
-
             // Calculate trajectory
+            Vector3 cursorPosition = _inputListener.CursorWorldPosition();
             LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxGrenadeHeight);
             throwGrenadeServerRpc(launchData.InitalVelocity);
 

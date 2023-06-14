@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.VFX;
 using Unity.Netcode;
 using System;
+using Shared;
+using TMPro;
+using Newtonsoft.Json;
 
 public class CharacterShooting : NetworkBehaviour
 {
@@ -47,12 +50,16 @@ public class CharacterShooting : NetworkBehaviour
 
     [Header("Debugging")]
     public bool EnableDebugging = true;
-
+    public float  Health { get; private set; }
     private NetworkVariable<bool> n_muzzleFlashEnabled = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    private TMP_Text healthtext;
+    private HealthSystem health;
 
     private void Start()
     {
 
+        health = GetComponent<HealthSystem>();
         // Weapon Init
         CurrentWeapon.CurrentClipSize = CurrentWeapon.MaxClipSize;
         CurrentWeapon.CurrentAmmo = CurrentWeapon.MaxAmmo - CurrentWeapon.MaxClipSize;
@@ -71,6 +78,14 @@ public class CharacterShooting : NetworkBehaviour
         _playerAudioSrc = gameObject.AddComponent<AudioSource>();
 
         if (!IsOwner) return;
+        health.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => {
+            if (args.newHealth <= 0)
+            {
+                GlobalNetworkManager.Instance.OnPlayerDied();
+            }
+        });
+        var healthboxObj = GameObject.Find("HealthbarTextbox");
+        healthtext = healthboxObj.GetComponentInChildren<TMP_Text>();
     }
 
     private void Update()
@@ -82,6 +97,10 @@ public class CharacterShooting : NetworkBehaviour
                 _muzzleFlash.enabled = next;
             };
             return;
+        }
+        if (healthtext is not null && CurrentWeapon is not null)
+        {
+            healthtext.text = $"HP: {health.CurrentHealth}/{health.MaxHealth}\nAmmo: {CurrentWeapon.CurrentAmmo}/{CurrentWeapon.MaxAmmo}";
         }
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
         AimDirection = GetAimDirection(cursorPosition);

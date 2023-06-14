@@ -127,7 +127,9 @@ public class JetPack : NetworkBehaviour
         _targetIntensity = JetPackLightIntensity;
         JetpackVFX_L.SendEvent(VisualEffectAsset.PlayEventID);
         JetpackVFX_R.SendEvent(VisualEffectAsset.PlayEventID);
-        _audioSrc.PlayOneShot(LaunchClip);
+        if(_audioSrc != null){
+            _audioSrc.PlayOneShot(LaunchClip);
+        }
         LoopSound();
     }
 

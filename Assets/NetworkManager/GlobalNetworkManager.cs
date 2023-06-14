@@ -149,7 +149,7 @@ public class GlobalNetworkManager : NetworkBehaviour
 
     void OnClientConnected(ulong clientid)
     {
-        if (NetworkManager.LocalClientId != clientid) return;
+        if (NetworkManager.Singleton.LocalClientId != clientid) return;
         Debug.Log("Client: Connected to server");
         mapgen();
     }
@@ -170,5 +170,25 @@ public class GlobalNetworkManager : NetworkBehaviour
     public int GetConnectedPlayersCount()
     {
         return 2;
+    }
+
+    [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
+    public void OnPlayerDiedServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        ReloadSceneClientRpc();
+    }
+
+    [ClientRpc]
+    public void ReloadSceneClientRpc()
+    {
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.UnloadSceneAsync(currentSceneName);
+        SceneManager.LoadSceneAsync(currentSceneName);
+    }
+
+    public void OnPlayerDied()
+    {
+        OnPlayerDiedServerRpc();
+        Debug.Log("Player died");
     }
 }

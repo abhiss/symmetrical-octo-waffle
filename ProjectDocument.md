@@ -114,17 +114,19 @@ First, I constructed a muzzle cone and planes to ensure that the effect could be
 
 Aside from muzzle effects, I also created various types of smoke particles that can be seen when a player dashes or jumps. Similarly, I constructed the design of the smoke using Blender and imported them into Unity where I utilized the VFX graph system. Then, I can adjust the parameters like spawn rate, angle alignment, lifespan and more to achieve the desired visual outcomes. Additionally, I have created the smoke trail and landing particle effect which have not been integrated into the game yet.
 
-[Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
-
-[DustCloud](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/DustCloud.prefab)
-
-[JetPack vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/JetPack.vfx)
+[Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)  [JetPack vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/JetPack.vfx)    [DustCloud](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/DustCloud.prefab)
 
 [Smoke vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/Smoke.vfx)
+![smoke](https://github.com/abhiss/symmetrical-octo-waffle/assets/129975299/67f32907-c582-43a8-8516-55eeb46e4295)
 
-[Weapon Pickup](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterWeaponPickUp.cs)
+Furthermore, I implemented a system for weapon pick up, drop, and inventory management to enhance the gameplay experience as well as shooting and reloading. Players can interact with weapons scattered throughout the game world, picking them up and adding them to their inventory. I designed a script that enables smooth weapon transitions, allowing players to seamlessly switch between different weapons. The script also manages the dropping of weapons when the player decides to discard them or replace them with a different weapon from their inventory.
 
-[Shooting](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterShooting.cs)
+When a player enters the trigger zone of the game object and remains inside, [CharacterWeaponPickup.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterWeaponPickUp.cs) detects it through the `OnTriggerStay` function. It sets a boolean flag, `isPlayerInside`, to indicate that a player is present. Additionally, it retrieves the `CharacterShooting` component from the player, storing it in the `characterShooting` variable. If the player exits the trigger zone, the `OnTriggerExit` function is called. Here, the `isPlayerInside` flag is reset to 'false', and the `characterShooting` variable is cleared. During each frame update, the script applies two visual effects to the game object. First, it creates a hovering effect by slightly adjusting the object's vertical position using a sine wave calculation. This is done to make the pickup visually appealing. Second, it rotates the object around the Y-axis at a specified speed, causing it to spin. If a player is inside the trigger zone and presses the "E" key, it assumes that the player has a `CharacterShooting` component and calls its `ChangeWeapon` function. This function likely handles the logic to switch the player's current weapon to the assigned `SniperWeapon`. After the weapon change, the script destroys the pickup object, removing it from the scene.
+In summary, the script enables players to pick up a weapon by interacting with the game object. When a player is nearby and presses the designated key, their current weapon is swapped with the sniper weapon defined in the script. The object also features visual effects such as hovering and spinning to make it visually appealing.
+
+
+[CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterShooting.cs)
+
 ## User Interface
 
 **Describe your user interface and how it relates to gameplay. This can be done via the template.**

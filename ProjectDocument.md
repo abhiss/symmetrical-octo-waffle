@@ -85,9 +85,6 @@ Multiplyer logic: We make sure the enemy still behave accordingly when the curre
 
 **Final enemy that made into the game:**
 
---Edward add melee and explosion  enemy logic here------
-
-
 Yudi's implementation on the AssultEnemy(range enemy) uses same statemachine structure from early unrefactored version of Edward's melee enemy. The patrol and idle is basically the same, where idle immediately goes to patrol and the enemy wonder around. The enemy shoots bullets at the player, when the player is air born the projectile travel 3 times the normal speed because air born player is harder to hit and it looks cooler. When player is out of sight, the Assult Enemy will enter the chase state to reposition until having a clear signline once again. The sightline can only be blocked by the wall and not other enemy, since the bullet doesn't collide with other enemy.The sightline is check using `SphereCast` while normal detection uses `OverlapSphere` so it keeps targeting player in air. To adjust for multiplayer the Assult/Range Enemy have the following behavior: The enemy immediately goes to idle then patrol once the player dies and start the detection cycle all over again. The Enemy will also target the closest player during attack and
 chase stage.
 
@@ -110,20 +107,6 @@ The implementation for striker and titan was cut short and unfinished after othe
 
 [Assult Enemy logic](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/RangeEnemyController.cs#L11)
 
-
-**Dominic's Conttibution:**
-[State machine in one script with states in enum and handler function](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/BaseEnemy.cs#L12)
-[Interface for the the statemachine](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/IEnemyMachine.cs#L3)
-
-
-**Edward's Contribution:**
-
-## Enemy Design - Yudi Lai & Edward John
-
-
-**This Role's main task is designing and implementing the logical behavior of enemies. This role's work is related to the topic related to game feel topic of the class.**
-
-
 We end up making the decign choose to only have robot/mecha type enemy for our space themed game. This means that we won't have organic monster type like `Titan`. we also choose to remove `Striker` enemy that's to tiny for player to see and it's poorly animated.
 
 
@@ -131,6 +114,59 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 **Contribution from Yudi Lai**
 [EnemyBullet](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/EnemyBullet.cs#L7)
+
+**Dominic's Conttibution:**
+[State machine in one script with states in enum and handler function](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/BaseEnemy.cs#L12)
+[Interface for the the statemachine](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/IEnemyMachine.cs#L3)
+
+**Edward's Contribution:**
+[Refactored and bugfixed AI](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/Enemy.cs)
+[AI for Explo Droid](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/ExploDroid.cs)
+[AI for Melee Droid](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/MeleeDroid.cs)
+
+## Enemies: Edward John
+I am responsible for the MeleeDroid, ExploDroid, and Enemy Spawner. Earlier in development, Yudi was responsible for AI while I worked on the enemy prefabs, models, animators, sfx, vfx, and interaction logic (taking damage, dealing damage, basically core game logic you'd see in a base enemy script). However, in the later stages of development, we ended up just working on our own enemies because we wanted to implement our own enemies. We ended up learning from each other and borrowing each others responsibilities here and there.
+
+Enemy Logic:
+---
+My primary responsibility in enemy logic was to handle how the enemy interacted with the player. It called the right functions when taking damage or dying, handled target acquisitions through a hitbox made by OverlapCube, detected targets using OverlapSphere, and slowed down or sped up based on its state. Some of these sound like AI concepts, which is because they are; Yudi and I iteratively built on the AI, and many of the changes I made to AI were only able to be made due to his previous implementations of them. Anything that has to do with enemy movement can be attributed to him, and much of the targeting logic and state transition logic was based off his work.
+
+An Enemy's life generally follows this process.
+1. Spawn from EnemySpawner
+2. Patrol around a patrol radius (OR immediately start chasing the enemy if the option is enabled)
+3. Chase the player if they're in detection radius
+4. Attack the player if they're in our hitbox created by overlapcube ()
+    - If we're still in range, keep attacking
+    - If we're not in range, start chasing
+5. Die in an explosion now that the player shot us to death
+OR
+5. Kill the player and start patrolling again, looking for the next target
+
+**Scripts**
+- [Enemy.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/Enemy.cs)
+- [MeleeDroid.cs]((https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/MeleeDroid.cs))
+- [ExploDroid.cs]((https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/ExploDroid.cs))
+
+
+Enemy SFX/VFX:
+---
+There was no dedicated sound manager for our enemies, but I still went ahead and implemented sounds. I went into Audacity for the majority of these sound effects to trim them, adjust their pitch, change their tempo, or boost their amplitude. You'll get to hear a sound when a droid dies, a droid gets hurt, when an explo droid detonates, when a melee droid hits, and when a melee droid misses. Our sound design was unpolished at the end so many of these sounds kinda get overshadowed by the player sounds, but when you hear it, it definitely gives some audio feedback for the player's actions.
+
+I also implemented the death explosion upon droid death and hit sparks. The death explosion was just a modified version of the regular explosion prefab with a less showy particle system. Hit sparks were instantiated on enemies as a take damage event from a health system. A bit of particle system tweaking was required to make sure that hit sparks were visible (but not distracting), lasted for the right amount of time, and emitted for the right amount of time.
+
+
+Enemy Models/Animations
+---
+We used droid assets from the unity asset store. I set up the prefabs and animators for titan (unimplemented), melee droid, and explodroid. This included setting up components and linking animator logic to our state machine logic (a LOT of debugging went into this to make it look good). We also ended up using animation events for our enemy attacks over coroutines after Yudi got the idea from an office hours session.
+
+- [Assault Droids](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
+
+Enemy Spawner
+---
+The enemy spawner works by randomly spawning enemies based on a spawn chance in intervals. There are public methods available to remove and add enemy spawns during gameplay, but these were never used in practice. The enemy spawner normalizes spawn rates to make sure they're always logical values in proper ratios, so even a misinput on an enemy spawner spawn rate would fix itself.
+
+- [EnemySpawner.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/EnemySpawner.cs)
+
 
 ## Game Design - Catherine Win & Jackie Trinh
 
@@ -275,6 +311,21 @@ Grenade: Attached to the grenade object, this script handles the lifecycle of a 
 
 Explosion: The explosion script comes into play when a grenade detonates. It plays an explosion sound effect via an AudioSource component for auditory feedback and instigates a camera shake for visual feedback, providing a more immersive experience for the player. The explosion also includes a mechanism for dealing damage to targets within a specific radius. By using the Physics.OverlapSphere function, the script gathers all colliders within the explosion's radius and checks if they are valid targets based on their tags ("Player", "Enemy", or "Destructible"). If valid, the HealthSystem component of the target is accessed, and damage is applied. After a specified duration, the explosion object is destroyed, clearing it from the scene. After the explosion happens and if it hits a valid target, this script shakes the main character's camera. This is where it calls the ShakeCamera method from the CharacterCamera class. It's a neat little touch that adds a lot to the game's feel, making the explosion more intense and real. So, when an explosion goes off near the player, the camera shakes, giving the player a sense of impact from the explosion.
 
+## Hazards - Edward John
+I implemented Explosive Barrel, Floor Trap, and Turret (along with its energy projectile). Many of the particles came from the asset store and just needed some minor tweaking, but sounds required a bit of online shopping and some audio editing. SFX that fit the object they're associated with it are crucial for game feel. A floor trap in space will play a laser-like sound effect, and a turret will plan a beeping detection noise while a player is in its radius then shoot an energy projectile that explodes on collision or after a travel time.
+- Explosive Barrel: Spawns an explosion after dying.
+- Floor Trap: Deals damage to players while they stay on it.
+- Turret: Shoots projectiles at players in its detection radius with a cooldown. Accounts for scenarios with multiple players, focusing on a target even if another target might enter its radius.
+
+**Scripts**
+- [Floor Trap](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Hazards/FloorTrap.cs)
+- [Turret](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Hazards/Turret.cs)
+- [Energy Projectile](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Hazards/EnergyProjectile.cs)
+
+**Model Sources**
+- [Floor Trap](https://assetstore.unity.com/packages/3d/props/interior/dungeon-floor-traps-77765)
+- [Turret](https://assetstore.unity.com/packages/3d/props/guns/laser-turret-36177)
+- [Explosion](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
  
 ## Cross-Platform
 
@@ -290,6 +341,19 @@ Explosion: The explosion script comes into play when a grenade detonates. It pla
 - [Sci-Fi Reload](https://freesound.org/people/SonoFxAudio/sounds/679546/)
 - [Bullet Shot](https://pixabay.com/sound-effects/semiautorifleshotwav-14725/)
 - [Ammo Pickup](https://freesound.org/people/Dpoggioli/sounds/213607/)
+
+**Enemy SFX Sources**
+- [Droid Death](https://freesound.org/people/bareform/sounds/218721/)
+- [Droid Hurt](https://freesound.org/people/Hanbaal/sounds/178659/)
+- [MeleeDroid Hit](https://freesound.org/people/ethanchase7744/sounds/441666/)
+- [MeleeDroid Miss](https://freesound.org/people/EminYILDIRIM/sounds/541210/)
+- [ExploDroid Detonate](https://freesound.org/people/snakebarney/sounds/138108/)
+
+**Hazard SFX Sources**
+- [Floor Trap](https://freesound.org/people/The-Sacha-Rush/sounds/657817/ )
+- [Turret](https://freesound.org/people/NicholasJudy567/sounds/673841/)
+- [Electric Projectile](https://freesound.org/people/FeliUsers/sounds/682068/)
+- [Explosion](https://freesound.org/people/SuperSouper/sounds/684754/)
 
 **Describe the implementation of your audio system.**
 

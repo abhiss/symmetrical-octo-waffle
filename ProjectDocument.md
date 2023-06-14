@@ -15,6 +15,8 @@ In our sci-fi top-down multiplayer shooter, you and your team assume the role of
 
 **If you did work that should be factored in to your grade that does not fit easily into the proscribed roles, add it here! Please include links to resources and descriptions of game-related material that does not fit into roles here.**
 
+**Dominic Quintero**: [IInteractable](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/IInteractable.cs) and [InteractableTerminal](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/TerminalInteractable.cs). We were unable to incorporate and expand upon this system in our game, but I created an intercatable system so when a user pressed their `UseKey`, they will activate events that are linked to the Terminal script.
+
 **Yudi Lai**: [Item Spawner](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Environment/ItemSpawner.cs#L6) in `Team Fortress 2` style, a disk that spawn item on top, and spawn item only when the timer is reached and there are no item on top.
 
 **Catherine Win**: Networking - Responsible for network setup like starting the game as a host and establishing connections between clients, host and server, manage the spawning of networked GameObjects like players, enemy spawner so that a player GameObject is automatically spawned for each client in the game.
@@ -184,12 +186,16 @@ The sliding (intenerally named as [Dash.cs](https://github.com/abhiss/symmetrica
 ## Animation and Visuals
 
 **Assets Used:**
-- Player:    [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
-- Enemies:   [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
-- Weapons:   [Sci-Fi Weapons](https://devassets.com/assets/sci-fi-weapons/)
-- Map:       [Big Star Station](https://www.unrealengine.com/marketplace/en-US/product/big-star-station)
-- Particles: [Particle Pack (Made by Unity)](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325#content)
-- Main Menu: [Power Supply](https://www.turbosquid.com/3d-models/free-sci-fi-power-supply-3d-model/1141036) and [Searchlight](https://www.turbosquid.com/3d-models/free-max-mode-beam-emitter/675838)
+- Player:        [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
+- Enemies:       [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
+- Weapons:       [Sci-Fi Weapons](https://devassets.com/assets/sci-fi-weapons/)
+- Map:           [Big Star Station](https://www.unrealengine.com/marketplace/en-US/product/big-star-station)
+- Particles:     [Particle Pack (Made by Unity)](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325#content)
+- Main Menu:
+    - [Power Supply](https://www.turbosquid.com/3d-models/free-sci-fi-power-supply-3d-model/1141036)
+    - [Searchlight](https://www.turbosquid.com/3d-models/free-max-mode-beam-emitter/675838)
+    - [Helmet](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/free-animated-space-man-61548)
+- Interactables: [Sci-fi Terminal](https://sketchfab.com/3d-models/sci-fi-terminal-9a9343dd76d848318d09badba8606a63)
 
 **Player - Dominic Quintero**
 We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.

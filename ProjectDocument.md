@@ -256,9 +256,25 @@ The system in place allows for quick and easy swapping between weapons and their
 
 **Summarize the key findings from your gameplay tests.**
 
-## Narrative Design
+## Narrative Design - Catherine Win
 
-**Document how the narrative is present in the game via assets, gameplay systems, and gameplay.**
+“Octo” is an action-packed sci-fi top-down multiplayer shooter set in a vast universe filled with abandoned and overrun spaceships. As a team of skilled mercenaries, players take on perilous missions to cleanse these derelict vessels of threats and secure valuable bounties. With the option to venture solo or team up with friends, players will navigate treacherous environments, level up their characters, and acquire powerful loot while facing escalating challenges and formidable boss encounters.
+
+Storyline: In the distant future, humanity has colonized various star systems, establishing trade routes and expanding its reach across the cosmos. However, this expansion has left behind a trail of abandoned and decaying spaceships that have become breeding grounds for deadly creatures and rogue artificial intelligences. To maintain order and ensure the safety of future explorers, an elite group of mercenaries emerges.
+
+Gameplay Mechanics:
+1. Team Coordination: Players can assemble a team up to tackle missions together, strategizing and coordinating their efforts to maximize efficiency and survival chances.
+
+2. Risk vs. Reward: Mercenaries can choose to venture alone, embracing high-risk scenarios for potentially greater rewards. Alternatively, teaming up with friends provides additional firepower and support but comes with a more balanced risk profile.
+
+3. Character Progression: As players successfully complete missions, they earn experience points (XP) and gold, which can be used to level up their characters. Leveling up unlocks new abilities, enhances existing skills, and improves stats, making mercenaries more formidable in combat.
+
+
+5. Procedurally Generated Ships: Each spaceship presents a dynamically generated layout, ensuring a unique experience with every playthrough. As players reach deeper into the ship's levels, the difficulty ramps up, demanding greater skill and coordination from the team.
+
+6. Boss Battles and Loot: At the heart of each vessel lies a formidable boss encounter. Successfully defeating these challenging adversaries grants players access to unique, customized loot, matching the boss's thematic design and providing powerful enhancements or rare items.
+
+Octo offers an engaging narrative-driven multiplayer experience set in a vast sci-fi universe. By blending cooperative gameplay, character progression, and high-stakes decision-making, the game offers challenging and rewarding gameplay loops. Explore abandoned spaceships, face off against menacing bosses, and acquire powerful loot.
 
 ## Press Kit and Trailer
 

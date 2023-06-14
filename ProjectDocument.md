@@ -198,7 +198,6 @@ The sliding (intenerally named as [Dash.cs](https://github.com/abhiss/symmetrica
 - Interactables: [Sci-fi Terminal](https://sketchfab.com/3d-models/sci-fi-terminal-9a9343dd76d848318d09badba8606a63)
 
 **Player - Dominic Quintero**
-----
 We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.
 We have an animation abstraction, [CharacterAnimator.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterAnimator.cs) that is a component listens to all the various character events that need animations. We try as much as possible to keep animation code and gameplay code seperate, as we never planned on the player code being heavily reliant on the animator states.
 

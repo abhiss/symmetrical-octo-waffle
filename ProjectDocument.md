@@ -102,11 +102,19 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 ## Game Design - Catherine Win
 
-[Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
+I have implemented a captivating game design that combines immersive particle effects and interactive mechanics to enhance the player experience. Using Blender, I have designed visually stunning particles such as muzzle flash, smoke, and various other effects that add a realistic touch to the gameplay.
+
+First, I constructed a muzzle cone and planes to ensure that the effect could be viewed from all angles within the game. Next, I crafted a series of particle systems that simulate the smoke, sparks, and flashes typically seen when a weapon is fired. To fine-tune the visual elements, I utilized Unity's VFX graph, which allowed me to easily adjust parameters such as particle size, angle, and lifespan. With these adjustments, I successfully achieved the desired aesthetic effects for the muzzle.
 
 [Muzzle](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/Muzzle.blend)
+
 [Muzzle Flash vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/MuzzleFlash.vfx)
 ![muzzleflash](https://github.com/abhiss/symmetrical-octo-waffle/assets/129975299/f6d178dc-c45d-474c-9d9e-7e31d0af6da0)
+
+
+Aside from muzzle effects, I also created various types of smoke particles that can be seen when a player dashes or jumps. Similarly, I constructed the design of the smoke using Blender and imported them into Unity where I utilized the VFX graph system. Then, I can adjust the parameters like spawn rate, angle alignment, lifespan and more to achieve the desired visual outcomes. Additionally, I have created the smoke trail and landing particle effect which have not been integrated into the game yet.
+
+[Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
 
 [DustCloud](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/DustCloud.prefab)
 

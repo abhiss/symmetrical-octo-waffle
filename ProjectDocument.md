@@ -151,11 +151,11 @@ The sliding (intenerally named as [Dash.cs](https://github.com/abhiss/symmetrica
 ## Animation and Visuals
 
 **Assets Used:**
-Player:    [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
-Enemies:   [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
-Weapons:   [Sci-Fi Weapons](https://devassets.com/assets/sci-fi-weapons/)
-Map:       [Big Star Station](https://www.unrealengine.com/marketplace/en-US/product/big-star-station)
-Particles: [Particle Pack (Made by Unity)](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325#content)
+- Player:    [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
+- Enemies:   [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
+- Weapons:   [Sci-Fi Weapons](https://devassets.com/assets/sci-fi-weapons/)
+- Map:       [Big Star Station](https://www.unrealengine.com/marketplace/en-US/product/big-star-station)
+- Particles: [Particle Pack (Made by Unity)](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325#content)
 
 **Player - Dominic Quintero**
 We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.
@@ -169,15 +169,15 @@ The game can only be played with a keyboard and mouse. The current systems in pl
 We had plans for input reconfiguration via a settings menu via [InputListener.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Character/InputListener.cs), but we were not able to implement this feature in time.
 
 ### Controls:
-⋅⋅* W - Forward
-⋅⋅* A - Left
-⋅⋅* S - Backward
-⋅⋅* D - Right
-⋅⋅* R - Reload
-⋅⋅* G - Grenade
-⋅⋅* Spacebar - Jetpack
-⋅⋅* Shift - Slide
-⋅⋅* Left Click - Fire
+- W - Forward
+- A - Left
+- S - Backward
+- D - Right
+- R - Reload
+- G - Grenade
+- Spacebar - Jetpack
+- Shift - Slide
+- Left Click - Fire
 
 ## Game Logic
 

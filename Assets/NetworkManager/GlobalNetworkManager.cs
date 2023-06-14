@@ -79,6 +79,7 @@ public class GlobalNetworkManager : NetworkBehaviour
 
     private void mapgen()
     {
+        Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
         if (IsServer)
         {
             procGenSeed.Value = new System.Random().Next();
@@ -93,9 +94,11 @@ public class GlobalNetworkManager : NetworkBehaviour
         Debug.Log("Map seed: " + config.Seed);
         var generator = new Generator();
         generator.Generate(config);
-        foreach (var obj in generator.NetworkObjects)
-        {
-            obj.Spawn();
+        if(IsServer){
+            foreach (var obj in generator.NetworkObjects)
+            {
+                obj.Spawn();
+            }
         }
     }
 

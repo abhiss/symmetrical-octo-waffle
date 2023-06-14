@@ -20,11 +20,11 @@ In our sci-fi top-down multiplayer shooter, you and your team assume the role of
 
 Your goal is to relate the work of your role and sub-role in terms of the content of the course. Please look at the role sections below for specific instructions for each role.
 
-Below is a template for you to highlight items of your work. These provide the evidence needed for your work to be evaluated. Try to have at least 4 such descriptions. They will be assessed on the quality of the underlying system and how they are linked to course content. 
+Below is a template for you to highlight items of your work. These provide the evidence needed for your work to be evaluated. Try to have at least 4 such descriptions. They will be assessed on the quality of the underlying system and how they are linked to course content.
 
 *Short Description* - Long description of your work item that includes how it is relevant to topics discussed in class. [link to evidence in your repository](https://github.com/dr-jam/ECS189L/edit/project-description/ProjectDocumentTemplate.md)
 
-Here is an example:  
+Here is an example:
 *Procedural Terrain* - The background of the game consists of procedurally-generated terrain that is produced with Perlin noise. This terrain can be modified by the game at run-time via a call to its script methods. The intent is to allow the player to modify the terrain. This system is based on the component design pattern and the procedural content generation portions of the course. [The PCG terrain generation script](https://github.com/dr-jam/CameraControlExercise/blob/513b927e87fc686fe627bf7d4ff6ff841cf34e9f/Obscura/Assets/Scripts/TerrainGenerator.cs#L6).
 
 You should replay any **bold text** with your relevant information. Liberally use the template when necessary and appropriate.
@@ -61,7 +61,7 @@ chase stage.
 
 
 **Yudi's Contribution:**
-Development Timeline: statemachine(unused) -> stiker(new feature:attack and dealing damage to player)(unused) -> Titan(new feature: agro on player when hit and use animator event for attack)(unused) ->|player now have jackpack and knowckback system broke| ->  AssultEnemy( new feature: target on closest player, reposition when player go out of sight, target enemy in air, attack in range)   
+Development Timeline: statemachine(unused) -> stiker(new feature:attack and dealing damage to player)(unused) -> Titan(new feature: agro on player when hit and use animator event for attack)(unused) ->|player now have jackpack and knowckback system broke| ->  AssultEnemy( new feature: target on closest player, reposition when player go out of sight, target enemy in air, attack in range)
 
 [Original State machine abstract class](https://github.com/abhiss/symmetrical-octo-waffle/blob/b8a8c090a95175cd3142bfb7757cf7ac053b8a63/Assets/Scripts/Enemy/State.cs#L6)
 
@@ -79,7 +79,7 @@ The implementation for striker and titan was cut short and unfinished after othe
 [Assult Enemy logic](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/RangeEnemyController.cs#L11)
 
 
-**Domonic's Conttibution:**
+**Dominic's Conttibution:**
 [State machine in one script with states in enum and handler function](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/BaseEnemy.cs#L12)
 [Interface for the the statemachine](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/DominicAI/IEnemyMachine.cs#L3)
 
@@ -92,7 +92,7 @@ The implementation for striker and titan was cut short and unfinished after othe
 **This Role's main task is designing and implementing the logical behavior of enemies. This role's work is related to the topic related to game feel topic of the class.**
 
 
-We end up making the decign choose to only have robot/mecha type enemy for our space themed game. This means that we won't have organic monster type like `Titan`. we also choose to remove `Striker` enemy that's to tiny for player to see and it's poorly animated. 
+We end up making the decign choose to only have robot/mecha type enemy for our space themed game. This means that we won't have organic monster type like `Titan`. we also choose to remove `Striker` enemy that's to tiny for player to see and it's poorly animated.
 
 
 We want the player to be able to react to the bullets so we made the enemy range attack in projectile instead of hitscan in raycast similar to player. This way the player will have fun dodging it. We also add the bullet trail so it's easier for player to see and dodge accordingly. When the bullet collide with most object, we made it destory itslef and spawn a spark effect. This add onto the hint that help player knows it's being hit if they see a spark effect on their character. We also made the bullet avoid collision between themselves and any other enemy on purpose.
@@ -121,27 +121,64 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 **Describe your user interface and how it relates to gameplay. This can be done via the template.**
 
-## Movement/Physics
+## Movement/Physics - Dominic Quintero
+Our movement code is unique as we use the `CharacterController` component within Unity. We do not use the built-in physics system `(RigidBody)` provided by Unity; we are only provided collisions. This component essentially takes in a velocity and provides the following: collisions, climbing stairs, and a `isGrounded` variable, along with some of the standard unity collision functions such as `OnTriggerEnter()`. Nothing else is provided, which allows us to have a lot more freedom in implementing the player. The code in [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) can be summarized as creating a velocity vector that reflects forces we add, gravity, and user input.
 
-**Describe the basics of movement and physics in your game. Is it the standard physics model? What did you change or modify? Did you make your movement scripts that do not use the physics system?**
+# Input Vector
+A common issue character controllers have is going down slopes. This is because you can't simply take the user's input directly as a velocity, it needs to be projected onto the floor of the player. The [ProcessInput()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#LL89C11-L89C11) function is where we correct this issue. To summarize, it created a plane with the ground surface normal, which allows us to properly project the input vector onto the surface.
+
+# Force Vector
+The force vector is how we simulate gravity when we have no gravity by default. The [Gravity()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#L192) function will process this vector and apply the current gravity settings to the player. When the player is grounded, the gravity must be set to '-0.5f' as a grounded value in order for the character controller component to properly detect if the player is grounded or not. An issue arises when we want to modify this vector; however, you cannot set the gravity to the grounded value on the same frame you want to do events such as jumping or knockback. To fix this, when someone wants to set the force velocity, we will skip the grounding statements so the character controller can process that the player is no longer grounded. The next frame will have an accurate IsGrounded value, and we can continue our calculations from there.
+
+# Velocity (Finalization)
+Velocity is the finalized vector once the frame has completed its calculations. The finalized vector is `InputVelocity + ForceVelocity`. We then send this vector to the [Move()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#L84) function provided by the component. Once the component receives this vector, it will perform the collision calculations for us, allowing the players to move as if they were a rigidbody. However now we have a great degree of control and can expand upon the movement code when needed.
 
 ## Animation and Visuals
 
-**List your assets including their sources and licenses.**
+**Assets Used:**
+Player:  [Robot Police Animation Set](https://assetstore.unity.com/packages/3d/animations/robot-police-animation-set-227367)
+Enemies: [Battle Droids Pack](https://assetstore.unity.com/packages/3d/characters/humanoids/sci-fi/battle-droids-pack-74088)
 
-**Describe how your work intersects with game feel, graphic design, and world-building. Include your visual style guide if one exists.**
+**Player - Dominic Quintero**
+We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.
+We have an animation abstraction, [CharacterAnimator.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterAnimator.cs) that is a component listens to all the various character events that need animations. We try as much as possible to keep animation code and gameplay code seperate, as we never planned on the player code being heavily reliant on the animator states.
 
-## Input
+## Input - Dominic Quintero
 
-**Describe the default input configuration.**
+# Input Configuration
+The game can only be played with a keyboard and mouse. The current systems in place are incredibly `MousePosition` to `WorldPosition` heavy. We use this to our advantage by allowing the player to aim vertically up and down.
 
-**Add an entry for each platform or input style your project supports.**
+Controls:
+    W - Forward
+    A - Left
+    S - Backward
+    D - Right
+    R - Reload
+    G - Grenade
+    Spacebar - Jetpack
+    Shift - Slide
+    Left Click - Fire
 
 ## Game Logic
 
 **Document what game states and game data you managed and what design patterns you used to complete your task.**
 
 # Sub-Roles
+
+## Camera / Aiming / Shooting & Reloading - Dominic Quintero
+
+# Camera
+We didn't want the camera to be at a fixed location and follow the player. We wanted to immerse our players more by having the camera move where they aim, but this provided a challenge as one-to-one camera position + camera offset to the mouse's world position did not yield the desired results, and we wanted to keep the player within the camera at all times. Our approach, [CharacterCamera.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Camera/CharacterCamera.cs) allows for a radius of "play" within the player's radius. We calculate the normalized direction between the `PlayerPosition` and the `MouseWorldPosition` We get the current distance between these points and multiply the directional vector by this clamped distance, giving us our radius of play and our camera's point position. We can then customize this by setting the cameras local position and rotation within the player prefab with ease, the local position will be used as the cameras offset, giving us `CameraPosition = CameraPoint + CameraOffset` With this implementation, if we set the plane's position to the player's position, we can easily have the camera raise and fall with the player. Effectively keeping the player within the camera at all times, giving the player a region of "play", and adding that extra layer of immersion.
+
+# Aiming
+Since the game is 3D, we wanted to take advantage of unused verticality 2D games normally don't have the luxury of. Depending on the cursors world position the player can aim up and down vertically. To visualize the vertical aiming we have two visual aids, the players circular half cursor and the lasersight. Within [CharacterShooting.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L212) We have a height tollerance that enables and disables vertiical aiming. This is so when the player is aiming on a flat surface, the game plays as you would expect any other 2D shooter game to play. Once this we exceed this flat threshold, vertical aiming takes over.
+
+The circular cursor serves as a subtle hint of when the player is vertically aiming or not. When they're not vertically aiming, the laser guide will go through the center of the cursor, signifying they currently can shoot directly infront of them. When vertical aiming is active, the laser guide will go straight to the center of the circular cursor.
+
+Vertical aiming brings about many edge cases that need to be solved inorder for clean and satisfying control of the player. We have a subtle aim assist that recalculates the aim direction to target what the cursor is pointing at. We also have to worry about the player being obstructed by walls because of the 3D verticallity, and so we fade colliders that are set to the Layer `Wall`. It attaches a component [Obstructable.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/Obstructable.cs) which fades the walls and changes the walls layer to a layer the camera ray will ignore, allowing for the player to play like normal and bring a "Diablo" feel to the game. The shader graph for the fade logic can be found within [Assets/Materials/Shaders/Fade.shadergraph](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Materials/Shaders/Fade.shadergraph).
+
+# Shooting & Reloading
+The system in place allows for quick and easy use of swapping between weapons and their individual SFX.
 
 ## Cross-Platform
 
@@ -153,7 +190,7 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 **Describe the implementation of your audio system.**
 
-**Document the sound style.** 
+**Document the sound style.**
 
 ## Gameplay Testing
 
@@ -163,7 +200,7 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 ## Narrative Design
 
-**Document how the narrative is present in the game via assets, gameplay systems, and gameplay.** 
+**Document how the narrative is present in the game via assets, gameplay systems, and gameplay.**
 
 ## Press Kit and Trailer
 
@@ -174,19 +211,19 @@ We want the player to be able to react to the bullets so we made the enemy range
 ## Game Balacing - Yudi Lai
 
 **This subrole focus on making the game feel more balanced to play**
-Basic balancing: 
+Basic balancing:
 
 The melee enemy should have higher health than range enenmy, while the explosion enemy should have least amount of health. The player will have 3 different weapon: assult rifle, shotgun, sniper rifle. In that order. Sniper will have the most damage, slowest fire rate, and smallest magazine size; the assult rigle have the least damage, fastest fire rate, and largest magazine size. When picking up ammo, we add 2 magazine worth of ammo for each gun instead of picking up fixed ammount of ammo for the obvious reason. 20 bullet in sniper rille kills worth 4 magazine and can kill 20 range enemy while 20 bullets in assult rifle only kill 2 assult enemy(if landed all) and less than half of magazine.
 
-since the game's goal is finding an exit. We want the player to be able to speed run  without completely ignore the enemy. So we made player harder to get hit by the enemy and allow them to move pass the enemy. However we also want to punish player for not killing the enemy and prevent they just keep running, we made the enmy not losing agro, and once detected they will forever chase the player. So if the player choose not to kill the enemy, they will pile up and constantly apply pressure to the player, one wrong turn might cost them life. We also made the slding no invinsible and the player can't phase through enemy so the player can't easily move around the enemy once their is a horde. 
+since the game's goal is finding an exit. We want the player to be able to speed run  without completely ignore the enemy. So we made player harder to get hit by the enemy and allow them to move pass the enemy. However we also want to punish player for not killing the enemy and prevent they just keep running, we made the enmy not losing agro, and once detected they will forever chase the player. So if the player choose not to kill the enemy, they will pile up and constantly apply pressure to the player, one wrong turn might cost them life. We also made the slding no invinsible and the player can't phase through enemy so the player can't easily move around the enemy once their is a horde.
 
-To make the play feel more challenging: 
+To make the play feel more challenging:
 
 We desgin our game to have no health packs so the player only have one life.
 
-Since the player have jackpack and can be air born, I made the enemy shoot 3 times faster when attacking the air born player, this pressure the player to move wisely when in air as well. 
+Since the player have jackpack and can be air born, I made the enemy shoot 3 times faster when attacking the air born player, this pressure the player to move wisely when in air as well.
 
-To make the game play feel more fair: 
+To make the game play feel more fair:
 
 I make sure the enemy cannot attack player while chasing, the enemy have to stop when attacking, this makes the enemy such as explosion enemy and melee enemy more balanced. Especially when we design the game such that player only have limited health. We have to make sure the enemy doesn't hit player too easily.
 

@@ -144,8 +144,8 @@ OR
 
 **Scripts**
 - [Enemy.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/Enemy.cs)
-- [MeleeDroid.cs]((https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/MeleeDroid.cs))
-- [ExploDroid.cs]((https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/ExploDroid.cs))
+- [MeleeDroid.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/MeleeDroid.cs)
+- [ExploDroid.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/feature/enemy/Assets/Scripts/Enemy/ExploDroid.cs)
 
 
 Enemy SFX/VFX:

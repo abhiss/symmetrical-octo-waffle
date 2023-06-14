@@ -134,7 +134,7 @@ We want the player to be able to react to the bullets so we made the enemy range
 
 ## Game Design - Catherine Win & Jackie Trinh
 
-### vFx Particles
+### vFx Particles - Catherine Win
 
 I have implemented a captivating game design that combines immersive particle effects and interactive mechanics to enhance the player experience. Using Blender, I have designed visually stunning particles such as muzzle flash, smoke, and various other effects that add a realistic touch to the gameplay.
 
@@ -153,7 +153,7 @@ Aside from muzzle effects, I also created various types of smoke particles that 
 [Smoke vfx](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Prefabs/Smoke.vfx)
 ![smoke](https://github.com/abhiss/symmetrical-octo-waffle/assets/129975299/67f32907-c582-43a8-8516-55eeb46e4295)
 
-### Weapon Pickup and Switching System
+### Weapon Pickup and Switching System - Catherine Win & Jackie Trinh
 
 Furthermore, we implemented a system for weapon pick up, drop, and inventory management to enhance the gameplay experience as well as shooting and reloading. Players can interact with weapons scattered throughout the game world, picking them up and adding them to their inventory. We designed a script that enables smooth weapon transitions, allowing players to seamlessly switch between different weapons. The script also manages the dropping of weapons when the player decides to discard them or replace them with a different weapon from their inventory.
 
@@ -230,7 +230,7 @@ We had plans for input reconfiguration via a settings menu via [InputListener.cs
 
 # Sub-Roles
 
-## Camera / Aiming / Shooting & Reloading/ Grenade - Dominic Quintero 
+## Camera / Aiming / Shooting & Reloading - Dominic Quintero 
 
 ### Camera
 We didn't want the camera to be at a fixed location and follow the player. We wanted to immerse our players more by having the camera move where they aim, but this provided a challenge as one-to-one camera position + camera offset to the mouse's world position did not yield the desired results, and we wanted to keep the player within the camera at all times. Our approach, [CharacterCamera.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Camera/CharacterCamera.cs) allows for a radius of "play" within the player's radius. We calculate the normalized direction between the `PlayerPosition` and the `MouseWorldPosition` We get the current distance between these points and multiply the directional vector by this clamped distance, giving us our radius of play and our camera's point position. We can then customize this by setting the cameras local position and rotation within the player prefab with ease, the local position will be used as the cameras offset, giving us `CameraPosition = CameraPoint + CameraOffset` With this implementation, if we set the plane's position to the player's position, we can easily have the camera raise and fall with the player. Effectively keeping the player within the camera at all times, giving the player a region of "play", and adding that extra layer of immersion.

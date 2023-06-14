@@ -2,7 +2,7 @@
 
 ## Summary ##
 
-**Symmetrical Octo Waffle**
+**Octo**
 
 Created by Dominic Quintero, Jackie Trinh, Edward John, Yudi Lai, Abhi Sohal, Atharav Samant, Jared Givens, Catherine Win
 
@@ -28,6 +28,33 @@ Here is an example:
 *Procedural Terrain* - The background of the game consists of procedurally-generated terrain that is produced with Perlin noise. This terrain can be modified by the game at run-time via a call to its script methods. The intent is to allow the player to modify the terrain. This system is based on the component design pattern and the procedural content generation portions of the course. [The PCG terrain generation script](https://github.com/dr-jam/CameraControlExercise/blob/513b927e87fc686fe627bf7d4ff6ff841cf34e9f/Obscura/Assets/Scripts/TerrainGenerator.cs#L6).
 
 You should replay any **bold text** with your relevant information. Liberally use the template when necessary and appropriate.
+
+## Multiplayer & Networking - Abhi Sohal
+**This roles main task is setting up the game to be multiplayer and ensuring that all the other subsystems work in the context of a multiplayer game. This task was related to the general theme of following design patterns and writing modular encapsulated code, which is very important when the code is running in different execution environments at the same time.**
+
+Octo is a multiplayer game written in Unity using the brand new "Netcode for Gameobjects" library provided by Unity https://docs-multiplayer.unity3d.com/netcode/current/about/. This library provided me with common mechanisms for implementing multiplayer games like RPCs, networked events, replication, and session management. RPCs and networked events are mechanisms for explicit communication between client and server. I used this extensively for synchronizing audio and visual effects, enemy AI logic, spawning objects like grenades and enemies, and much more. Replication is a more implicit way of communication between server and clients where you can set properties to be synchronized for everyone and the library will handle the synchronization in the background. This was used for storing state information in NetworkVariables and synchronizing transforms and other properties for basically every dynamic object.
+
+We knew that multiplayer in video games is a very complex topic and we didn't want that to be a burden on everyone on our team or to limit our pace of development. Because of this, I took on the role of being the "multiplayer guy" that made sure all the subsystems work in mutliplayer so the rest of the team didn't have to worry about it. I was also responsible for fixing bugs that came up that were related to multiplayer or networking code. The idea was that another team would design and implement a subsystem, then I could go in and network it to make sure it works in the multiplayer game.
+
+### Synchronizing enemies 
+The core code for the enemies was written by the EnemyAI sub-team, but they didn't write it with multiplayer in mind, so I went through all the relevant scripts and modified them to work in a multiplayer game. 
+
+The first problem with running AI in a multiplayer game is that the code of AI can run on the server or on any of the clients. My approach to networking the enemies was to ensure that all enemies were "owned" by the server. This means that the code in the enemy script was executing on the server. This avoids running the same code in multiple execution environments which would be extremely confusing to reason about. It also avoids the problem of "how do we handle objects when the client that owns it disconnects?". Having all the enemies owned by the server simplified the implementation. By default, NetworkObjects are owned by the execution environment that spawned them, so if an enemy was spawned by a client, the enemy would be owned by that client. 
+
+Lucky, we had a EnemySpawner object that spawned enemies in waves. The key was to only run the EnemySpawner logic on the server. There's 2 ways to make a NetworkObject only run on the server. 1 way is to register it with the NetworkManager, which will ensure it's replicated and synchronized between clients and server. The other way is to give all the clients and the server their own version of the NetworkObject, but only run the specific logic on the server. In this case, I opted for the second option because the EnemySpawners were already being placed in the scene and because registering too many objects with NetworkManager is an anti-pattern. I did this by only running the spawning logic on the server while keeping a "dumb" version of the object on each of the clients. [Here](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Enemy/EnemySpawner.cs#L52) is the code for separating the client and server and [here](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Enemy/EnemySpawner.cs#L94) is the code for spawning enemies. Note that this isn't a normal Instantiate call, rather it calls the Spawn() method on a NetworkObject to spawn it across all the clients and on the server. 
+
+The actual enemies followed a similar pattern where the actual logic of the enemies, like where to go, who to attack, etc. was done on the server and we use the NetworkManager component to replicate their transforms and animators.
+
+### Synchronizing Players
+The clients own their own player objects, but every client also needs to run code for all the other players for visual and audio effects because those aren't synchronized by unity automatically like transforms and animators are. The problem was that when a client triggers an audio or visual effect, it only triggers it on it's own instance of the player, but the other clients won't see the audio/visual effect. The solution was to implement a "broadcast" system using RPCs. When 1 client triggers an effect on thier owned player, they tell all the other clients to trigger the same effect on their instance of that player. The problem is that clients can't call RPCs on other client, only on the server. So, I used the following pattern: the client triggering the effect calls a server RPC that calls a client RPC on all the client telling them to trigger the effect. [Here](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Abilities/JetPack.cs#LL148C18-L148C41) is an example of this used for the Jetpack's visual and audio effects. OnLaunch runs on 1 client, which calls OnJetpackStateServerRpc, which calls OnJpStateClientRpc, which triggers the jetpack effect. This solution had a latency issue for the client that triggered it because the effects lagged behind the input since it had to go through the server to trigger it's own particle. I simply solved this by separating the audio/visual effects into -Inner() methods that are called by the ServerRPC and immediately by the client that triggered the effect. 
+
+I used this same pattern for several game mechanics like 
+[jetpack](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Abilities/JetPack.cs#L147), 
+[shooting](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Character/CharacterShooting.cs#L154),
+[dashing](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Abilities/Dash.cs#LL64C10-L64C10),
+[turrets](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Hazards/Turret.cs#L58),
+[explosive barrels](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Hazards/ExplosiveBarrel.cs#L21),
+[grenades](https://github.com/abhiss/symmetrical-octo-waffle/blob/0f91e379656c097a249e7d305a00d911e83118fb/Assets/Scripts/Abilities/GrenadeExplosion.cs#L19) and more. 
 
 ## EnemyAI - Yudi Lai & Edward John
 

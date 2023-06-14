@@ -45,7 +45,8 @@ public class CharacterCamera : MonoBehaviour
       return;
     }
 
-    FadeObstructions();
+    // Couldn't create shader in time to enable this
+    // FadeObstructions();
 
     // Get Cursor position in world space
     _playerPosition = PlayerObject.transform.position;

@@ -141,6 +141,13 @@ The force vector is how we simulate gravity when we have no gravity by default. 
 ### Velocity (Finalization)
 Velocity is the finalized vector once the frame has completed its calculations. The finalized vector is `InputVelocity + ForceVelocity`. We then send this vector to the [Move()](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#L84) function provided by the component. Once the component receives this vector, it will perform the collision calculations for us, allowing the players to move as if they were a rigidbody. However now we have a great degree of control and can expand upon the movement code when needed.
 
+### Jetpack & Sliding
+These "abilities" display the pay off of using the Unity's `CharacterController` component with the addition of our [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) component.
+
+The [Jetpack.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Abilities/JetPack.cs) uses Kinematic equations (SUVAT), derived with help of [Sebastian Lague's Kinematic Equations Video](https://www.youtube.com/watch?v=IvT8hjy6q4o). With the help of the video, we were able to create the static [Trajectory.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Misc/Trajectory.cs) class. Each trajectory can return an arc, but we weren't able to fully display this system. When the player presses `SpaceBar`, the player will jump to the cursors `WorldPosition` and land on the target.
+
+The sliding (intenerally named as [Dash.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Abilities/Dash.cs)) component displays the input projection working as planned. Without the input projection onto the plane, the player would slide off forward and off sloped surfaces rather than sliding down the slope as one would expect. The `CharacterMotor` has an option for scripts to [override the input](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterMotor.cs#LL10C43-L10C60), which is what the slide script uses.
+
 ## Animation and Visuals
 
 **Assets Used:**
@@ -159,16 +166,18 @@ We have an animation abstraction, [CharacterAnimator.cs](https://github.com/abhi
 ### Input Configuration
 The game can only be played with a keyboard and mouse. The current systems in place are incredibly `MousePosition` to `WorldPosition` heavy. We use this to our advantage by allowing the player to aim vertically up and down.
 
-Controls:
-    ⋅⋅* W - Forward
-    ⋅⋅* A - Left
-    ⋅⋅* S - Backward
-    ⋅⋅* D - Right
-    ⋅⋅* R - Reload
-    ⋅⋅* G - Grenade
-    ⋅⋅* Spacebar - Jetpack
-    ⋅⋅* Shift - Slide
-    ⋅⋅* Left Click - Fire
+We had plans for input reconfiguration via a settings menu via [InputListener.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Character/InputListener.cs), but we were not able to implement this feature in time.
+
+### Controls:
+⋅⋅* W - Forward
+⋅⋅* A - Left
+⋅⋅* S - Backward
+⋅⋅* D - Right
+⋅⋅* R - Reload
+⋅⋅* G - Grenade
+⋅⋅* Spacebar - Jetpack
+⋅⋅* Shift - Slide
+⋅⋅* Left Click - Fire
 
 ## Game Logic
 

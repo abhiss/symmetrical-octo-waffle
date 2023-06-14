@@ -100,6 +100,8 @@ We want the player to be able to react to the bullets so we made the enemy range
 **Contribution from Yudi Lai**
 [EnemyBullet](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Enemy/EnemyBullet.cs#L7)
 
+## Game Design - Catherine Win
+
 [Smoke](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Materials/Meshes/smoke.blend)
 ## User Interface
 

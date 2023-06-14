@@ -14,7 +14,10 @@ In our sci-fi top-down multiplayer shooter, you and your team assume the role of
 
 
 **If you did work that should be factored in to your grade that does not fit easily into the proscribed roles, add it here! Please include links to resources and descriptions of game-related material that does not fit into roles here.**
+
 **Yudi Lai**: [Item Spawner](https://github.com/abhiss/symmetrical-octo-waffle/blob/1b37cf62ea5483326a6de48fcd46aedc5267e652/Assets/Scripts/Environment/ItemSpawner.cs#L6) in `Team Fortress 2` style, a disk that spawn item on top, and spawn item only when the timer is reached and there are no item on top.
+
+**Catherine Win**: Networking - Responsible for network setup like starting the game as a host and establishing connections between clients, host and server, manage the spawning of networked GameObjects like players, enemy spawner so that a player GameObject is automatically spawned for each client in the game. 
 
 # Main Roles #
 

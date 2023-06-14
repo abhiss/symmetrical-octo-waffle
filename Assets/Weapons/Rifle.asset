@@ -20,6 +20,6 @@ MonoBehaviour:
   ReloadTime: 1
   MaxDistance: 100
   ReplenishAmount: 100
-  FireSound: {fileID: 8300000, guid: eff86c781ea80b4439195814217d9ea2, type: 3}
+  FireSound: {fileID: 8300000, guid: 31533ed06e42a62498a6131b8eb4d103, type: 3}
   ReloadSound: {fileID: 8300000, guid: db555038fea38734aa776f416f882c2d, type: 3}
   NoAmmoSound: {fileID: 8300000, guid: 8850b8e137275704296d74db7c4fa80b, type: 3}

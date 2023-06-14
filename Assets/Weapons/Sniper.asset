@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sniper
   m_EditorClassIdentifier: 
   WeaponName: Sniper
-  Damage: 100
+  Damage: 50
   FireRate: 1.2
   MaxClipSize: 5
   MaxAmmo: 20

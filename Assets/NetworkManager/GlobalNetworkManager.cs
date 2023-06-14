@@ -14,11 +14,13 @@ using Unity.VisualScripting;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using ProcGen;
+using Unity.Collections;
 
 public class GlobalNetworkManager : NetworkBehaviour
 {
     public static GlobalNetworkManager Instance;
-    public GameObject MapParentGO;
+
+    private NetworkVariable<FixedString32Bytes> n_joinCodeString = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private NetworkVariable<int> procGenSeed = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private bool isMainScene;
@@ -33,7 +35,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
     }
 
     private async void Start()
@@ -50,7 +51,7 @@ public class GlobalNetworkManager : NetworkBehaviour
         isMainScene = SceneManager.GetActiveScene().name == "MainScene";
         var isMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
 
-        if(isMainMenu) return;
+        if (isMainMenu) return;
 #if UNITY_EDITOR
         Debug.Log("In unity editor.");
         // automatically start as client if detected that instance is a parallelsync clone
@@ -83,7 +84,7 @@ public class GlobalNetworkManager : NetworkBehaviour
             procGenSeed.Value = new System.Random().Next();
         }
         Debug.Log("in isserver");
-
+        var MapParentGO = GameObject.Find("---- MAP -----");
         var config = new Config();
         config.Seed = procGenSeed.Value;
         config.Instantiate = Instantiate;
@@ -104,6 +105,7 @@ public class GlobalNetworkManager : NetworkBehaviour
         {
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(7);
             string joincode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            n_joinCodeString.Value = joincode;
             Debug.Log("Joincode: " + joincode);
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
                 allocation.RelayServer.IpV4,
@@ -155,7 +157,14 @@ public class GlobalNetworkManager : NetworkBehaviour
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].Despawn();
     }
 
-    private int GetConnectedPlayersCount()
+    public void OnJoinCodeChange(System.Action<string> action)
+    {
+        n_joinCodeString.OnValueChanged = (prev, next) =>
+        {
+            action.Invoke(next.ToString());
+        };
+    }
+    public int GetConnectedPlayersCount()
     {
         return 2;
     }

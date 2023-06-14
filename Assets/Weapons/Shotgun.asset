@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   WeaponName: Shotgun
-  Damage: 20
+  Damage: 25
   FireRate: 1.25
   MaxClipSize: 50
   MaxAmmo: 200

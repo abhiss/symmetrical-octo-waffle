@@ -50,7 +50,10 @@ class EnemySpawner : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsServer) return;
+        if (!IsServer) {
+            Debug.Log($"isserver={IsServer} isclient={IsClient} ishost={IsHost} isspawned={IsSpawned}");
+            return;
+        };
         if (_timeTowardsNextSpawn >= _timeBetweenSpawns)
         {
             RandomSpawnEnemy();

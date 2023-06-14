@@ -37,7 +37,7 @@ Transform:
   m_Children:
   - {fileID: 4059817063944707186}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6384406556849988663
 MeshFilter:
@@ -126,10 +126,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemySpawns:
   - Enemy: {fileID: 7019907609670061836, guid: 283514e71175dc344bdc7bccfdb6cc2d, type: 3}
-    SpawnChance: 1
+    SpawnChance: 0.867
   - Enemy: {fileID: 4853595808668006219, guid: 59cd07f205dd30847adcc7d33ffb467d, type: 3}
+    SpawnChance: 0.864
+  - Enemy: {fileID: 772981208468871829, guid: 1e2a0914fb397431eb53a6eeb6c98ccb, type: 3}
     SpawnChance: 1
-  _timeBetweenSpawns: 5
+  _timeBetweenSpawns: 15
   _deathExplosion: {fileID: 4771023247389459232, guid: b1bd9cd864a686f44805e86b088cd666,
     type: 3}
 --- !u!114 &3283940984444765569

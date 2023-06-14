@@ -108,10 +108,10 @@ public abstract class Enemy : NetworkBehaviour
 
     private void DropLoot()
     {
-        // Random range is max exclusive, so increment end range by 1.
-        float randomNumber = UnityEngine.Random.Range(1, 101);
-        // Drop loot based on loot drop rate.
-        if (_lootDropRate <= randomNumber)
+        //// Random range is max exclusive, so increment end range by 1.
+        //float randomNumber = UnityEngine.Random.Range(1, 101);
+        //// Drop loot based on loot drop rate.
+        //if (_lootDropRate <= randomNumber)
         {
             Instantiate(_loot, transform.position, Quaternion.identity);
         }

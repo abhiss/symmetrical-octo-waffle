@@ -38,7 +38,6 @@ public class GlobalNetworkManager : NetworkBehaviour
 
     private async void Start()
     {
-        gameObject.transform.position = new Vector3(0,2,0);
         NetworkManager.OnClientConnectedCallback += OnClientConnected;
         await UnityServices.InitializeAsync();
 
@@ -91,7 +90,12 @@ public class GlobalNetworkManager : NetworkBehaviour
         config.GO = MapParentGO;
         // config.PremadeRooms = new List<PremadeRoom>();
         Debug.Log("Map seed: " + config.Seed);
-        new Generator().Generate(config);
+        var generator = new Generator();
+        generator.Generate(config);
+        foreach (var obj in generator.NetworkObjects)
+        {
+            obj.Spawn();
+        }
     }
 
     public async void CreateRelay()
@@ -143,7 +147,6 @@ public class GlobalNetworkManager : NetworkBehaviour
         if (NetworkManager.LocalClientId != clientid) return;
         Debug.Log("Client: Connected to server");
         mapgen();
-        NetworkManager.ConnectedClients[clientid].PlayerObject.transform.GetChild(2).transform.position =  new Vector3(0, 2, 0);
     }
 
     [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]

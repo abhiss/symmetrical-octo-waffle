@@ -14766,7 +14766,7 @@ MonoBehaviour:
   _explosionRadius: 3
   _targetMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   _showExplosionRadius: 0
 --- !u!114 &8896318980586382652
 MonoBehaviour:

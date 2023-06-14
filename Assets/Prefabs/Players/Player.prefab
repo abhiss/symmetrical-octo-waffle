@@ -730,12 +730,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 074dc4236068cf04dac93b6bf4f4638a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GrenadePrefab: {fileID: 38953816251675571, guid: 71ccf2d93b64b7a459c1b62be84aff73,
+  GrenadePrefab: {fileID: 6240956855057959958, guid: 6d65496f49ccac345bdf7f0b147b2c91,
     type: 3}
   PlayerAnimator: {fileID: 474122193657312462}
   MaxGrenadeHeight: 2
-  GrenadeCount: 5
-  MaxGrenades: 10
+  GrenadeCount: 1000
+  MaxGrenades: 1000
   GrenadeThrowCooldown: 3
 --- !u!114 &999072899312915246
 MonoBehaviour:

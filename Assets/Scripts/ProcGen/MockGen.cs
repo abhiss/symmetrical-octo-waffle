@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEngine.Assertions;
 using UnityEngine.AI;
 using Unity.Netcode;
-
 namespace ProcGen
 {
 
@@ -373,7 +372,7 @@ namespace ProcGen
     public int HallWidth = 2;
 
     private List<Room> _rooms = new List<Room>();
-    public int InnerMin = 0;
+    public int InnerMin = 1;
     public int InnerMax = 4;
     public float propFrequency = 0.2f;
     public int InnerSizeMin = 2;

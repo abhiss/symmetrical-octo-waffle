@@ -13,14 +13,15 @@ using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using ProcGen;
 
 public class GlobalNetworkManager : NetworkBehaviour
 {
     public static GlobalNetworkManager Instance;
-    private NetworkVariable<Vector3> spawnLocation = new NetworkVariable<Vector3>();
+    public GameObject MapParentGO;
 
+    private NetworkVariable<int> procGenSeed = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private bool isMainScene;
-    private GenLayout map;
     private NetworkObject player;
 
     private void Awake()
@@ -31,16 +32,14 @@ public class GlobalNetworkManager : NetworkBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(transform.gameObject);
+        DontDestroyOnLoad(gameObject);
 
     }
-    private async void Start()
 
+    private async void Start()
     {
-        NetworkManager.OnClientConnectedCallback += (ulong id) =>
-        {
-            Debug.Log("ON CLIENT CONNECTED.");
-        };
+        gameObject.transform.position = new Vector3(0,2,0);
+        NetworkManager.OnClientConnectedCallback += OnClientConnected;
         await UnityServices.InitializeAsync();
 
         AuthenticationService.Instance.SignedIn += () =>
@@ -58,7 +57,10 @@ public class GlobalNetworkManager : NetworkBehaviour
         // automatically start as client if detected that instance is a parallelsync clone
         if (Application.dataPath.Contains("clone"))
         {
-            NetworkManager.Singleton.StartClient();
+            if (!NetworkManager.Singleton.StartClient())
+            {
+                Debug.LogError("Failed to start client.");
+            }
         }
         else
         {
@@ -72,18 +74,24 @@ public class GlobalNetworkManager : NetworkBehaviour
             Debug.Log("not main scene");
             return;
         }
+#endif
+    }
+
+    private void mapgen()
+    {
         if (IsServer)
         {
-            Debug.Log("in isserver");
-            map = new GenLayout(Instantiate, gameObject, 0);
-            Debug.Log("map spawnlocation: " + map.PlayerSpawnLocation);
-            //spawnLocation.Value = map.PlayerSpawnLocation;
+            procGenSeed.Value = new System.Random().Next();
         }
-        if (IsClient)
-        {
-            player = NetworkManager.LocalClient.PlayerObject;
-        }
-#endif
+        Debug.Log("in isserver");
+
+        var config = new Config();
+        config.Seed = procGenSeed.Value;
+        config.Instantiate = Instantiate;
+        config.GO = MapParentGO;
+        // config.PremadeRooms = new List<PremadeRoom>();
+        Debug.Log("Map seed: " + config.Seed);
+        new Generator().Generate(config);
     }
 
     public async void CreateRelay()
@@ -128,6 +136,14 @@ public class GlobalNetworkManager : NetworkBehaviour
         {
             Debug.LogError(e);
         }
+    }
+
+    void OnClientConnected(ulong clientid)
+    {
+        if (NetworkManager.LocalClientId != clientid) return;
+        Debug.Log("Client: Connected to server");
+        mapgen();
+        NetworkManager.ConnectedClients[clientid].PlayerObject.transform.GetChild(2).transform.position =  new Vector3(0, 2, 0);
     }
 
     [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]

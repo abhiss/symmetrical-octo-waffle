@@ -76,10 +76,7 @@ public class RangeEnemyController : NetworkBehaviour
             {
                 Instantiate(_deathExplosion, transform.position, Quaternion.identity);
                 // 1/5 chance to drop amo
-                if (UnityEngine.Random.Range(0,8) == 1)
-                {
-                    Instantiate(_loot, transform.position, Quaternion.identity);
-                }
+                Instantiate(_loot, transform.position, Quaternion.identity);
                 Destroy(gameObject);
                 return;
             }

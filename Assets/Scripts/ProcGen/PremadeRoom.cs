@@ -7,8 +7,8 @@ namespace ProcGen
     public class PremadeRoom : MonoBehaviour
     {
         public Vector3Int Size;
-        Vector3Int Entrance;
-        Vector3Int Exit;
+        public Vector3Int Entrance;
+        public Vector3Int Exit;
         public int Index;
 
         // public List<Dir> Dirs;
@@ -18,7 +18,8 @@ namespace ProcGen
             Size.y = 1;
             var sizePos = transform.position;
             sizePos.y = 0;
-            Gizmos.DrawWireCube(sizePos, Size);
+            Gizmos.DrawWireCube(sizePos - (Vector3)Size * 0.5f, (Vector3)Size * Generator.BlockSize);
+
             DrawDoor(Entrance);
             DrawDoor(Exit);
         }

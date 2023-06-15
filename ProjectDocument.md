@@ -199,8 +199,6 @@ The player can also switch the weapons that are in the inventory by using the "X
 
 In summary, it enables players to pick up a weapon by interacting with the game object. When a player is nearby and presses the designated key, their current weapon is swapped with the new weapon and always allows them to switch between different weapons. The object also features visual effects such as hovering and spinning to make it visually appealing.
 
-
-
 ## User Interface
 
 **Describe your user interface and how it relates to gameplay. This can be done via the template.**
@@ -256,11 +254,11 @@ We had plans for input reconfiguration via a settings menu via [InputListener.cs
 - D - Right
 - R - Reload
 - G - Grenade
+- X - Weapon Switching
+- E - Pick Up Weapon
 - Spacebar - Jetpack
 - Shift - Slide
 - Left Click - Fire
-- X - Weapon Switching
-- E - Pick Up Weapon
 
 ## Game Logic
 
@@ -299,6 +297,7 @@ In summary, the camera shake mechanic is an effective way to convey certain in-g
 To implement the [Weapon Laser](https://github.com/abhiss/symmetrical-octo-waffle/blob/cfe0206d7430113f01e44b3a2926e4c01a8503fa/Assets/Scripts/Character/CharacterShooting.cs#L286) functionality, I turned to Unity's native `LineRenderer` component. This handy tool can draw lines in 3D space, following a sequence of points. In the Start method, I created a new LineRenderer instance and added it to the game object. Then, I set its properties. I gave it a distinct look using a predefined material, the LaserMaterial, to style the laser. I also ensured the laser maintained a consistent width from start to end by setting its `startWidth` and `endWidth` properties.
 
 Initially, I had planned to make the laser visible only when the player right-clicks the mouse, but for the sake of a more intuitive game feel, I decided to have it continuously visible whenever the player is aiming. Throughout the game, I continuously monitor the player's actions in the update loop, updating the laser's state accordingly. If the player is aiming, and is not in the process of reloading or have their input disabled, the laser gets drawn. In the `DrawLaser` method, I calculate the end position of the laser line. This position is based on where the player's character is aiming, multiplied by the maximum distance of the weapon. However, if the laser comes into contact with an object before reaching its maximum distance, I adjust the laser to stop at the hit point, keeping it realistic. By updating these positions each frame, I've managed to simulate a real-time laser sight for the player's character. I believe this has significantly enhanced the shooting experience for players.
+
 ### Grenade System
 
 This system includes various components: the grenade-throwing mechanism, the grenade pickup objects, the grenade object itself, and the subsequent explosion caused by a grenade.
@@ -354,10 +353,6 @@ I implemented Explosive Barrel, Floor Trap, and Turret (along with its energy pr
 - [Turret](https://freesound.org/people/NicholasJudy567/sounds/673841/)
 - [Electric Projectile](https://freesound.org/people/FeliUsers/sounds/682068/)
 - [Explosion](https://freesound.org/people/SuperSouper/sounds/684754/)
-
-**Describe the implementation of your audio system.**
-
-**Document the sound style.**
 
 ## Gameplay Testing
 

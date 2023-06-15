@@ -33,7 +33,7 @@ public class Explosion : NetworkBehaviour
             targetHealth.TakeDamage(gameObject, _explosionDamage);
             if (collider.gameObject.CompareTag("Player"))
             {
-                Camera.main.GetComponent<CharacterCamera>().ShakeCamera(30f, .75f);
+                Camera.main.GetComponent<CharacterCamera>().ShakeCamera(15.0f, 0.5f);
             }
         }
         Destroy(gameObject, _explosionDuration);

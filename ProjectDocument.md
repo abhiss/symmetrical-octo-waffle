@@ -417,7 +417,7 @@ To make the game play feel more fair:
 I make sure the enemy cannot attack player while chasing, the enemy have to stop when attacking, this makes the enemy such as explosion enemy and melee enemy more balanced. Especially when we design the game such that player only have limited health. We have to make sure the enemy doesn't hit player too easily.
 
 ## Enviorment Assets - Jared Givens
-The environment assets from unreal needed modifications to work correctly with unity and procedural generation. There were plans to have multiple wall variants. However, after converting the assets adding backs to the walls for the black void effect, and fixing normals, they ended up having issues like being too thick such that they would clip into each other back to back or not being correctly aligned. The assets also used a custom color mapping shader that I recreated in the shader graph. Assets/Materials/Shaders/Fade.shadergraph
+The environment assets from unreal needed modifications to work correctly with unity and procedural generation. There were plans to have multiple wall variants. However, after converting the assets adding backs to the walls for the black void effect, and fixing normals, they ended up having issues like being too thick such that they would clip into each other back to back or not being correctly aligned. The assets also used a custom color mapping shader that I recreated in the shader graph. Assets/Materials/Shaders/ColorMask.shadergraph
 
 ## Main Menu
 

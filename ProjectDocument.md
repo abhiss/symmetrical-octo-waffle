@@ -387,7 +387,7 @@ Octo offers an engaging narrative-driven multiplayer experience set in a vast sc
 
 ## Press Kit and Trailer
 
-**Include links to your presskit materials and trailer.**
+[Presskit](https://docs.google.com/document/d/1jcuWgJCnZ4qw3p1dchj5r7ZY1M5ChbdKlDUPH9hwiLg/edit?usp=sharing)
 
 **Describe how you showcased your work. How did you choose what to show in the trailer? Why did you choose your screenshots?**
 
@@ -416,6 +416,3 @@ I make sure the enemy cannot attack player while chasing, the enemy have to stop
 **Dominic's Conttibution:**
 Visual design and UI layout.
 
-## Game Feel
-
-**Document what you added to and how you tweaked your game to improve its game feel.**

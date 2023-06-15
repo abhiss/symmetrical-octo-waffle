@@ -242,7 +242,7 @@ The sliding (intenerally named as [Dash.cs](https://github.com/abhiss/symmetrica
 We wanted the player to be extremely reactive and reflect the players input. We use the animations within this asset to tie toghether the various states of the player.
 We have an animation abstraction, [CharacterAnimator.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterAnimator.cs) that is a component listens to all the various character events that need animations. We try as much as possible to keep animation code and gameplay code seperate, as we never planned on the player code being heavily reliant on the animator states.
 
-## Input - Dominic Quintero
+## Input - Dominic Quintero & Jackie Trinh
 
 ### Input Configuration
 The game can only be played with a keyboard and mouse. The current systems in place are incredibly `MousePosition` to `WorldPosition` heavy. We use this to our advantage by allowing the player to aim vertically up and down.

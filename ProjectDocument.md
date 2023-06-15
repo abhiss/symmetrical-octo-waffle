@@ -387,9 +387,7 @@ Octo offers an engaging narrative-driven multiplayer experience set in a vast sc
 
 ## Press Kit and Trailer
 
-[Presskit](https://docs.google.com/document/d/1jcuWgJCnZ4qw3p1dchj5r7ZY1M5ChbdKlDUPH9hwiLg/edit?usp=sharing)
-
-**Describe how you showcased your work. How did you choose what to show in the trailer? Why did you choose your screenshots?**
+[Presskit](https://docs.google.com/document/d/1jcuWgJCnZ4qw3p1dchj5r7ZY1M5ChbdKlDUPH9hwiLg/edit?usp=sharing) - Jackie Trinh
 
 ## Game Balacing - Yudi Lai
 

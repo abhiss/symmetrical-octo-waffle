@@ -40,7 +40,7 @@ public class RangeEnemyController : NetworkBehaviour
     private Vector3 _destination;
     private bool _isDead = false;
     //Patrolling
-    [SerializeField] public float _patrolRadius = 2.5f; 
+    [SerializeField] public float _patrolRadius = 2.5f;
     [SerializeField] private float _timeToRoam;
     private float _timeRoamed;
     // detect obstruction
@@ -67,7 +67,7 @@ public class RangeEnemyController : NetworkBehaviour
         _animator = GetComponent<Animator>();
         _audio = GetComponent<AudioSource>();
         _healthSystem = GetComponent<HealthSystem>();
-        _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) => 
+        _healthSystem.OnDamageEvent += new EventHandler<HealthSystem.OnDamageArgs>((_, args) =>
         {
             // Emit sparks when getting hit.
             Destroy(Instantiate(_sparksPrefab, transform.position, Quaternion.identity), 0.25f);
@@ -168,8 +168,11 @@ public class RangeEnemyController : NetworkBehaviour
         _agent.enabled = true;
 
         // Navigate towards the player.
-        _destination = _target.transform.position;
-        _agent.SetDestination(_destination);
+        if (_target != null)
+        {
+            _destination = _target.transform.position;
+            _agent.SetDestination(_destination);
+        }
 
         // If we are within range to attack, enter attack state.
         if (targetDetection() && InSight())
@@ -250,7 +253,7 @@ public class RangeEnemyController : NetworkBehaviour
             if(objectHit.tag == "Player" && Vector3.Distance(_target.transform.position, this.transform.position) < _attackRange)
             {
                 return true;
-            }  
+            }
         }
         return false;
     }

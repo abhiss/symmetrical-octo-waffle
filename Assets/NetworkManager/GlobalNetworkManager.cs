@@ -182,7 +182,7 @@ public class GlobalNetworkManager : NetworkBehaviour
     public void ReloadSceneClientRpc()
     {
         string currentSceneName = SceneManager.GetActiveScene().name;
-        SceneManager.UnloadSceneAsync(currentSceneName);
+        SceneManager.LoadSceneAsync("MainMenu");
         SceneManager.LoadSceneAsync(currentSceneName);
     }
 

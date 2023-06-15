@@ -100,7 +100,7 @@ public class CharacterShooting : NetworkBehaviour
         }
         if (healthtext is not null && CurrentWeapon is not null)
         {
-            healthtext.text = $"HP: {health.CurrentHealth}/{health.MaxHealth}\nAmmo: {CurrentWeapon.CurrentAmmo}/{CurrentWeapon.MaxAmmo}";
+            healthtext.text = $"HP: {health.CurrentHealth}/{health.MaxHealth}\nAmmo: {CurrentWeapon.CurrentClipSize}/{CurrentWeapon.CurrentAmmo}";
         }
         Vector3 cursorPosition = AdjustCursorPostion(Input.mousePosition);
         AimDirection = GetAimDirection(cursorPosition);

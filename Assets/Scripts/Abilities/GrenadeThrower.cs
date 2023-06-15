@@ -30,6 +30,13 @@ public class GrenadeThrower : NetworkBehaviour
             // Calculate trajectory
             Vector3 cursorPosition = _inputListener.CursorWorldPosition();
             LaunchData launchData = Trajectory.CalculateLaunchData(transform.position, cursorPosition, MaxGrenadeHeight);
+
+            Vector3 v = launchData.InitalVelocity;
+            if (float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z))
+            {
+                return;
+            }
+
             throwGrenadeServerRpc(launchData.InitalVelocity);
 
             // Functional

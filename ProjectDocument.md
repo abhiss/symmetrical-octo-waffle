@@ -199,11 +199,24 @@ The player can also switch the weapons that are in the inventory by using the "X
 
 In summary, it enables players to pick up a weapon by interacting with the game object. When a player is nearby and presses the designated key, their current weapon is swapped with the new weapon and always allows them to switch between different weapons. The object also features visual effects such as hovering and spinning to make it visually appealing.
 
+## User Interface - Atharav Samant
+I used TextMeshPro UI for the text in the buttons and the title, which was imported from a website called [dafont.com](https://www.dafont.com). I have a bunch of different fonts downloaded, so we can change it easily. The EventSystem handles the input for the textfields and buttons. I made use of the scale with screen size on the canvas scaler property, which makes sure that the buttons do not get distorted or look weird when the screen resolution changes.
+Made the different components needed in UI which are:
 
+### Player Prefab Canvas
+This canvas consists of the game data that we need to show to the user, so that the user can make informed decisions. This data is the the join code, the healthbar and the other players in the game. There is a player icon, which is just as a asthetic.
 
-## User Interface
+#### Healthbar
+We had imported a asset called the "Feel"(Abhi found this asset). This pack had a dynamic health bar. I read the code, figured out how the heathbar needs to be updated, and used the HealthSystem.cs sript attached to the player, in order to update the healthbar. It has dynamic effects like shake and fade effect(shows amount of health reduced in red, then reduces). I had to modify the components for the heathbar the pack had, to make it more suitable for our game.
 
-**Describe your user interface and how it relates to gameplay. This can be done via the template.**
+#### Ammo
+I used TextMeshPro to display the ammo(currently loaded ammo and how much extra ammo the user has) and the name of the current gun that the user has. This component is in the bottom right corner of the screen.
+
+#### ToggleUI
+This script was attached to the UI game object. As the name describes, it is responsible for the toggling of objects. Currently, it only has the pause menu object that is toggled.
+
+### Pause Menu
+This is a pretty simple menu, which has the resume and quit button. The quit button takes you back to the main menu.
 
 ## Movement/Physics - Dominic Quintero
 Our movement code is unique as we use the `CharacterController` component within Unity. We do not use the built-in physics system `(RigidBody)` provided by Unity; we are only provided collisions. This component essentially takes in a velocity and provides the following: collisions, climbing stairs, and a `isGrounded` variable, along with some of the standard unity collision functions such as `OnTriggerEnter()`. Nothing else is provided, which allows us to have a lot more freedom in implementing the player. The code in [CharacterMotor.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Character/CharacterMotor.cs) can be summarized as creating a velocity vector that reflects forces we create: gravity and user input.
@@ -268,7 +281,7 @@ We had plans for input reconfiguration via a settings menu via [InputListener.cs
 
 # Sub-Roles
 
-## Camera / Aiming / Shooting & Reloading - Dominic Quintero 
+## Camera / Aiming / Shooting & Reloading - Dominic Quintero
 
 ### Camera
 We didn't want the camera to be at a fixed location and follow the player. We wanted to immerse our players more by having the camera move where they aim, but this provided a challenge as one-to-one camera position + camera offset to the mouse's world position did not yield the desired results, and we wanted to keep the player within the camera at all times. Our approach, [CharacterCamera.cs](https://github.com/abhiss/symmetrical-octo-waffle/blob/main/Assets/Scripts/Camera/CharacterCamera.cs) allows for a radius of "play" within the player's radius. We calculate the normalized direction between the `PlayerPosition` and the `MouseWorldPosition` We get the current distance between these points and multiply the directional vector by this clamped distance, giving us our radius of play and our camera's point position. We can then customize this by setting the cameras local position and rotation within the player prefab with ease, the local position will be used as the cameras offset, giving us `CameraPosition = CameraPoint + CameraOffset` With this implementation, if we set the plane's position to the player's position, we can easily have the camera raise and fall with the player. Effectively keeping the player within the camera at all times, giving the player a region of "play", and adding that extra layer of immersion.
@@ -326,7 +339,7 @@ I implemented Explosive Barrel, Floor Trap, and Turret (along with its energy pr
 - [Floor Trap](https://assetstore.unity.com/packages/3d/props/interior/dungeon-floor-traps-77765)
 - [Turret](https://assetstore.unity.com/packages/3d/props/guns/laser-turret-36177)
 - [Explosion](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
- 
+
 ## Cross-Platform
 
 **Describe the platforms you targeted for your game release. For each, describe the process and unique actions taken for each platform. What obstacles did you overcome? What was easier than expected?**
@@ -411,7 +424,16 @@ To make the game play feel more fair:
 I make sure the enemy cannot attack player while chasing, the enemy have to stop when attacking, this makes the enemy such as explosion enemy and melee enemy more balanced. Especially when we design the game such that player only have limited health. We have to make sure the enemy doesn't hit player too easily.
 
 
-## Main Menu
+#### Main Menu
+The main menu is the start of the game. This has the start, battle pass, settings, and quit button. Each of these button's funcitonality are scripted in the MainMenu.cs script(attached to the Main Menu Canvas). The start button leads to the lobby menu and the settings button leads to the Settings Canvas.
+
+#### Lobby
+This canvas will lead to the game. You enteryour username in the username text field provided(the user can leave it empty too). After that, you can either host a game, or join a game. In both buttons, the scene changes from the main menu scene to the main scene(game screen). In join button, I made a pop up that appears, in which you have to input the code to join the game.
+
+#### Settings
+In this canvas, you can change the in game volume, and the brightness(brightness does not directly affect the screen brightness, but affects the in light birghtness provided by the light added). Both of these have sliders to adjust the settings.
+
+Along with this, we have the background music and button click sound(the objects was added by me, but the sound choice for the game was made by Dominic).
 
 **Dominic's Conttibution:**
 Visual design and UI layout.

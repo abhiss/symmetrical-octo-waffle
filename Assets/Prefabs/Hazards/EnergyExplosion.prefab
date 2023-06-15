@@ -5055,8 +5055,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0355067663df348738acc502c392c8c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _explosionDamage: 50
+  _explosionDamage: 25
   _explosionRadius: 2
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _showExplosionRadius: 0
 --- !u!1 &1313580442152225190
 GameObject:
   m_ObjectHideFlags: 0

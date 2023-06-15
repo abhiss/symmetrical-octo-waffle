@@ -275,9 +275,8 @@ We had plans for input reconfiguration via a settings menu via [InputListener.cs
 - X - Weapon Switching
 - E - Pick Up Weapon
 
-## Game Logic
-
-**Document what game states and game data you managed and what design patterns you used to complete your task.**
+## Session Management / Game Logic - Abhi Sohal 
+I was also in charge of the overall game logic and session management. The multiplayer nature of the game is heavily tied to the Game Logic. For example, spawning a player in a singleplayer game is as simple as Instantiating a new player gameobject. In a multiplayer game this is much more complicated due to the requirement that everything needs to be server authoritative and synchronized between clients. The Unity Netcode for Gameobjects library provides a suite of premade scripts that I set up, like NetworkManager and SpawnManager. These helped in some ways because it made it easy to start up in the project, but a I was limited in what I could do with these premade objects. I ended up writing a lot of custom session management and game logic code. For example, the built-in NetworkManager can spawn the player object for you, but it doesn't support respawns or deaths, so I had to write that logic myself.
 
 # Sub-Roles
 

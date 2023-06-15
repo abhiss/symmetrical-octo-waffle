@@ -15,12 +15,14 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using ProcGen;
 using Unity.Collections;
+using System.Threading.Tasks;
 
 public class GlobalNetworkManager : NetworkBehaviour
 {
     public static GlobalNetworkManager Instance;
 
     private NetworkVariable<FixedString32Bytes> n_joinCodeString = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public GameObject PlayerPrefab;
 
     private NetworkVariable<int> procGenSeed = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private bool isMainScene;
@@ -175,15 +177,22 @@ public class GlobalNetworkManager : NetworkBehaviour
     [ServerRpc(Delivery = RpcDelivery.Reliable, RequireOwnership = false)]
     public void OnPlayerDiedServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        ReloadSceneClientRpc();
+        var clientId = serverRpcParams.Receive.SenderClientId;
+        respawnPlayer(clientId);
     }
-
-    [ClientRpc]
-    public void ReloadSceneClientRpc()
+    private void respawnPlayer(ulong clientId)
     {
-        string currentSceneName = SceneManager.GetActiveScene().name;
-        SceneManager.LoadSceneAsync("MainMenu");
-        SceneManager.LoadSceneAsync(currentSceneName);
+        Debug.Log("respawnPlayer");
+        if (NetworkManager.ConnectedClients.ContainsKey(clientId))
+        {
+            var client = NetworkManager.ConnectedClients[clientId];
+            client.PlayerObject.Despawn();
+            client.PlayerObject.transform.position = Vector3.zero;
+            GameObject player = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+            var net = player.GetComponent<NetworkObject>();
+            net.SpawnAsPlayerObject(clientId);
+            //client.PlayerObject.;//pSpawnAsPlayerObject(clientId);
+        }
     }
 
     public void OnPlayerDied()

@@ -2196,6 +2196,12 @@ PrefabInstance:
       objectReference: {fileID: 1132645037}
     - target: {fileID: 5895435387553431229, guid: d61b9362d64de2d44b0a8e79abe1e1d1,
         type: 3}
+      propertyPath: PlayerPrefab
+      value: 
+      objectReference: {fileID: 1801000252830821874, guid: d6853885a48259740ab8001a7648c52a,
+        type: 3}
+    - target: {fileID: 5895435387553431229, guid: d61b9362d64de2d44b0a8e79abe1e1d1,
+        type: 3}
       propertyPath: JoinCodeUIGameObj
       value: 
       objectReference: {fileID: 157276461}

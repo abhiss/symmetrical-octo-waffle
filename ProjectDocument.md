@@ -12,8 +12,14 @@ In our sci-fi top-down multiplayer shooter, you and your team assume the role of
 
 **In this section, explain how the game should be played. Treat this as a manual within a game. It is encouraged to explain the button mappings and the most optimal gameplay strategy.**
 
+If playing as a single player, click start game, and then host. A host starts a game with a new "join code". Other players can join the host's game by clicking join game instead of host game and typing in the join code displayed on the bottom left of the host's screen.
+
 
 **If you did work that should be factored in to your grade that does not fit easily into the proscribed roles, add it here! Please include links to resources and descriptions of game-related material that does not fit into roles here.**
+
+
+**Abhi Sohal**: Networking - Responsible for network setup like starting the game as a host and establishing connections between clients, host and server, manage the spawning of networked GameObjects like players, enemy spawner so that a player GameObject is automatically spawned for each client in the game.
+
 
 **Dominic Quintero**: [IInteractable](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/IInteractable.cs) and [InteractableTerminal](https://github.com/abhiss/symmetrical-octo-waffle/blob/BranchJustForDocument/Assets/Scripts/Environment/TerminalInteractable.cs). We were unable to incorporate and expand upon this system in our game, but I created an intercatable system so when a user pressed their `UseKey`, they will activate events that are linked to the Terminal script.
 

@@ -1,6 +1,5 @@
 # Octo
-Octo is a 3D, multiplayer, procedurally generated, top down shooter, made in unity.
-(UC Davis ECS 189L, Spring '23)
+Octo is a 3D, multiplayer, procedurally generated, top down shooter, made in Unity.
 
 ## Screenshots ##
 ![img1](https://github.com/abhiss/symmetrical-octo-waffle/assets/38144873/271198e8-d2a2-4796-b7a0-30707c3b6387)
